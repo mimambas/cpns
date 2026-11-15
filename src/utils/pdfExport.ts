@@ -25,7 +25,7 @@ export async function exportResultToPdf(
   const contentWidth = pageWidth - marginX * 2;
 
   // Header band
-  doc.setFillColor(250, 93, 25); // Firecrawl Heat Orange #fa5d19
+  doc.setFillColor(24, 104, 219); // Brand Blue #1868DB
   doc.rect(0, 0, pageWidth, 28, 'F');
 
   doc.setTextColor(255, 255, 255);
@@ -43,7 +43,7 @@ export async function exportResultToPdf(
 
   // Meta information block
   let cursorY = 36;
-  doc.setTextColor(38, 38, 38);
+  doc.setTextColor(41, 42, 46);
   doc.setFontSize(10);
 
   const metaRows: [string, string][] = [
@@ -68,13 +68,13 @@ export async function exportResultToPdf(
     styles: {
       fontSize: 9,
       cellPadding: 2.8,
-      textColor: [38, 38, 38],
+      textColor: [41, 42, 46],
       lineColor: [232, 232, 232],
       lineWidth: 0.2,
     },
     headStyles: {
-      fillColor: [249, 249, 249],
-      textColor: [38, 38, 38],
+      fillColor: [240, 241, 242],
+      textColor: [41, 42, 46],
       fontStyle: 'bold',
     },
     columnStyles: {
@@ -115,12 +115,12 @@ export async function exportResultToPdf(
     styles: {
       fontSize: 9,
       cellPadding: 2.8,
-      textColor: [38, 38, 38],
+      textColor: [41, 42, 46],
       lineColor: [232, 232, 232],
       lineWidth: 0.2,
     },
     headStyles: {
-      fillColor: [38, 38, 38],
+      fillColor: [24, 104, 219],
       textColor: [255, 255, 255],
       fontStyle: 'bold',
     },
@@ -193,14 +193,14 @@ export async function exportResultToPdf(
     styles: {
       fontSize: 7.5,
       cellPadding: 2.5,
-      textColor: [38, 38, 38],
+      textColor: [41, 42, 46],
       lineColor: [232, 232, 232],
       lineWidth: 0.2,
       valign: 'top',
       overflow: 'linebreak',
     },
     headStyles: {
-      fillColor: [38, 38, 38],
+      fillColor: [41, 42, 46],
       textColor: [255, 255, 255],
       fontStyle: 'bold',
       fontSize: 8,

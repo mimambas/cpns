@@ -40,61 +40,36 @@ export const HomeView: React.FC<HomeViewProps> = ({
   return (
     <div className="stack-400">
       {/* Hero / Page Header */}
-      <section className="hero-header-row">
-        <div className="stack-200">
-          <div className="row-wrap">
-            <span className="lozenge lozenge-info">Simulasi CAT BKN</span>
-            <span className="tag tag-blue">Tanpa login · Ekspor PDF langsung</span>
-          </div>
-          <h1 className="h-xlarge">
-            Latihan simulasi ujian dan pusat belajar SKD CPNS
-          </h1>
-          <p className="body-large" style={{ maxWidth: '68ch' }}>
-            Kerjakan try out dengan komposisi resmi 110 soal (30 TWK, 35 TIU, 45 TKP) dalam waktu 100 menit, evaluasi skor berdasarkan aturan Kepmenpan RB Nomor 321 Tahun 2024, tinjau link sumber pada tiap butir soal, lalu ekspor hasil lengkapnya ke berkas PDF.
-          </p>
-          <div className="row-wrap">
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={() => onStartPackage(fullPackages[0])}
-            >
-              Siapkan simulasi 110 soal (Paket 1)
-              <ChevronRightIcon size={16} />
-            </button>
-            <button type="button" className="btn" onClick={onOpenStudy}>
-              <BookIcon size={16} />
-              Buka pusat belajar materi
-            </button>
-            {history.length > 0 && (
-              <button type="button" className="btn btn-subtle" onClick={onOpenHistory}>
-                Lihat riwayat ujian ({history.length})
-              </button>
-            )}
-          </div>
+      <section className="stack-200">
+        <div className="row-wrap">
+          <span className="lozenge lozenge-info">Simulasi CAT BKN</span>
+          <span className="tag tag-blue">Tanpa login · Ekspor PDF langsung</span>
         </div>
-
-        <aside className="ascii-flame-card" aria-hidden="true">
-          <div>
-            {'       '}
-            <span className="ascii-flame-warm">{'./)'}</span>
-            {'\n'}
-            {'      '}
-            <span className="ascii-flame-warm">{'.('}</span>
-            <span className="ascii-flame-hot">{'^'}</span>
-            <span className="ascii-flame-warm">{')'}</span>
-            {'\n'}
-            {'     '}
-            <span className="ascii-flame-hot">{'/(  )\\'}</span>
-            {'   TWK 30\n'}
-            {'    '}
-            <span className="ascii-flame-hot">{'(  /\\ )'}</span>
-            {'   TIU 35\n'}
-            {'     '}
-            <span className="ascii-flame-warm">{'\\__/'}</span>
-            {'     TKP 45'}
-          </div>
-          <span className="ascii-flame-caption">CAT BKN · 110 SOAL / 100M</span>
-        </aside>
+        <h1 className="h-xlarge">
+          Latihan simulasi ujian dan pusat belajar SKD CPNS
+        </h1>
+        <p className="body-large" style={{ maxWidth: '72ch' }}>
+          Kerjakan try out dengan komposisi resmi 110 soal (30 TWK, 35 TIU, 45 TKP) dalam waktu 100 menit, evaluasi skor berdasarkan aturan Kepmenpan RB Nomor 321 Tahun 2024, tinjau link sumber pada tiap butir soal, lalu ekspor hasil lengkapnya ke berkas PDF.
+        </p>
+        <div className="row-wrap">
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() => onStartPackage(fullPackages[0])}
+          >
+            Siapkan simulasi 110 soal (Paket 1)
+            <ChevronRightIcon size={16} />
+          </button>
+          <button type="button" className="btn" onClick={onOpenStudy}>
+            <BookIcon size={16} />
+            Buka pusat belajar materi
+          </button>
+          {history.length > 0 && (
+            <button type="button" className="btn btn-subtle" onClick={onOpenHistory}>
+              Lihat riwayat ujian ({history.length})
+            </button>
+          )}
+        </div>
       </section>
 
       {/* Active Session Resume Notice */}
