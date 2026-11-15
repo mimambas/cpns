@@ -1,0 +1,18 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Build
+dist
+dist-ssr
+*.local
+*.tsbuildinfo
+
+# Environment & Caches
+.env
+.env.*
+.cache
+.vercel
+.DS_Store
+*.log
