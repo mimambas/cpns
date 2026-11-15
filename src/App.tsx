@@ -17,6 +17,7 @@ import { exportResultToPdf } from './utils/pdfExport';
 import { AppLogoIcon, CheckCircleIcon, CrossCircleIcon, DownloadIcon } from './components/Icons';
 import { HomeView } from './components/HomeView';
 import { ExamView } from './components/ExamView';
+import { ExamSetupView } from './components/ExamSetupView';
 import { ResultView } from './components/ResultView';
 import { StudyView } from './components/StudyView';
 
@@ -46,10 +47,10 @@ export const App: React.FC = () => {
   const [history, setHistory] = useState<ExamAttempt[]>(() =>
     loadJson<ExamAttempt[]>(STORAGE_HISTORY_KEY, []),
   );
+  const [selectedPackageId, setSelectedPackageId] = useState<string>(FULL_PACKAGES[0].id);
+  const [isSessionRunning, setIsSessionRunning] = useState<boolean>(false);
   const [selectedResultId, setSelectedResultId] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<AppTab>(() =>
-    loadJson<ActiveExamSession | null>(STORAGE_ACTIVE_KEY, null) ? 'exam' : 'home',
-  );
+  const [activeTab, setActiveTab] = useState<AppTab>('home');
 
   useEffect(() => {
     try {
@@ -105,13 +106,14 @@ export const App: React.FC = () => {
 
     setHistory((prev) => [attempt, ...prev]);
     setActiveSession(null);
+    setIsSessionRunning(false);
     setSelectedResultId(attempt.id);
     setActiveTab('history');
   }, [activeSession]);
 
-  // Countdown tick whenever an exam session is active
+  // Countdown tick only runs while the exam workspace is actively started and open
   useEffect(() => {
-    if (!activeSession || activeTab !== 'exam') return;
+    if (!activeSession || !isSessionRunning || activeTab !== 'exam') return;
 
     const timer = window.setInterval(() => {
       setActiveSession((prev) => {
@@ -124,22 +126,30 @@ export const App: React.FC = () => {
     }, 1000);
 
     return () => window.clearInterval(timer);
-  }, [activeSession !== null, activeTab]);
+  }, [activeSession !== null, isSessionRunning, activeTab]);
 
   // Auto-submit when timer hits 0
   useEffect(() => {
-    if (activeSession && activeSession.remainingSeconds === 0) {
+    if (activeSession && isSessionRunning && activeSession.remainingSeconds === 0) {
       finishExam();
     }
-  }, [activeSession, finishExam]);
+  }, [activeSession, isSessionRunning, finishExam]);
 
-  const handleStartPackage = (pkg: QuestionPackage) => {
+  const handleOpenExamPrep = (pkg: QuestionPackage) => {
+    setSelectedPackageId(pkg.id);
+    setIsSessionRunning(false);
+    setSelectedResultId(null);
+    setActiveTab('exam');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleConfirmStartExam = (pkg: QuestionPackage, formationId: FormationType) => {
     const allocatedSeconds = pkg.durationMinutes * 60;
     const newSession: ActiveExamSession = {
       packageId: pkg.id,
       packageTitle: pkg.title,
       isFullSimulation: pkg.isFullSimulation,
-      formationId: selectedFormation,
+      formationId,
       startedAt: new Date().toISOString(),
       allocatedSeconds,
       remainingSeconds: allocatedSeconds,
@@ -147,10 +157,22 @@ export const App: React.FC = () => {
       answers: {},
       flaggedIds: [],
     };
+    setSelectedPackageId(pkg.id);
     setActiveSession(newSession);
+    setIsSessionRunning(true);
     setSelectedResultId(null);
     setActiveTab('exam');
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const switchTab = (nextTab: AppTab) => {
+    if (nextTab !== 'exam') {
+      setIsSessionRunning(false);
+    }
+    if (nextTab === 'history') {
+      setSelectedResultId(null);
+    }
+    setActiveTab(nextTab);
   };
 
   const handleSelectAnswer = (questionId: string, optionKey: OptionKey) => {
@@ -194,6 +216,9 @@ export const App: React.FC = () => {
     );
   };
 
+  const selectedSetupPkg =
+    getPackageById(selectedPackageId) ?? FULL_PACKAGES[0];
+
   const currentExamPkg = activeSession
     ? getPackageById(activeSession.packageId)
     : undefined;
@@ -210,7 +235,7 @@ export const App: React.FC = () => {
           <button
             type="button"
             className="brand-link"
-            onClick={() => setActiveTab('home')}
+            onClick={() => switchTab('home')}
           >
             <AppLogoIcon size={22} className="brand-glyph" />
             <span>Simulasi &amp; Belajar CPNS</span>
@@ -222,7 +247,7 @@ export const App: React.FC = () => {
               role="tab"
               aria-selected={activeTab === 'home'}
               className="tab-btn"
-              onClick={() => setActiveTab('home')}
+              onClick={() => switchTab('home')}
             >
               Paket try out
             </button>
@@ -232,13 +257,7 @@ export const App: React.FC = () => {
               role="tab"
               aria-selected={activeTab === 'exam'}
               className="tab-btn"
-              onClick={() => {
-                if (activeSession) {
-                  setActiveTab('exam');
-                } else {
-                  handleStartPackage(FULL_PACKAGES[0]);
-                }
-              }}
+              onClick={() => switchTab('exam')}
             >
               <span>Simulasi ujian</span>
               {activeSession && (
@@ -253,7 +272,7 @@ export const App: React.FC = () => {
               role="tab"
               aria-selected={activeTab === 'study'}
               className="tab-btn"
-              onClick={() => setActiveTab('study')}
+              onClick={() => switchTab('study')}
             >
               Pusat belajar
             </button>
@@ -263,10 +282,7 @@ export const App: React.FC = () => {
               role="tab"
               aria-selected={activeTab === 'history'}
               className="tab-btn"
-              onClick={() => {
-                setSelectedResultId(null);
-                setActiveTab('history');
-              }}
+              onClick={() => switchTab('history')}
             >
               <span>Hasil &amp; riwayat</span>
               {history.length > 0 && <span className="badge">{history.length}</span>}
@@ -282,10 +298,16 @@ export const App: React.FC = () => {
             onSelectFormation={setSelectedFormation}
             activeSession={activeSession}
             history={history}
-            onStartPackage={handleStartPackage}
-            onResumeExam={() => setActiveTab('exam')}
-            onDiscardSession={() => setActiveSession(null)}
-            onOpenStudy={() => setActiveTab('study')}
+            onStartPackage={handleOpenExamPrep}
+            onResumeExam={() => {
+              setIsSessionRunning(true);
+              setActiveTab('exam');
+            }}
+            onDiscardSession={() => {
+              setActiveSession(null);
+              setIsSessionRunning(false);
+            }}
+            onOpenStudy={() => switchTab('study')}
             onOpenHistory={() => {
               setSelectedResultId(history[0]?.id ?? null);
               setActiveTab('history');
@@ -293,7 +315,7 @@ export const App: React.FC = () => {
           />
         )}
 
-        {activeTab === 'exam' && activeSession && currentExamPkg && (
+        {activeTab === 'exam' && activeSession && currentExamPkg && isSessionRunning && (
           <ExamView
             pkg={currentExamPkg}
             formationId={activeSession.formationId}
@@ -309,8 +331,24 @@ export const App: React.FC = () => {
           />
         )}
 
+        {activeTab === 'exam' && (!activeSession || !currentExamPkg || !isSessionRunning) && (
+          <ExamSetupView
+            selectedPackage={selectedSetupPkg}
+            selectedFormation={selectedFormation}
+            activeSession={activeSession}
+            onChangePackage={setSelectedPackageId}
+            onChangeFormation={setSelectedFormation}
+            onConfirmStartExam={handleConfirmStartExam}
+            onResumeActiveSession={() => setIsSessionRunning(true)}
+            onDiscardActiveSession={() => {
+              setActiveSession(null);
+              setIsSessionRunning(false);
+            }}
+          />
+        )}
+
         {activeTab === 'study' && (
-          <StudyView onStartTryout={() => handleStartPackage(FULL_PACKAGES[0])} />
+          <StudyView onStartTryout={() => handleOpenExamPrep(FULL_PACKAGES[0])} />
         )}
 
         {activeTab === 'history' && selectedAttempt && (
@@ -319,7 +357,7 @@ export const App: React.FC = () => {
             onUpdateFormation={handleUpdateAttemptFormation}
             onRetakePackage={(pkgId) => {
               const found = getPackageById(pkgId);
-              if (found) handleStartPackage(found);
+              if (found) handleOpenExamPrep(found);
             }}
             onBackHome={() => setSelectedResultId(null)}
           />
@@ -354,9 +392,9 @@ export const App: React.FC = () => {
                 <button
                   type="button"
                   className="btn btn-primary"
-                  onClick={() => handleStartPackage(FULL_PACKAGES[0])}
+                  onClick={() => handleOpenExamPrep(FULL_PACKAGES[0])}
                 >
-                  Mulai simulasi 110 soal sekarang
+                  Siapkan simulasi 110 soal sekarang
                 </button>
               </div>
             ) : (

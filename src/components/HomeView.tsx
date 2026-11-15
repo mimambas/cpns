@@ -57,7 +57,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
             className="btn btn-primary"
             onClick={() => onStartPackage(fullPackages[0])}
           >
-            Mulai simulasi 110 soal (Paket 1)
+            Siapkan simulasi 110 soal (Paket 1)
             <ChevronRightIcon size={16} />
           </button>
           <button type="button" className="btn" onClick={onOpenStudy}>
@@ -206,7 +206,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                   className={idx === 0 ? 'btn btn-primary' : 'btn'}
                   onClick={() => onStartPackage(pkg)}
                 >
-                  Mulai try out paket {idx + 1}
+                  Pilih paket {idx + 1}
                   <ChevronRightIcon size={16} />
                 </button>
               </div>
@@ -239,7 +239,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                   className="btn"
                   onClick={() => onStartPackage(pkg)}
                 >
-                  Mulai latihan fokus
+                  Pilih latihan fokus
                   <ChevronRightIcon size={16} />
                 </button>
               </div>
