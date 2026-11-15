@@ -127,7 +127,7 @@ export const ExamView: React.FC<ExamViewProps> = ({
           </div>
           <button
             type="button"
-            className="btn btn-primary"
+            className="btn"
             onClick={() => setConfirmOpen(true)}
           >
             Selesaikan ujian
@@ -200,8 +200,8 @@ export const ExamView: React.FC<ExamViewProps> = ({
             className="row-wrap"
             style={{
               justifyContent: 'space-between',
-              paddingTop: 'var(--space-200)',
-              borderTop: 'var(--border-width-default) solid var(--border)',
+              paddingTop: 'var(--space-4)',
+              borderTop: '1px solid var(--border-faint)',
             }}
           >
             <div className="row-wrap" style={{ gap: 'var(--space-100)' }}>
@@ -321,9 +321,9 @@ export const ExamView: React.FC<ExamViewProps> = ({
           <div
             className="stack-200"
             style={{
-              gap: 'var(--space-075)',
-              paddingTop: 'var(--space-150)',
-              borderTop: 'var(--border-width-default) solid var(--border)',
+              gap: 'var(--space-2)',
+              paddingTop: 'var(--space-3)',
+              borderTop: '1px solid var(--border-faint)',
             }}
           >
             <div className="row-wrap" style={{ gap: 'var(--space-100)' }}>

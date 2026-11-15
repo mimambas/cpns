@@ -1,6 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import './styles/atlassian-tokens.css';
+import './styles/firecrawl-tokens.css';
 import './styles/app.css';
 import App from './App';
 

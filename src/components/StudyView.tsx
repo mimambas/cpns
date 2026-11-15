@@ -61,7 +61,7 @@ export const StudyView: React.FC<StudyViewProps> = ({ onStartTryout }) => {
         role="tablist"
         aria-label="Filter materi belajar"
         className="tablist"
-        style={{ borderBottom: 'var(--border-width-default) solid var(--border)' }}
+        style={{ borderBottom: '1px solid var(--border-muted)' }}
       >
         {(
           [

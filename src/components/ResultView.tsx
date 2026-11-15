@@ -197,7 +197,7 @@ export const ResultView: React.FC<ResultViewProps> = ({
           <span className="body-small">Ekspor laporan lengkap</span>
           <button
             type="button"
-            className="btn btn-primary"
+            className="btn"
             disabled={isExporting}
             onClick={handleDownloadPdf}
           >
@@ -457,8 +457,8 @@ export const ResultView: React.FC<ResultViewProps> = ({
                     <div
                       className="row-wrap"
                       style={{
-                        paddingTop: 'var(--space-100)',
-                        borderTop: 'var(--border-width-default) solid var(--border)',
+                        paddingTop: 'var(--space-2)',
+                        borderTop: '1px solid var(--border-faint)',
                         justifyContent: 'space-between',
                       }}
                     >

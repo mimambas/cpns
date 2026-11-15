@@ -449,7 +449,7 @@ export const App: React.FC = () => {
                             <div className="row-wrap" style={{ gap: 'var(--space-075)' }}>
                               <button
                                 type="button"
-                                className="btn btn-compact btn-primary"
+                                className="btn btn-compact"
                                 onClick={() => setSelectedResultId(item.id)}
                               >
                                 Lihat pembahasan

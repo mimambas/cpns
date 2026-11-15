@@ -1,0 +1,168 @@
+:root {
+  color-scheme: light;
+
+  /* Core & Surfaces (Firecrawl Light Theme) */
+  --primary: #fa5d19;
+  --secondary: #262626;
+  --tertiary: #2a6dfb;
+  --background-base: #f9f9f9;
+  --background-lighter: #fbfbfb;
+  --surface: #ffffff;
+  --surface-raised: #ffffff;
+  --accent-black: #262626;
+  --accent-white: #ffffff;
+
+  /* Heat — signature brand orange (#fa5d19) at fixed opacities */
+  --heat-4: #fa5d190a;
+  --heat-8: #fa5d1914;
+  --heat-12: #fa5d191f;
+  --heat-16: #fa5d1929;
+  --heat-20: #fa5d1933;
+  --heat-40: #fa5d1966;
+  --heat-90: #fa5d19e6;
+  --heat-100: #fa5d19;
+
+  /* Semantic Accents */
+  --accent-amethyst: #9061ff;
+  --accent-bluetron: #2a6dfb;
+  --accent-crimson: #eb3424;
+  --accent-forest: #42c366;
+  --accent-honey: #ecb730;
+
+  /* Readable semantic text tones (WCAG AA on light tint & surface) */
+  --accent-crimson-text: #b81f13;
+  --accent-forest-text: #1c6b34;
+  --accent-honey-text: #7d5700;
+  --accent-bluetron-text: #1749b8;
+  --accent-amethyst-text: #6234cc;
+
+  /* Borders & Illustrations */
+  --border-faint: #ededed;
+  --border-muted: #e8e8e8;
+  --border-loud: #e6e6e6;
+  --illustrations-faint: #ededed;
+  --illustrations-muted: #e6e6e6;
+  --illustrations-default: #dbdbdb;
+
+  /* Black Alpha Scale */
+  --black-alpha-1: #00000003;
+  --black-alpha-2: #00000005;
+  --black-alpha-3: #00000008;
+  --black-alpha-4: #0000000a;
+  --black-alpha-5: #0000000d;
+  --black-alpha-6: #0000000f;
+  --black-alpha-7: #00000012;
+  --black-alpha-8: #00000014;
+  --black-alpha-10: #0000001a;
+  --black-alpha-12: #0000001f;
+  --black-alpha-16: #00000029;
+  --black-alpha-20: #00000033;
+  --black-alpha-24: #0000003d;
+  --black-alpha-32: #26262652;
+  --black-alpha-40: #26262666;
+  --black-alpha-48: #2626267a;
+  --black-alpha-56: #2626268f;
+  --black-alpha-64: #262626a3;
+  --black-alpha-72: #262626b8;
+  --black-alpha-88: #262626e0;
+
+  /* White Alpha Scale */
+  --white-alpha-56: #ffffff8f;
+  --white-alpha-72: #ffffffb8;
+
+  /* Chart Mappings */
+  --chart-brand: var(--accent-bluetron);
+  --chart-success: var(--accent-forest);
+  --chart-danger: var(--accent-crimson);
+  --chart-warning: var(--accent-honey);
+
+  /* Overlay Blanket */
+  --blanket: #26262666;
+
+  /* Typography */
+  --font-sans: 'SuisseIntl', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'Geist Mono', 'Roboto Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  --font-ascii: 'Roboto Mono', 'Geist Mono', ui-monospace, monospace;
+
+  --weight-regular: 400;
+  --weight-label: 450;
+  --weight-medium: 500;
+
+  /* Spacing Scale (4px pixel rhythm) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-16: 64px;
+  --space-24: 96px;
+
+  /* Spacing Aliases for existing TSX inline references aligned to 4px scale */
+  --space-025: 4px;
+  --space-050: 4px;
+  --space-075: 8px;
+  --space-100: 8px;
+  --space-150: 12px;
+  --space-200: 16px;
+  --space-250: 24px;
+  --space-300: 24px;
+  --space-400: 32px;
+
+  /* Radii */
+  --rounded-sm: 8px;
+  --rounded-md: 12px;
+  --rounded-lg: 16px;
+  --rounded-full: 999px;
+
+  /* Elevation & Motion */
+  --shadow-heat-primary:
+    inset 0 -6px 12px 0 rgba(255, 0, 0, 0.2),
+    0 0.6px 0.8px 0 rgba(255, 139, 0, 0.22),
+    0 1.3px 1.7px 0 rgba(255, 139, 0, 0.19),
+    0 2.5px 3.1px 0 rgba(255, 139, 0, 0.16),
+    0 4.4px 5.5px 0 rgba(255, 139, 0, 0.13),
+    0 8.3px 10.3px 0 rgba(255, 139, 0, 0.1),
+    0 2px 4px 0 rgba(250, 93, 25, 0.3);
+  --shadow-overlay: 0 12px 32px rgba(38, 38, 38, 0.14), 0 0 0 1px var(--border-muted);
+  --transition-firecrawl: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+
+  /* Wide-gamut brand + accent P3 variants */
+  --heat-100-p3: color(display-p3 0.980392 0.364706 0.098039);
+  --accent-amethyst-p3: color(display-p3 0.564706 0.380392 1);
+  --accent-bluetron-p3: color(display-p3 0.164706 0.427451 0.984314);
+  --accent-crimson-p3: color(display-p3 0.921569 0.203922 0.141176);
+  --accent-forest-p3: color(display-p3 0.258824 0.764706 0.4);
+  --accent-honey-p3: color(display-p3 0.92549 0.717647 0.188235);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-theme='auto'] {
+    color-scheme: dark;
+    --background-base: #0a0a0a;
+    --background-lighter: #141414;
+    --surface: #171717;
+    --surface-raised: #1f1f1f;
+    --accent-black: #f5f5f5;
+    --border-faint: #2a2a2a;
+    --border-muted: #333333;
+    --border-loud: #404040;
+    --illustrations-faint: #2a2a2a;
+    --illustrations-muted: #3d3d3d;
+    --illustrations-default: #525252;
+  }
+}
+
+@supports (color: color(display-p3 1 1 1)) {
+  @media (color-gamut: p3) {
+    :root {
+      --heat-100: var(--heat-100-p3);
+      --accent-amethyst: var(--accent-amethyst-p3);
+      --accent-bluetron: var(--accent-bluetron-p3);
+      --accent-crimson: var(--accent-crimson-p3);
+      --accent-forest: var(--accent-forest-p3);
+      --accent-honey: var(--accent-honey-p3);
+    }
+  }
+}

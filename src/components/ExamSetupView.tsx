@@ -202,7 +202,7 @@ export const ExamSetupView: React.FC<ExamSetupViewProps> = ({
           <div className="row-wrap" style={{ marginTop: 'auto' }}>
             <button
               type="button"
-              className="btn btn-primary"
+              className={activeSession ? 'btn' : 'btn btn-primary'}
               onClick={() => onConfirmStartExam(selectedPackage, selectedFormation)}
             >
               <CheckCircleIcon size={16} />
