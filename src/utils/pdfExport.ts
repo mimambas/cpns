@@ -50,7 +50,7 @@ export async function exportResultToPdf(
     ['Paket ujian', attempt.packageTitle],
     ['Formasi acuan', evaluation.formation.label],
     ['Waktu pengerjaan', `${formatDurationText(attempt.elapsedSeconds)} (dari alokasi ${Math.round(attempt.allocatedSeconds / 60)} menit)`],
-    ['Mulai & selesai', `${formatDateTimeId(attempt.startedAt)} — ${formatDateTimeId(attempt.finishedAt)}`],
+    ['Mulai & selesai', `${formatDateTimeId(attempt.startedAt)} s.d. ${formatDateTimeId(attempt.finishedAt)}`],
     ['Total skor SKD', `${evaluation.totalScore} / ${evaluation.maxTotalScore}`],
     [
       'Status kelulusan',
@@ -218,7 +218,7 @@ export async function exportResultToPdf(
       doc.setFontSize(8);
       doc.setTextColor(107, 110, 118);
       doc.text(
-        `Simulasi CPNS (cpns.imambas.my.id)  —  Halaman ${data.pageNumber} dari ${pageCount}`,
+        `Simulasi CPNS (cpns.imambas.my.id)  |  Halaman ${data.pageNumber} dari ${pageCount}`,
         marginX,
         pageHeight - 7,
       );

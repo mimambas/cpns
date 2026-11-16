@@ -125,7 +125,7 @@ export const ResultView: React.FC<ResultViewProps> = ({
           <div className="row-wrap" style={{ gap: '8px' }}>
             <span className="h-small">Soal #{q.number}</span>
             <span className="lozenge lozenge-info">{q.category}</span>
-            <span className="tag tag-teal">{q.subtopic}</span>
+            <span className="body-small">{q.subtopic}</span>
           </div>
 
           <div className="row-wrap" style={{ gap: '8px' }}>
@@ -144,6 +144,8 @@ export const ResultView: React.FC<ResultViewProps> = ({
         {q.figureUrl && (
           <div className="figure-box">
             <img
+              width={560}
+              height={220}
               src={q.figureUrl}
               alt={`Gambar soal nomor ${q.number}`}
               className="figure-img"

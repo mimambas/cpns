@@ -4,7 +4,6 @@ import { ALL_PACKAGES } from '../data/questionBank';
 import { FORMATION_RULES, formatCountdown, summarizeAttempt } from '../utils/scoring';
 import {
   CheckCircleIcon,
-  ChevronRightIcon,
   ClockIcon,
   ExternalLinkIcon,
   InfoIcon,
@@ -95,7 +94,6 @@ export const ExamSetupView: React.FC<ExamSetupViewProps> = ({
                 onClick={onResumeActiveSession}
               >
                 Lanjutkan sesi ujian
-                <ChevronRightIcon size={16} />
               </button>
               <button
                 type="button"
@@ -168,12 +166,9 @@ export const ExamSetupView: React.FC<ExamSetupViewProps> = ({
                   onClick={() => onChangePackage(pkg.id)}
                 >
                   <div className="row-wrap" style={{ justifyContent: 'space-between', width: '100%' }}>
-                    <div className="row-wrap" style={{ gap: '8px' }}>
-                      <span className={pkg.isFullSimulation ? 'lozenge lozenge-success' : 'tag tag-teal'}>
-                        {pkg.compositionLabel}
-                      </span>
-                      <span className="tag tag-blue">{pkg.durationMinutes} mnt</span>
-                    </div>
+                    <span className="body-small mono">
+                      {pkg.compositionLabel} · {pkg.durationMinutes} menit
+                    </span>
                     {best && (
                       <span className="lozenge lozenge-info mono">
                         Skor terbaik: {best.score}/{best.max}

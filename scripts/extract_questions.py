@@ -37,19 +37,19 @@ def infer_study_link(category: str, text: str) -> tuple[str, str, str]:
     if category == "TWK":
         if any(k in lower for k in ["pancasila", "sila ", "butir", "piagam jakarta", "bpupki", "ppki"]):
             return (
-                "Pilar Negara — Pancasila",
+                "Pilar Negara: Pancasila",
                 "https://kerjago.id/materi-cpns/pancasila",
                 "Materi Pancasila & 45 Butir (Kerjago)",
             )
         if any(k in lower for k in ["pembukaan uud", "alinea"]):
             return (
-                "Pilar Negara — Pembukaan UUD 1945",
+                "Pilar Negara: Pembukaan UUD 1945",
                 "https://kerjago.id/materi-cpns/pembukaan-uud-1945",
                 "Materi Pembukaan UUD 1945 (Kerjago)",
             )
         if any(k in lower for k in ["uud 1945", "pasal", "amandemen", "konstitusi", "uu", "hukum"]):
             return (
-                "Pilar Negara — UUD 1945 & Konstitusi",
+                "Pilar Negara: UUD 1945 & Konstitusi",
                 "https://kerjago.id/materi-cpns/uud-1945",
                 "Materi UUD 1945 Per Pasal (Kerjago)",
             )
@@ -80,13 +80,13 @@ def infer_study_link(category: str, text: str) -> tuple[str, str, str]:
     if category == "TIU":
         if any(k in lower for k in ["gambar", "kubus", "pola"]):
             return (
-                "TIU Figural — Deret & Ketidaksamaan Gambar",
+                "TIU Figural: Deret & Ketidaksamaan Gambar",
                 YOUTUBE_FIGURAL_URL,
                 "Video Pembahasan TIU Figural (Ruang Tentor)",
             )
         if any(k in lower for k in ["sinonim", "antonim", "analogi", "paragraf", "simpulan", "topik", "teks"]):
             return (
-                "TIU Verbal — Analogi, Sinonim & Penalaran",
+                "TIU Verbal: Analogi, Sinonim & Penalaran",
                 "https://kerjago.id/materi-cpns/tiu",
                 "Rumus & Pola TIU (Kerjago)",
             )
@@ -97,7 +97,7 @@ def infer_study_link(category: str, text: str) -> tuple[str, str, str]:
                 "Rumus & Pola TIU (Kerjago)",
             )
         return (
-            "TIU Numerik — Deret, Berhitung & Soal Cerita",
+            "TIU Numerik: Deret, Berhitung & Soal Cerita",
             "https://kerjago.id/materi-cpns/tiu",
             "Rumus & Pola TIU (Kerjago)",
         )
@@ -105,30 +105,30 @@ def infer_study_link(category: str, text: str) -> tuple[str, str, str]:
     # TKP
     if any(k in lower for k in ["pelanggan", "masyarakat", "warga", "pasien", "pembeli", "layanan", "pelayanan", "puskesmas", "antre"]):
         return (
-            "TKP — Pelayanan Publik",
+            "TKP: Pelayanan Publik",
             "https://kerjago.id/materi-cpns/tkp",
             "Aspek & Trik Skor 5 TKP (Kerjago)",
         )
     if any(k in lower for k in ["radikal", "toleran", "agama", "suku", "etnis", "teror", "hoaks", "berita bohong"]):
         return (
-            "TKP — Anti Radikalisme & Sosial Budaya",
+            "TKP: Anti Radikalisme & Sosial Budaya",
             "https://kerjago.id/materi-cpns/tkp",
             "Aspek & Trik Skor 5 TKP (Kerjago)",
         )
     if any(k in lower for k in ["aplikasi", "sistem", "teknologi", "komputer", "internet", "online", "digital", "media sosial", "zoom", "file", "presentation", "presentasi", "it "]):
         return (
-            "TKP — Teknologi Informasi & Komunikasi",
+            "TKP: Teknologi Informasi & Komunikasi",
             "https://kerjago.id/materi-cpns/tkp",
             "Aspek & Trik Skor 5 TKP (Kerjago)",
         )
     if any(k in lower for k in ["tim", "rekan", "divisi", "kerjasama", "rapat", "kelompok", "mutasi"]):
         return (
-            "TKP — Jejaring Kerja & Sosial Budaya",
+            "TKP: Jejaring Kerja & Sosial Budaya",
             "https://kerjago.id/materi-cpns/tkp",
             "Aspek & Trik Skor 5 TKP (Kerjago)",
         )
     return (
-        "TKP — Profesionalisme",
+        "TKP: Profesionalisme",
         "https://kerjago.id/materi-cpns/tkp",
         "Aspek & Trik Skor 5 TKP (Kerjago)",
     )
@@ -643,7 +643,7 @@ def main() -> None:
         "packages": [
             {
                 "id": "paket-lolosasn-2023",
-                "title": "Paket 1 — Simulasi SKD CPNS Lengkap (LolosASN)",
+                "title": "Paket 1: Simulasi SKD CPNS Lengkap (LolosASN)",
                 "description": "110 soal asli SKD sesuai komposisi BKN (30 TWK, 35 TIU, 45 TKP) dengan pembahasan lengkap dari modul Tryout LolosASN.",
                 "durationMinutes": 100,
                 "sourceTitle": "TRYOUT CPNS 2023 By LolosASN - PEMBAHASAN.pdf",
@@ -652,7 +652,7 @@ def main() -> None:
             },
             {
                 "id": "paket-hots-2024-2025",
-                "title": "Paket 2 — Simulasi SKD CPNS HOTS 2024/2025",
+                "title": "Paket 2: Simulasi SKD CPNS HOTS 2024/2025",
                 "description": "110 soal HOTS sesuai kisi-kisi PermenPAN-RB (30 TWK, 35 TIU termasuk figural, 45 TKP) dari modul Bank Drilling CPNS 2024/2025.",
                 "durationMinutes": 100,
                 "sourceTitle": "CPNS-2024-2025.pdf (Paket Soal 1 & Kunci Jawaban)",

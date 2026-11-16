@@ -16,7 +16,6 @@ import {
   FolderIcon,
   InfoIcon,
   PlayIcon,
-  VideoIcon,
 } from './Icons';
 
 export type StudyModuleId =
@@ -121,10 +120,6 @@ export const StudyView: React.FC<StudyViewProps> = ({
       {/* Header Summary */}
       <section className="row-wrap" style={{ justifyContent: 'space-between' }}>
         <div className="stack-200" style={{ gap: '4px' }}>
-          <div className="row-wrap" style={{ gap: '8px' }}>
-            <span className="lozenge lozenge-info">Kurikulum Terstruktur</span>
-            <span className="tag tag-blue">SSCASN · Kerjago · Google Drive · YouTube</span>
-          </div>
           <h1 className="h-xlarge">Kelas &amp; modul belajar SKD CPNS</h1>
           <p className="body text-subtle">
             Pelajari modul secara berurutan dari regulasi, materi TWK, video TIU figural, strategi TKP, hingga arsip e-book lalu lanjutkan ke latihan fokus.
@@ -208,21 +203,20 @@ export const StudyView: React.FC<StudyViewProps> = ({
             }}
           >
             <div className="stack-200" style={{ gap: '6px', flex: 1, minWidth: '240px' }}>
-              <div className="row-wrap" style={{ gap: '8px' }}>
-                <span className="lozenge lozenge-info">Modul {activeMeta.number} dari 5</span>
-                <span className="tag">{activeMeta.tag}</span>
-                {isCompleted && (
-                  <span className="lozenge lozenge-success">
-                    <CheckCircleIcon size={12} />
-                    Selesai dipelajari
-                  </span>
-                )}
+              <div className="body-small mono">
+                Modul {activeMeta.number} dari 5 · {activeMeta.tag} · {activeMeta.duration}
               </div>
               <h2 className="h-large">{activeMeta.title}</h2>
               <p className="body text-subtle">{activeMeta.subtitle}</p>
             </div>
 
             <div className="row-wrap" style={{ gap: '8px' }}>
+              {isCompleted && (
+                <span className="lozenge lozenge-success">
+                  <CheckCircleIcon size={12} />
+                  Selesai dipelajari
+                </span>
+              )}
               <button
                 type="button"
                 className={isCompleted ? 'btn btn-selected' : 'btn'}
@@ -300,10 +294,6 @@ export const StudyView: React.FC<StudyViewProps> = ({
 
               <div className="grid-2">
                 <article className="well-sunken stack-200">
-                  <div className="row-wrap" style={{ justifyContent: 'space-between' }}>
-                    <span className="lozenge lozenge-info">Portal resmi pemerintah</span>
-                    <span className="tag">BKN</span>
-                  </div>
                   <h3 className="h-small">{SSCASN_PORTAL.title}</h3>
                   <p className="body">{SSCASN_PORTAL.description}</p>
                   <div className="row-wrap">
@@ -329,11 +319,7 @@ export const StudyView: React.FC<StudyViewProps> = ({
                 </article>
 
                 <article className="well-sunken stack-200">
-                  <div className="row-wrap" style={{ justifyContent: 'space-between' }}>
-                    <span className="lozenge lozenge-success">Rangkuman teori gratis</span>
-                    <span className="tag tag-teal">Kerjago</span>
-                  </div>
-                  <h3 className="h-small">Indeks materi CPNS lengkap — Kerjago</h3>
+                  <h3 className="h-small">Indeks materi CPNS lengkap: Kerjago</h3>
                   <p className="body">
                     Berisi naskah UUD 1945 per pasal dengan penanda amandemen, 45 butir Pancasila, UU ASN Nomor 20 Tahun 2023, lembaga negara, sejarah, rumus TIU, dan aspek TKP.
                   </p>
@@ -383,9 +369,7 @@ export const StudyView: React.FC<StudyViewProps> = ({
               <div className="grid-2">
                 {KERJAGO_MODULES.filter((m) => m.category.startsWith('TWK')).map((mod) => (
                   <article key={mod.url} className="well-sunken stack-200">
-                    <span className="tag tag-blue" style={{ alignSelf: 'flex-start' }}>
-                      {mod.category}
-                    </span>
+                    <div className="body-small">{mod.category}</div>
                     <h3 className="h-small">{mod.title}</h3>
                     <p className="body">{mod.description}</p>
                     <div style={{ marginTop: 'auto' }}>
@@ -409,16 +393,14 @@ export const StudyView: React.FC<StudyViewProps> = ({
           {activeMeta.id === 'modul-tiu' && (
             <div className="grid-2">
               <div className="well-sunken stack-200">
-                <div className="row-wrap" style={{ justifyContent: 'space-between' }}>
-                  <span className="lozenge lozenge-discovery">
-                    <VideoIcon size={14} />
-                    Video pembahasan TIU Figural
-                  </span>
-                  <span className="tag tag-purple">{YOUTUBE_RESOURCE.channel}</span>
+                <div className="body-small">
+                  Video pembahasan TIU Figural · {YOUTUBE_RESOURCE.channel}
                 </div>
                 <h3 className="h-small">{YOUTUBE_RESOURCE.title}</h3>
                 <div className="video-frame">
                   <iframe
+                    width={640}
+                    height={360}
                     src={YOUTUBE_RESOURCE.embedUrl}
                     title={YOUTUBE_RESOURCE.title}
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -440,10 +422,7 @@ export const StudyView: React.FC<StudyViewProps> = ({
 
               <div className="stack-200">
                 <article className="well-sunken stack-200">
-                  <div className="row-wrap" style={{ justifyContent: 'space-between' }}>
-                    <span className="lozenge lozenge-info">Modul rumus cepat</span>
-                    <span className="tag tag-teal">Kerjago</span>
-                  </div>
+                  <div className="body-small">Modul rumus cepat · Kerjago</div>
                   <h3 className="h-small">Ringkasan rumus dan pola TIU SKD CPNS</h3>
                   <p className="body">
                     Pelajari hukum silogisme (modus ponens, modus tollens, ekuivalensi semua/sebagian), trik identitas aljabar (a² - b²), persen cepat (33 1/3% = 1/3), perbandingan senilai vs berbalik nilai, serta deret larik ganda.
@@ -482,12 +461,7 @@ export const StudyView: React.FC<StudyViewProps> = ({
           {activeMeta.id === 'modul-tkp' && (
             <div className="grid-2">
               <article className="well-sunken stack-200">
-                <div className="row-wrap">
-                  <span className="lozenge lozenge-success">
-                    <CheckCircleIcon size={14} />
-                    Ciri pilihan bernilai 5 poin
-                  </span>
-                </div>
+                <h3 className="h-small">Ciri pilihan bernilai 5 poin</h3>
                 <ul
                   className="stack-200"
                   style={{ margin: 0, paddingInlineStart: '20px', gap: '10px' }}
@@ -514,9 +488,7 @@ export const StudyView: React.FC<StudyViewProps> = ({
               </article>
 
               <article className="well-sunken stack-200">
-                <span className="tag tag-blue" style={{ alignSelf: 'flex-start' }}>
-                  TKP — Panduan Kerjago
-                </span>
+                <div className="body-small">TKP: Panduan Kerjago</div>
                 <h3 className="h-small">
                   {KERJAGO_MODULES.find((m) => m.category.startsWith('TKP'))?.title}
                 </h3>
@@ -584,9 +556,7 @@ export const StudyView: React.FC<StudyViewProps> = ({
                         <td>
                           <strong>{file.title}</strong>
                         </td>
-                        <td>
-                          <span className="tag tag-teal">{file.focus}</span>
-                        </td>
+                        <td className="body-small">{file.focus}</td>
                         <td className="body-small">{file.format}</td>
                         <td>{file.description}</td>
                         <td style={{ whiteSpace: 'nowrap' }}>

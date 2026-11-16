@@ -51,7 +51,7 @@ export const ALL_PACKAGES: QuestionPackage[] = [
   ...FULL_PACKAGES,
   buildFocusedPackage(
     'fokus-twk-paket2',
-    'Latihan fokus TWK — Tes Wawasan Kebangsaan',
+    'Latihan fokus TWK: Tes Wawasan Kebangsaan',
     '30 soal TWK pilihan dari Bank Drilling CPNS 2024/2025 mencakup Pancasila, UUD 1945, NKRI, sejarah nasional, dan Bahasa Indonesia.',
     'TWK',
     30,
@@ -59,7 +59,7 @@ export const ALL_PACKAGES: QuestionPackage[] = [
   ),
   buildFocusedPackage(
     'fokus-tiu-paket2',
-    'Latihan fokus TIU — Tes Intelegensia Umum',
+    'Latihan fokus TIU: Tes Intelegensia Umum',
     '35 soal TIU pilihan mencakup analogi, silogisme, hitung cepat, deret angka, penalaran analitis, serta soal figural gambar.',
     'TIU',
     35,
@@ -67,7 +67,7 @@ export const ALL_PACKAGES: QuestionPackage[] = [
   ),
   buildFocusedPackage(
     'fokus-tkp-paket1',
-    'Latihan fokus TKP — Tes Karakteristik Pribadi',
+    'Latihan fokus TKP: Tes Karakteristik Pribadi',
     '45 soal TKP dari modul LolosASN dengan pembobotan poin 1–5 pada aspek pelayanan publik, jejaring kerja, sosial budaya, TIK, profesionalisme, dan anti-radikalisme.',
     'TKP',
     40,
@@ -91,56 +91,56 @@ export const KERJAGO_MODULES: StudyLinkItem[] = [
   {
     title: 'UUD 1945 lengkap per pasal setelah amandemen',
     url: 'https://kerjago.id/materi-cpns/uud-1945',
-    category: 'TWK — Konstitusi',
+    category: 'TWK: Konstitusi',
     description:
       'Naskah UUD NRI 1945 setelah empat kali perubahan per bab dan pasal beserta penanda perubahan tiap pasal.',
   },
   {
     title: 'Pembukaan UUD 1945: teks lengkap 4 alinea dan maknanya',
     url: 'https://kerjago.id/materi-cpns/pembukaan-uud-1945',
-    category: 'TWK — Konstitusi',
+    category: 'TWK: Konstitusi',
     description:
       'Pokok isi tiap alinea Pembukaan UUD 1945: hak kemerdekaan, cita-cita perjuangan, pernyataan kemerdekaan, tujuan negara, dan dasar negara.',
   },
   {
     title: 'Pancasila dan 45 butir pengamalannya',
     url: 'https://kerjago.id/materi-cpns/pancasila',
-    category: 'TWK — Ideologi',
+    category: 'TWK: Ideologi',
     description:
       'Kelima sila Pancasila beserta 45 butir pedoman penghayatan dan pengamalan (Tap MPR No. I/MPR/2003) yang kerap keluar pada soal studi kasus TWK.',
   },
   {
     title: 'UU ASN Nomor 20 Tahun 2023: asas, nilai dasar & kode etik',
     url: 'https://kerjago.id/materi-cpns/uu-asn',
-    category: 'TWK — Regulasi ASN',
+    category: 'TWK: Regulasi ASN',
     description:
       'Ringkasan pasal penting UU No. 20 Tahun 2023 tentang Aparatur Sipil Negara: nilai dasar BerAKHLAK, fungsi, tugas, dan kode etik ASN.',
   },
   {
     title: 'Lembaga negara menurut UUD 1945',
     url: 'https://kerjago.id/materi-cpns/lembaga-negara',
-    category: 'TWK — Tata Negara',
+    category: 'TWK: Tata Negara',
     description:
       'Tugas, wewenang, dan dasar konstitusional MPR, DPR, DPD, Presiden, MA, MK, KY, dan BPK pasca amandemen.',
   },
   {
     title: 'Sejarah kebangsaan Indonesia',
     url: 'https://kerjago.id/materi-cpns/sejarah',
-    category: 'TWK — Nasionalisme',
+    category: 'TWK: Nasionalisme',
     description:
       'Garis waktu perjuangan bangsa dari Budi Utomo (1908), Sumpah Pemuda (1928), BPUPKI, Piagam Jakarta, PPKI, Proklamasi, hingga Dekrit Presiden 1959.',
   },
   {
     title: 'Rumus & pola TIU SKD CPNS',
     url: 'https://kerjago.id/materi-cpns/tiu',
-    category: 'TIU — Verbal & Numerik',
+    category: 'TIU: Verbal & Numerik',
     description:
       'Ringkasan pola deret angka dan huruf, hukum penarikan kesimpulan silogisme (modus ponens, tollens, ekuivalensi), persen, diskon, perbandingan, dan kecepatan.',
   },
   {
     title: 'Enam aspek TKP dan strategi meraih poin 5',
     url: 'https://kerjago.id/materi-cpns/tkp',
-    category: 'TKP — Karakteristik Pribadi',
+    category: 'TKP: Karakteristik Pribadi',
     description:
       'Panduan mengenali pola jawaban skor maksimal (5) pada aspek pelayanan publik, jejaring kerja, sosial budaya, TIK, profesionalisme, dan anti-radikalisme.',
   },
@@ -213,7 +213,7 @@ export const DRIVE_SUBFOLDERS: { title: string; url: string; note: string }[] = 
     note: 'Kumpulan modul dan latihan soal persiapan SKD.',
   },
   {
-    title: 'Ebook CPNS & PPPK — LolosASN',
+    title: 'Ebook CPNS & PPPK (LolosASN)',
     url: 'https://drive.google.com/drive/folders/1Rzfx0m3gWgw4sUrnSHEgFAaRbaYHCr-e',
     note: 'Arsip e-book dan paket try out terstruktur.',
   },
@@ -231,7 +231,7 @@ export const DRIVE_SUBFOLDERS: { title: string; url: string; note: string }[] = 
 
 export const YOUTUBE_RESOURCE = {
   id: 'aCEH7JRLJDY',
-  title: '[8.15] 15 Soal Deret Gambar TIU SKD CPNS 2024 — Ruang Tentor',
+  title: '[8.15] 15 Soal Deret Gambar TIU SKD CPNS 2024 (Ruang Tentor)',
   url: 'https://youtu.be/aCEH7JRLJDY?si=Sl_7cWjqoV1xDQb6',
   embedUrl: 'https://www.youtube.com/embed/aCEH7JRLJDY',
   channel: 'Ruang Tentor',
@@ -239,6 +239,6 @@ export const YOUTUBE_RESOURCE = {
     'Amati satu elemen spesifik terlebih dahulu (misalnya titik hitam, bintang, atau arah panah) daripada mencoba membaca seluruh gambar sekaligus.',
     'Periksa pola rotasi bertahap: apakah berputar 45°, 90°, atau 180° searah atau berlawanan jarum jam pada tiap langkah.',
     'Cek perubahan jumlah sisi bangun datar atau banyaknya garis/arsiran (+1, -1, atau selang-seling ganjil-genap).',
-    'Pada soal ketidaksamaan (odd one out), putar gambar secara mental di bidang 2D—gambar yang merupakan hasil pencerminan (mirror) hampir selalu menjadi pengecoh yang berbeda.',
+    'Pada soal ketidaksamaan (odd one out), putar gambar secara mental di bidang 2D, karena gambar hasil pencerminan (mirror) hampir selalu menjadi pengecoh yang berbeda.',
   ],
 };

@@ -423,9 +423,7 @@ export const App: React.FC = () => {
               >
                 Sesi dijeda · {formatCountdown(activeSession.remainingSeconds)}
               </button>
-            ) : (
-              <span className="tag tag-blue">Acuan: Kepmenpan RB 321/2024</span>
-            )}
+            ) : null}
           </div>
         </header>
 
@@ -636,7 +634,7 @@ export const App: React.FC = () => {
         <footer className="footer">
           <div className="footer-inner">
             <span className="body-small">
-              cpns.imambas.my.id — LMS &amp; Simulasi CAT SKD CPNS tanpa login (Kepmenpan RB No. 321/2024).
+              cpns.imambas.my.id · LMS &amp; Simulasi CAT SKD CPNS tanpa login (Kepmenpan RB No. 321/2024).
             </span>
             <div className="row-wrap" style={{ gap: '16px' }}>
               <a

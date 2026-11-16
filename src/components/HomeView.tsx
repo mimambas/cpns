@@ -4,9 +4,6 @@ import { ALL_PACKAGES, SSCASN_PORTAL } from '../data/questionBank';
 import { FORMATION_RULES, formatCountdown, summarizeAttempt } from '../utils/scoring';
 import type { StudyModuleId } from './StudyView';
 import {
-  BookIcon,
-  CheckCircleIcon,
-  ChevronRightIcon,
   ClockIcon,
   CourseIcon,
   ExternalLinkIcon,
@@ -47,8 +44,6 @@ export const HomeView: React.FC<HomeViewProps> = ({
 
   const stats = useMemo(() => {
     const byPackage = new Map<string, { attempts: number; bestScore: number; maxScore: number }>();
-    let bestFullScore = 0;
-    let bestAttemptId: string | undefined;
 
     for (const item of history) {
       const ev = summarizeAttempt(item);
@@ -66,11 +61,6 @@ export const HomeView: React.FC<HomeViewProps> = ({
           maxScore: ev.maxTotalScore,
         });
       }
-
-      if (ev.totalScore >= bestFullScore) {
-        bestFullScore = ev.totalScore;
-        bestAttemptId = item.id;
-      }
     }
 
     const latestAttempt = history[0];
@@ -78,7 +68,6 @@ export const HomeView: React.FC<HomeViewProps> = ({
 
     return {
       byPackage,
-      bestAttemptId,
       latestAttempt,
       latestEval,
     };
@@ -119,13 +108,20 @@ export const HomeView: React.FC<HomeViewProps> = ({
 
       {/* Dashboard Header */}
       <section className="stack-200" style={{ gap: '8px' }}>
-        <div className="row-wrap" style={{ gap: '8px' }}>
-          <span className="lozenge lozenge-info">LMS Persiapan CPNS</span>
-          <span className="tag tag-blue">Tanpa login · Progres tersimpan otomatis</span>
+        <div className="row-wrap" style={{ justifyContent: 'space-between' }}>
+          <h1 className="h-xlarge">Beranda belajar &amp; simulasi CAT SKD CPNS</h1>
+          <a
+            href={SSCASN_PORTAL.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="link body-small"
+          >
+            Portal resmi SSCASN BKN
+            <ExternalLinkIcon size={12} />
+          </a>
         </div>
-        <h1 className="h-xlarge">Beranda belajar &amp; simulasi CAT SKD CPNS</h1>
         <p className="body-large" style={{ maxWidth: '72ch' }}>
-          Ikuti alur belajar terstruktur mulai dari modul materi, latihan fokus subtes, hingga simulasi 110 soal berstandar Kepmenpan RB No. 321 Tahun 2024 lengkap dengan pembahasan, link sumber, dan ekspor PDF.
+          Pelajari 5 modul materi tanpa login, latih kecepatan tiap subtes, atau kerjakan simulasi penuh 110 soal berstandar Kepmenpan RB No. 321 Tahun 2024 lengkap dengan link sumber soal dan ekspor PDF.
         </p>
       </section>
 
@@ -133,9 +129,11 @@ export const HomeView: React.FC<HomeViewProps> = ({
       <section className="grid-4" aria-label="Ringkasan progres belajar">
         {/* Card 1: Target Formasi */}
         <article className="kpi-card">
-          <span className="body-small">Target formasi aktif</span>
+          <label htmlFor="dashboard-formation-select" className="body-small">
+            Target formasi aktif
+          </label>
           <select
-            aria-label="Pilih target formasi aktif"
+            id="dashboard-formation-select"
             className="select-input"
             value={selectedFormation}
             onChange={(e) => onSelectFormation(e.target.value as FormationType)}
@@ -172,7 +170,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
               onClick={() => onOpenStudy()}
             >
               <CourseIcon size={14} />
-              Lanjutkan modul belajar
+              Buka modul belajar
             </button>
           </div>
         </article>
@@ -205,7 +203,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
             </>
           ) : (
             <>
-              <div className="metric-medium text-subtle">—</div>
+              <div className="h-medium text-subtle">Belum ada skor</div>
               <span className="body-small">Belum ada riwayat pengerjaan</span>
               <div style={{ marginTop: 'auto' }}>
                 <button
@@ -235,88 +233,8 @@ export const HomeView: React.FC<HomeViewProps> = ({
             onClick={() => onStartPackage(fullPackages[0])}
           >
             Siapkan simulasi 110 soal (Paket 1)
-            <ChevronRightIcon size={16} />
           </button>
         </article>
-      </section>
-
-      {/* Guided 3-Step LMS Learning Roadmap */}
-      <section className="stack-200">
-        <div className="row-wrap" style={{ justifyContent: 'space-between' }}>
-          <div>
-            <h2 className="h-medium">Alur belajar terpandu (3 langkah persiapan)</h2>
-            <p className="body text-subtle" style={{ marginTop: '4px' }}>
-              Ikuti tahapan berikut agar belajar materi dan latihan soal terasa lebih terarah.
-            </p>
-          </div>
-          <a
-            href={SSCASN_PORTAL.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="link body-small"
-          >
-            Portal resmi SSCASN BKN
-            <ExternalLinkIcon size={12} />
-          </a>
-        </div>
-
-        <div className="roadmap-grid">
-          <article className="roadmap-card">
-            <div className="row-wrap" style={{ gap: '10px' }}>
-              <span className="roadmap-step-num">1</span>
-              <span className="h-small">Pelajari 5 modul kelas</span>
-            </div>
-            <p className="body">
-              Pahami aturan Passing Grade Kepmenpan RB 321/2024, rangkuman TWK Kerjago, video pembahasan TIU Figural, dan trik skor 5 TKP.
-            </p>
-            <div style={{ marginTop: 'auto' }}>
-              <button type="button" className="btn btn-compact" onClick={() => onOpenStudy('modul-regulasi')}>
-                <BookIcon size={14} />
-                Buka kelas &amp; modul ({completedModules.length}/{totalModulesCount})
-              </button>
-            </div>
-          </article>
-
-          <article className="roadmap-card">
-            <div className="row-wrap" style={{ gap: '10px' }}>
-              <span className="roadmap-step-num">2</span>
-              <span className="h-small">Latihan fokus subtes</span>
-            </div>
-            <p className="body">
-              Latih kecepatan per subtes dengan paket singkat (30 soal TWK, 35 soal TIU, atau 45 soal TKP) sebelum mengerjakan 110 soal penuh.
-            </p>
-            <div style={{ marginTop: 'auto' }}>
-              <button
-                type="button"
-                className="btn btn-compact"
-                onClick={() => onStartPackage(focusedPackages[0])}
-              >
-                <PlayIcon size={14} />
-                Pilih latihan fokus subtes
-              </button>
-            </div>
-          </article>
-
-          <article className="roadmap-card">
-            <div className="row-wrap" style={{ gap: '10px' }}>
-              <span className="roadmap-step-num">3</span>
-              <span className="h-small">Simulasi penuh &amp; unduh PDF</span>
-            </div>
-            <p className="body">
-              Uji kesiapan pada paket penuh 110 soal selama 100 menit, evaluasi kelulusan Passing Grade, lalu unduh laporan PDF beserta pembahasan &amp; link sumber.
-            </p>
-            <div style={{ marginTop: 'auto' }}>
-              <button
-                type="button"
-                className="btn btn-compact"
-                onClick={() => onStartPackage(fullPackages[0])}
-              >
-                <ChevronRightIcon size={14} />
-                Siapkan simulasi 110 soal
-              </button>
-            </div>
-          </article>
-        </div>
       </section>
 
       {/* Full Simulation Packages Catalog */}
@@ -334,18 +252,14 @@ export const HomeView: React.FC<HomeViewProps> = ({
             return (
               <article key={pkg.id} className="card stack-200">
                 <div className="row-wrap" style={{ justifyContent: 'space-between' }}>
-                  <span className="lozenge lozenge-success">
-                    <CheckCircleIcon size={14} />
-                    Komposisi asli BKN
+                  <span className="body-small mono">
+                    30 TWK · 35 TIU · 45 TKP · {pkg.durationMinutes} menit
                   </span>
-                  <div className="row-wrap" style={{ gap: '6px' }}>
-                    {pkgStats && (
-                      <span className="lozenge lozenge-info mono">
-                        Terbaik: {pkgStats.bestScore}/{pkgStats.maxScore}
-                      </span>
-                    )}
-                    <span className="tag tag-blue">{pkg.durationMinutes} menit</span>
-                  </div>
+                  {pkgStats && (
+                    <span className="lozenge lozenge-info mono">
+                      Terbaik: {pkgStats.bestScore}/{pkgStats.maxScore}
+                    </span>
+                  )}
                 </div>
 
                 <div className="stack-200" style={{ gap: '6px' }}>
@@ -354,9 +268,6 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 </div>
 
                 <div className="well-sunken stack-200" style={{ gap: '4px', padding: '12px 14px' }}>
-                  <div className="body-small">
-                    <strong>Rincian soal:</strong> 30 TWK · 35 TIU · 45 TKP (total 110 butir)
-                  </div>
                   <div className="body-small">
                     <strong>Sumber dokumen:</strong>{' '}
                     <a
@@ -378,7 +289,6 @@ export const HomeView: React.FC<HomeViewProps> = ({
                     onClick={() => onStartPackage(pkg)}
                   >
                     Pilih paket {idx + 1}
-                    <ChevronRightIcon size={16} />
                   </button>
                   {pkgStats && (
                     <span className="body-small text-subtlest">
@@ -407,7 +317,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
             return (
               <article key={pkg.id} className="card stack-200">
                 <div className="row-wrap" style={{ justifyContent: 'space-between' }}>
-                  <span className="tag tag-teal">{pkg.compositionLabel}</span>
+                  <span className="body-small mono">{pkg.compositionLabel}</span>
                   <span className="body-small mono">{pkg.durationMinutes} mnt</span>
                 </div>
                 <h3 className="h-small">{pkg.title}</h3>
@@ -424,7 +334,6 @@ export const HomeView: React.FC<HomeViewProps> = ({
                     onClick={() => onStartPackage(pkg)}
                   >
                     Pilih latihan fokus
-                    <ChevronRightIcon size={16} />
                   </button>
                 </div>
               </article>

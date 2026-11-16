@@ -143,12 +143,9 @@ export const ExamView: React.FC<ExamViewProps> = ({
               Jeda &amp; keluar
             </button>
             <div className="stack-200" style={{ gap: '2px' }}>
-              <div className="row-wrap" style={{ gap: '8px' }}>
-                <h1 className="h-small">{pkg.title}</h1>
-                <span className="tag">{FORMATION_RULES[formationId].shortLabel}</span>
-              </div>
+              <h1 className="h-small">{pkg.title}</h1>
               <span className="body-small">
-                Soal {currentIndex + 1}/{questions.length} · Dijawab {answeredCount} ({progressPct}%) · Ragu-ragu {flaggedCount}
+                {FORMATION_RULES[formationId].shortLabel} · Soal {currentIndex + 1}/{questions.length} · Dijawab {answeredCount} ({progressPct}%) · Ragu-ragu {flaggedCount}
               </span>
             </div>
           </div>
@@ -208,9 +205,9 @@ export const ExamView: React.FC<ExamViewProps> = ({
             <div className="row-wrap" style={{ justifyContent: 'space-between' }}>
               <div className="row-wrap" style={{ gap: '8px' }}>
                 <span className={`lozenge ${categoryLozengeClass}`}>
-                  {currentQuestion.category} — Soal #{currentQuestion.number}
+                  {currentQuestion.category} · Soal #{currentQuestion.number}
                 </span>
-                <span className="tag tag-teal">{currentQuestion.subtopic}</span>
+                <span className="body-small">{currentQuestion.subtopic}</span>
                 {isFlagged && (
                   <span className="lozenge lozenge-warning">
                     <FlagIcon size={12} />
@@ -237,6 +234,8 @@ export const ExamView: React.FC<ExamViewProps> = ({
               <div className="figure-box">
                 <span className="body-small">Gambar soal figural (perhatikan opsi gambar A sampai E):</span>
                 <img
+                  width={560}
+                  height={220}
                   src={currentQuestion.figureUrl}
                   alt={`Gambar figural soal nomor ${currentQuestion.number}`}
                   className="figure-img"

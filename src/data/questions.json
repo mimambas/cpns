@@ -2,7 +2,7 @@
   "packages": [
     {
       "id": "paket-lolosasn-2023",
-      "title": "Paket 1 — Simulasi SKD CPNS Lengkap (LolosASN)",
+      "title": "Paket 1: Simulasi SKD CPNS Lengkap (LolosASN)",
       "description": "110 soal asli SKD sesuai komposisi BKN (30 TWK, 35 TIU, 45 TKP) dengan pembahasan lengkap dari modul Tryout LolosASN.",
       "durationMinutes": 100,
       "sourceTitle": "TRYOUT CPNS 2023 By LolosASN - PEMBAHASAN.pdf",
@@ -12,7 +12,7 @@
           "id": "lolosasn-001",
           "number": 1,
           "category": "TWK",
-          "subtopic": "Pilar Negara — Pancasila",
+          "subtopic": "Pilar Negara: Pancasila",
           "question": "Yang memberikan usul tentang Dasar Negara Pancasila adalah...",
           "options": [
             {
@@ -52,7 +52,7 @@
           "id": "lolosasn-002",
           "number": 2,
           "category": "TWK",
-          "subtopic": "Pilar Negara — Pancasila",
+          "subtopic": "Pilar Negara: Pancasila",
           "question": "Pancasila mencerminkan realitas hidup yang ada di masyarakat sehingga Pancasila tidak pernah\nbertentangan dengan tradisi, adat-istiadat, kebudayaan, dan tata hidup keagamaan yang ada dalam\nmasyarakat Indonesia disebut dengan dimensi...",
           "options": [
             {
@@ -92,7 +92,7 @@
           "id": "lolosasn-003",
           "number": 3,
           "category": "TWK",
-          "subtopic": "Pilar Negara — Pancasila",
+          "subtopic": "Pilar Negara: Pancasila",
           "question": "Pancasila merupakan Philosofische Gronslag yang berarti Pancasila...",
           "options": [
             {
@@ -132,7 +132,7 @@
           "id": "lolosasn-004",
           "number": 4,
           "category": "TWK",
-          "subtopic": "Pilar Negara — Pancasila",
+          "subtopic": "Pilar Negara: Pancasila",
           "question": "Salah satu fungsi dari Pancasila adalah sebagai filter dengan tujuan...",
           "options": [
             {
@@ -172,7 +172,7 @@
           "id": "lolosasn-005",
           "number": 5,
           "category": "TWK",
-          "subtopic": "Pilar Negara — UUD 1945 & Konstitusi",
+          "subtopic": "Pilar Negara: UUD 1945 & Konstitusi",
           "question": "Di dalam UUD 1945, secara sah negara Indonesia berbentuk...",
           "options": [
             {
@@ -212,7 +212,7 @@
           "id": "lolosasn-006",
           "number": 6,
           "category": "TWK",
-          "subtopic": "Pilar Negara — UUD 1945 & Konstitusi",
+          "subtopic": "Pilar Negara: UUD 1945 & Konstitusi",
           "question": "UUD 1945 disebut sebagai konstitusi rigid karena pada waktu perubahannya harus...",
           "options": [
             {
@@ -252,7 +252,7 @@
           "id": "lolosasn-007",
           "number": 7,
           "category": "TWK",
-          "subtopic": "Pilar Negara — UUD 1945 & Konstitusi",
+          "subtopic": "Pilar Negara: UUD 1945 & Konstitusi",
           "question": "Amandemen pertama dilakukan pada era Presiden...",
           "options": [
             {
@@ -292,7 +292,7 @@
           "id": "lolosasn-008",
           "number": 8,
           "category": "TWK",
-          "subtopic": "Pilar Negara — Pembukaan UUD 1945",
+          "subtopic": "Pilar Negara: Pembukaan UUD 1945",
           "question": "Pernyataan bahwa setiap bangsa mempunyai hak untuk merdeka, hal ini tertuang dalam\nPembukaan UUD 1945 alinea...",
           "options": [
             {
@@ -332,7 +332,7 @@
           "id": "lolosasn-009",
           "number": 9,
           "category": "TWK",
-          "subtopic": "Pilar Negara — UUD 1945 & Konstitusi",
+          "subtopic": "Pilar Negara: UUD 1945 & Konstitusi",
           "question": "Pada masa demokrasi terpimpin, Indonesia memakai konstitusi...",
           "options": [
             {
@@ -532,7 +532,7 @@
           "id": "lolosasn-014",
           "number": 14,
           "category": "TWK",
-          "subtopic": "Pilar Negara — Pancasila",
+          "subtopic": "Pilar Negara: Pancasila",
           "question": "Anggota PKI pada awalnya berjumlah 21 orang kemudian ditambah beberapa orang menjadi",
           "options": [
             {
@@ -652,7 +652,7 @@
           "id": "lolosasn-017",
           "number": 17,
           "category": "TWK",
-          "subtopic": "Pilar Negara — Pancasila",
+          "subtopic": "Pilar Negara: Pancasila",
           "question": "Salah satu faktor yang mendorong lahirnya Orde Baru adalah ....",
           "options": [
             {
@@ -772,7 +772,7 @@
           "id": "lolosasn-020",
           "number": 20,
           "category": "TWK",
-          "subtopic": "Pilar Negara — Pancasila",
+          "subtopic": "Pilar Negara: Pancasila",
           "question": "Tokoh-tokoh yang berdiskusi tentang Bhinneka Tunggal Ika di sela-sela sidang BPUPKI adalah ...",
           "options": [
             {
@@ -812,7 +812,7 @@
           "id": "lolosasn-021",
           "number": 21,
           "category": "TWK",
-          "subtopic": "Pilar Negara — UUD 1945 & Konstitusi",
+          "subtopic": "Pilar Negara: UUD 1945 & Konstitusi",
           "question": "Prinsip penulisan Negara Kesatuan yang tidak dapat diubah tercantum dalam UUD 1945 Pasal....",
           "options": [
             {
@@ -852,7 +852,7 @@
           "id": "lolosasn-022",
           "number": 22,
           "category": "TWK",
-          "subtopic": "Pilar Negara — Pancasila",
+          "subtopic": "Pilar Negara: Pancasila",
           "question": "Yang mampu menjadi landasan dan falsafah hidup Bangsa Indonesia adalah....",
           "options": [
             {
@@ -972,7 +972,7 @@
           "id": "lolosasn-025",
           "number": 25,
           "category": "TWK",
-          "subtopic": "Pilar Negara — UUD 1945 & Konstitusi",
+          "subtopic": "Pilar Negara: UUD 1945 & Konstitusi",
           "question": "Lambang serta semboyan negara diatur dalam UUD 1945 Pasal....",
           "options": [
             {
@@ -1212,7 +1212,7 @@
           "id": "lolosasn-031",
           "number": 31,
           "category": "TIU",
-          "subtopic": "TIU Verbal — Analogi, Sinonim & Penalaran",
+          "subtopic": "TIU Verbal: Analogi, Sinonim & Penalaran",
           "question": "Solusi = ...",
           "options": [
             {
@@ -1252,7 +1252,7 @@
           "id": "lolosasn-032",
           "number": 32,
           "category": "TIU",
-          "subtopic": "TIU Verbal — Analogi, Sinonim & Penalaran",
+          "subtopic": "TIU Verbal: Analogi, Sinonim & Penalaran",
           "question": "Kerangka = ...",
           "options": [
             {
@@ -1292,7 +1292,7 @@
           "id": "lolosasn-033",
           "number": 33,
           "category": "TIU",
-          "subtopic": "TIU Verbal — Analogi, Sinonim & Penalaran",
+          "subtopic": "TIU Verbal: Analogi, Sinonim & Penalaran",
           "question": "Rabun = ...",
           "options": [
             {
@@ -1332,7 +1332,7 @@
           "id": "lolosasn-034",
           "number": 34,
           "category": "TIU",
-          "subtopic": "TIU Verbal — Analogi, Sinonim & Penalaran",
+          "subtopic": "TIU Verbal: Analogi, Sinonim & Penalaran",
           "question": "Aus >< ...",
           "options": [
             {
@@ -1372,7 +1372,7 @@
           "id": "lolosasn-035",
           "number": 35,
           "category": "TIU",
-          "subtopic": "TIU Verbal — Analogi, Sinonim & Penalaran",
+          "subtopic": "TIU Verbal: Analogi, Sinonim & Penalaran",
           "question": "Autentik >< ...",
           "options": [
             {
@@ -1412,7 +1412,7 @@
           "id": "lolosasn-036",
           "number": 36,
           "category": "TIU",
-          "subtopic": "TIU Verbal — Analogi, Sinonim & Penalaran",
+          "subtopic": "TIU Verbal: Analogi, Sinonim & Penalaran",
           "question": "Efek >< ...",
           "options": [
             {
@@ -1452,7 +1452,7 @@
           "id": "lolosasn-037",
           "number": 37,
           "category": "TIU",
-          "subtopic": "TIU Verbal — Analogi, Sinonim & Penalaran",
+          "subtopic": "TIU Verbal: Analogi, Sinonim & Penalaran",
           "question": "Kenanga : Anggrek = ... : ...",
           "options": [
             {
@@ -1492,7 +1492,7 @@
           "id": "lolosasn-038",
           "number": 38,
           "category": "TIU",
-          "subtopic": "TIU Verbal — Analogi, Sinonim & Penalaran",
+          "subtopic": "TIU Verbal: Analogi, Sinonim & Penalaran",
           "question": "Sapu : Bersih = ... : ...",
           "options": [
             {
@@ -1532,7 +1532,7 @@
           "id": "lolosasn-039",
           "number": 39,
           "category": "TIU",
-          "subtopic": "TIU Verbal — Analogi, Sinonim & Penalaran",
+          "subtopic": "TIU Verbal: Analogi, Sinonim & Penalaran",
           "question": "Kayu : Papan = ... : ...",
           "options": [
             {
@@ -1572,7 +1572,7 @@
           "id": "lolosasn-040",
           "number": 40,
           "category": "TIU",
-          "subtopic": "TIU Numerik — Deret, Berhitung & Soal Cerita",
+          "subtopic": "TIU Numerik: Deret, Berhitung & Soal Cerita",
           "question": "Pilihlah satu kata yang tidak termasuk ke dalam kelompok yang sama dengan kata-kata lainnya!",
           "options": [
             {
@@ -1612,7 +1612,7 @@
           "id": "lolosasn-041",
           "number": 41,
           "category": "TIU",
-          "subtopic": "TIU Numerik — Deret, Berhitung & Soal Cerita",
+          "subtopic": "TIU Numerik: Deret, Berhitung & Soal Cerita",
           "question": "Pilihlah satu kata yang tidak termasuk ke dalam kelompok yang sama dengan kata-kata lainnya!",
           "options": [
             {
@@ -1652,7 +1652,7 @@
           "id": "lolosasn-042",
           "number": 42,
           "category": "TIU",
-          "subtopic": "TIU Numerik — Deret, Berhitung & Soal Cerita",
+          "subtopic": "TIU Numerik: Deret, Berhitung & Soal Cerita",
           "question": "Pilihlah satu kata yang tidak termasuk ke dalam kelompok yang sama dengan kata-kata lainnya!",
           "options": [
             {
@@ -1692,7 +1692,7 @@
           "id": "lolosasn-043",
           "number": 43,
           "category": "TIU",
-          "subtopic": "TIU Verbal — Analogi, Sinonim & Penalaran",
+          "subtopic": "TIU Verbal: Analogi, Sinonim & Penalaran",
           "question": "Bacalah teks berikut dengan seksama!\nSeorang anak yang baru lahir masih suci. Baik buruknya anak tersebut kelak tergantung bagaimana\ncara orang tua mendidiknya serta pengaruh orang-orang terdekat dan lingkungannya. Demikian pula\nkertas putih yang belum ternoda. Akan menjadi apa kertas tersebut, tergantung pada apa yang akan\nkita goreskan pada kertas putih tersebut. Simpulan yang tepat berdasarkan teks tersebut adalah...",
           "options": [
             {
@@ -1732,7 +1732,7 @@
           "id": "lolosasn-044",
           "number": 44,
           "category": "TIU",
-          "subtopic": "TIU Verbal — Analogi, Sinonim & Penalaran",
+          "subtopic": "TIU Verbal: Analogi, Sinonim & Penalaran",
           "question": "Bacalah teks berikut dengan saksama!\nSetiap hari kita dapat melihat dan mendengar, betapa banyak kata asing yang dilontarkan ke mana-\nmana. Rupanya kita lebih suka menempuh jalan pintas, daripada mencari kata milik kita sendiri.\nDengan alasan yang selalu diberikan ialah, kata yang bersangkutan tidak dikenal. Padahal tidak\njarang orang tidak memahami apa makna kata asing yang digunakan.\nTopik paragraf tersebut adalah ....",
           "options": [
             {
@@ -1772,7 +1772,7 @@
           "id": "lolosasn-045",
           "number": 45,
           "category": "TIU",
-          "subtopic": "TIU Numerik — Deret, Berhitung & Soal Cerita",
+          "subtopic": "TIU Numerik: Deret, Berhitung & Soal Cerita",
           "question": "Berikut ini penulisan kata serapan yang tepat adalah …",
           "options": [
             {
@@ -1812,7 +1812,7 @@
           "id": "lolosasn-046",
           "number": 46,
           "category": "TIU",
-          "subtopic": "TIU Figural — Deret & Ketidaksamaan Gambar",
+          "subtopic": "TIU Figural: Deret & Ketidaksamaan Gambar",
           "question": "10, 5, 0, -4, -9, -14, -18, ..., ...",
           "options": [
             {
@@ -1852,7 +1852,7 @@
           "id": "lolosasn-047",
           "number": 47,
           "category": "TIU",
-          "subtopic": "TIU Figural — Deret & Ketidaksamaan Gambar",
+          "subtopic": "TIU Figural: Deret & Ketidaksamaan Gambar",
           "question": "10 1/2, 48, 21, 24, 42, 12, ..., ...",
           "options": [
             {
@@ -1892,7 +1892,7 @@
           "id": "lolosasn-048",
           "number": 48,
           "category": "TIU",
-          "subtopic": "TIU Figural — Deret & Ketidaksamaan Gambar",
+          "subtopic": "TIU Figural: Deret & Ketidaksamaan Gambar",
           "question": "24, 12, 11, -6, -2, 3, ..., ....",
           "options": [
             {
@@ -1932,7 +1932,7 @@
           "id": "lolosasn-049",
           "number": 49,
           "category": "TIU",
-          "subtopic": "TIU Figural — Deret & Ketidaksamaan Gambar",
+          "subtopic": "TIU Figural: Deret & Ketidaksamaan Gambar",
           "question": "E, D, A, F, E, B, G, ..., ...",
           "options": [
             {
@@ -1972,7 +1972,7 @@
           "id": "lolosasn-050",
           "number": 50,
           "category": "TIU",
-          "subtopic": "TIU Numerik — Deret, Berhitung & Soal Cerita",
+          "subtopic": "TIU Numerik: Deret, Berhitung & Soal Cerita",
           "question": "125 adalah nilai ... % dari 2.000",
           "options": [
             {
@@ -2012,7 +2012,7 @@
           "id": "lolosasn-051",
           "number": 51,
           "category": "TIU",
-          "subtopic": "TIU Numerik — Deret, Berhitung & Soal Cerita",
+          "subtopic": "TIU Numerik: Deret, Berhitung & Soal Cerita",
           "question": "Nilai dari perhitungan berikut adalah ...\n137² - 113² = ...",
           "options": [
             {
@@ -2052,7 +2052,7 @@
           "id": "lolosasn-052",
           "number": 52,
           "category": "TIU",
-          "subtopic": "TIU Numerik — Deret, Berhitung & Soal Cerita",
+          "subtopic": "TIU Numerik: Deret, Berhitung & Soal Cerita",
           "question": "Hasil dari penjumlahan berikut adalah ...\n15% dari 120 dan 33 1/3% dari 600",
           "options": [
             {
@@ -2092,7 +2092,7 @@
           "id": "lolosasn-053",
           "number": 53,
           "category": "TIU",
-          "subtopic": "TIU Numerik — Deret, Berhitung & Soal Cerita",
+          "subtopic": "TIU Numerik: Deret, Berhitung & Soal Cerita",
           "question": "99 x 9 x 11 x 0 + 1 = ...",
           "options": [
             {
@@ -2252,7 +2252,7 @@
           "id": "lolosasn-057",
           "number": 57,
           "category": "TIU",
-          "subtopic": "TIU Verbal — Analogi, Sinonim & Penalaran",
+          "subtopic": "TIU Verbal: Analogi, Sinonim & Penalaran",
           "question": "Kebanyakan ikan bernapas dengan insang.Paus adalah seekor ikan. Jadi, kesimpulannya...",
           "options": [
             {
@@ -2292,7 +2292,7 @@
           "id": "lolosasn-058",
           "number": 58,
           "category": "TIU",
-          "subtopic": "TIU Verbal — Analogi, Sinonim & Penalaran",
+          "subtopic": "TIU Verbal: Analogi, Sinonim & Penalaran",
           "question": "Jika ingin menuju bandara harus naik taksi atau bus. Richie menuju bandara. Kesimpulan yang\ntepat adalah ...",
           "options": [
             {
@@ -2412,7 +2412,7 @@
           "id": "lolosasn-061",
           "number": 61,
           "category": "TIU",
-          "subtopic": "TIU Verbal — Analogi, Sinonim & Penalaran",
+          "subtopic": "TIU Verbal: Analogi, Sinonim & Penalaran",
           "question": "Teks bacaan untuk soal nomor 61–63:\nSekelompok mahasiswa mengadakan penelitian di desa. Mereka menginap di rumah warga yang kebetulan memiliki 6 kamar yang berderet. Reno ingin berada di sebelah kamar Ical, tapi tidak ingin bersebelahan dengan Danang. Danang ingin berada di kamar paling ujung. Wildan ingin kamarnya berada di antara kamar Oyon dan Sandy.\n\nUrutan kamar yang mungkin adalah ...",
           "options": [
             {
@@ -2452,7 +2452,7 @@
           "id": "lolosasn-062",
           "number": 62,
           "category": "TIU",
-          "subtopic": "TIU Verbal — Analogi, Sinonim & Penalaran",
+          "subtopic": "TIU Verbal: Analogi, Sinonim & Penalaran",
           "question": "Teks bacaan untuk soal nomor 61–63:\nSekelompok mahasiswa mengadakan penelitian di desa. Mereka menginap di rumah warga yang kebetulan memiliki 6 kamar yang berderet. Reno ingin berada di sebelah kamar Ical, tapi tidak ingin bersebelahan dengan Danang. Danang ingin berada di kamar paling ujung. Wildan ingin kamarnya berada di antara kamar Oyon dan Sandy.\n\nKamar paling ujung tidak mungkin ditempati oleh ...",
           "options": [
             {
@@ -2492,7 +2492,7 @@
           "id": "lolosasn-063",
           "number": 63,
           "category": "TIU",
-          "subtopic": "TIU Verbal — Analogi, Sinonim & Penalaran",
+          "subtopic": "TIU Verbal: Analogi, Sinonim & Penalaran",
           "question": "Teks bacaan untuk soal nomor 61–63:\nSekelompok mahasiswa mengadakan penelitian di desa. Mereka menginap di rumah warga yang kebetulan memiliki 6 kamar yang berderet. Reno ingin berada di sebelah kamar Ical, tapi tidak ingin bersebelahan dengan Danang. Danang ingin berada di kamar paling ujung. Wildan ingin kamarnya berada di antara kamar Oyon dan Sandy.\n\nKamar Danang mungkin berseblahan dengan kamar...",
           "options": [
             {
@@ -2532,7 +2532,7 @@
           "id": "lolosasn-064",
           "number": 64,
           "category": "TIU",
-          "subtopic": "TIU Verbal — Analogi, Sinonim & Penalaran",
+          "subtopic": "TIU Verbal: Analogi, Sinonim & Penalaran",
           "question": "Teks bacaan untuk soal nomor 64–65:\nUang tabungan Ipin lebih banyak dari uang tabungan Yadi. Uang tabungan Mutia tidak kalah banyak dari uang tabungan Ipin. Uang tabungan Halimah tidak sebanyak uang tabungan Mutia tapi lebih banyak dari uang tabungan Ipin. Uang tabungan Farhan lebih sedikit dari uang tabungan Yadi.\n\nPernyataan yang benar adalah ...",
           "options": [
             {
@@ -2572,7 +2572,7 @@
           "id": "lolosasn-065",
           "number": 65,
           "category": "TIU",
-          "subtopic": "TIU Verbal — Analogi, Sinonim & Penalaran",
+          "subtopic": "TIU Verbal: Analogi, Sinonim & Penalaran",
           "question": "Teks bacaan untuk soal nomor 64–65:\nUang tabungan Ipin lebih banyak dari uang tabungan Yadi. Uang tabungan Mutia tidak kalah banyak dari uang tabungan Ipin. Uang tabungan Halimah tidak sebanyak uang tabungan Mutia tapi lebih banyak dari uang tabungan Ipin. Uang tabungan Farhan lebih sedikit dari uang tabungan Yadi.\n\nAnak yang memiliki uang tabungan paling sedikit adalah ...",
           "options": [
             {
@@ -2612,7 +2612,7 @@
           "id": "lolosasn-066",
           "number": 66,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Pada waktu bangun tidur saya sering merasa…",
           "options": [
             {
@@ -2652,7 +2652,7 @@
           "id": "lolosasn-067",
           "number": 67,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Ketika ada salah seorang tetangga Anda meniggal dunia, maka Anda akan...",
           "options": [
             {
@@ -2692,7 +2692,7 @@
           "id": "lolosasn-068",
           "number": 68,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Ketika Anda berkunjung ke sebuah pusat perbelanjaan, Anda senang jika...",
           "options": [
             {
@@ -2732,7 +2732,7 @@
           "id": "lolosasn-069",
           "number": 69,
           "category": "TKP",
-          "subtopic": "TKP — Jejaring Kerja & Sosial Budaya",
+          "subtopic": "TKP: Jejaring Kerja & Sosial Budaya",
           "question": "Jika ada seorang rekan yang memberikan secara langsung berkas-berkas temannya untuk\nditindaklanjuti oleh Anda, maka Anda akan...",
           "options": [
             {
@@ -2772,7 +2772,7 @@
           "id": "lolosasn-070",
           "number": 70,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Saya berhasil mengatasi tantangan terutama karena ...",
           "options": [
             {
@@ -2812,7 +2812,7 @@
           "id": "lolosasn-071",
           "number": 71,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Jika ada kesempatan untuk berkompetisi dalam bidang yang saya senangi, maka saya…",
           "options": [
             {
@@ -2852,7 +2852,7 @@
           "id": "lolosasn-072",
           "number": 72,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Ketika Anda membawa anak Anda ke pasar, anak Anda tiba-tiba meminta untuk dibelikan\npermainan, maka Anda akan...",
           "options": [
             {
@@ -2892,7 +2892,7 @@
           "id": "lolosasn-073",
           "number": 73,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Anda senang tinggal dalam lingkungan yang...",
           "options": [
             {
@@ -2932,7 +2932,7 @@
           "id": "lolosasn-074",
           "number": 74,
           "category": "TKP",
-          "subtopic": "TKP — Pelayanan Publik",
+          "subtopic": "TKP: Pelayanan Publik",
           "question": "Ketika Ketua RT Anda membutuhkan warganya untuk melakukan kerja bakti di lingkungan\nrumah Anda dan sekitarnya, Anda sedang sibuk. Maka Anda akan...",
           "options": [
             {
@@ -2972,7 +2972,7 @@
           "id": "lolosasn-075",
           "number": 75,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Jika Anda sedang dalam keadaan yang lelah, biasanya Anda akan...",
           "options": [
             {
@@ -3012,7 +3012,7 @@
           "id": "lolosasn-076",
           "number": 76,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Harga-harga saat ini berubah dengan cepat dan kecenderungannya meningkat terus.\nSementara pendapatan dari saya terbatas, menghadapi keadaan ini saya..",
           "options": [
             {
@@ -3052,7 +3052,7 @@
           "id": "lolosasn-077",
           "number": 77,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Jika Anda sedang memiliki banyak pekerjaan dan atasan Anda memberi pekerjaan yang\nbaru lagi kepada Anda padahal pekerjaan sebelumnya belum Anda selesaikan, maka Anda\nakan...",
           "options": [
             {
@@ -3092,7 +3092,7 @@
           "id": "lolosasn-078",
           "number": 78,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Jika Anda sudah tidak memiliki pekerjaan apa pun di kantor, maka Anda akan...",
           "options": [
             {
@@ -3132,7 +3132,7 @@
           "id": "lolosasn-079",
           "number": 79,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Saat saya menghadiri pernikahan seorang kerabat dari luar kota bersamaan dengan itu ada\ntugas kantor, sedangkan minggu lalu saya sudah membolos saya akan..",
           "options": [
             {
@@ -3172,7 +3172,7 @@
           "id": "lolosasn-080",
           "number": 80,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Anda memiliki keinginan untuk mendirikan sebuah lembaga pendidikan yang...",
           "options": [
             {
@@ -3212,7 +3212,7 @@
           "id": "lolosasn-081",
           "number": 81,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Ketika muncul suatu masalah dalam pekerjaan yang kebetulan ada katitannya dengan halhal yang\nmenjadi kewajiban saya, maka saya…",
           "options": [
             {
@@ -3252,7 +3252,7 @@
           "id": "lolosasn-082",
           "number": 82,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Nonton film pada saat jam kantor menurut saya...",
           "options": [
             {
@@ -3292,7 +3292,7 @@
           "id": "lolosasn-083",
           "number": 83,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Menyediakan jajanan di meja kerja kantor menurut saya...",
           "options": [
             {
@@ -3332,7 +3332,7 @@
           "id": "lolosasn-084",
           "number": 84,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Ketika berkunjung ke kantor klien yang akan Anda audit, Anda mendapatkan uang dari klien\nsebagai pengganti transport, maka Anda akan....",
           "options": [
             {
@@ -3372,7 +3372,7 @@
           "id": "lolosasn-085",
           "number": 85,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Sehubungan dengan pekerjaan Anda, kantor Anda memeberikan jatah uang makan sebesar\nRp.500.000,- untuk makan siang setiap harinya. Uang tersebut akan diganti seusai dengan\nbukti pembayaran makan siang. Namun menurut Anda makan siang Anda selama ini tidak\nsebesar jumlah tersebut. Oleh karena itu Anda akan...",
           "options": [
             {
@@ -3412,7 +3412,7 @@
           "id": "lolosasn-086",
           "number": 86,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Tugas Anda harus diselesaikan dalam satu minggu. Maka Anda akan...",
           "options": [
             {
@@ -3452,7 +3452,7 @@
           "id": "lolosasn-087",
           "number": 87,
           "category": "TKP",
-          "subtopic": "TKP — Jejaring Kerja & Sosial Budaya",
+          "subtopic": "TKP: Jejaring Kerja & Sosial Budaya",
           "question": "Suatu hari Anda sedang rapat bersama para pimpinan, salah seorang pimpinan\nmengeluarkan pendapatnya. Namun Anda tidak setuju dengan pendapat tersebut, maka\nAnda akan...",
           "options": [
             {
@@ -3492,7 +3492,7 @@
           "id": "lolosasn-088",
           "number": 88,
           "category": "TKP",
-          "subtopic": "TKP — Jejaring Kerja & Sosial Budaya",
+          "subtopic": "TKP: Jejaring Kerja & Sosial Budaya",
           "question": "Menurut rekan-rekan saya, saya ini orang yang…",
           "options": [
             {
@@ -3532,7 +3532,7 @@
           "id": "lolosasn-089",
           "number": 89,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Setelah menyelesaikan pekerjaan tertentu, saya …",
           "options": [
             {
@@ -3572,7 +3572,7 @@
           "id": "lolosasn-090",
           "number": 90,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Jika mengalalami kegagalan dalam rangka mencoba sesuatu maka saya..",
           "options": [
             {
@@ -3612,7 +3612,7 @@
           "id": "lolosasn-091",
           "number": 91,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Ketika saya diminta melakukan pekerjaan berat, saya..",
           "options": [
             {
@@ -3652,7 +3652,7 @@
           "id": "lolosasn-092",
           "number": 92,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Jika Anda diminta untuk menggambar pemandangan, maka yang terlintas pertama kali\ndalam pikiran Anda untuk digambar ialah...",
           "options": [
             {
@@ -3692,7 +3692,7 @@
           "id": "lolosasn-093",
           "number": 93,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "PNS yang kreatif itu adalah PNS yang...",
           "options": [
             {
@@ -3732,7 +3732,7 @@
           "id": "lolosasn-094",
           "number": 94,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Pasangan saya tidak menyukai tempat dimana saya bekerja, sikap saya…",
           "options": [
             {
@@ -3772,7 +3772,7 @@
           "id": "lolosasn-095",
           "number": 95,
           "category": "TKP",
-          "subtopic": "TKP — Teknologi Informasi & Komunikasi",
+          "subtopic": "TKP: Teknologi Informasi & Komunikasi",
           "question": "Saya sedang tidak dalam kondisi fit untuk bekerja, sikap saya…",
           "options": [
             {
@@ -3812,7 +3812,7 @@
           "id": "lolosasn-096",
           "number": 96,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Teman saya menanyakan proses pekerjaan saya, sikap saya…",
           "options": [
             {
@@ -3852,7 +3852,7 @@
           "id": "lolosasn-097",
           "number": 97,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Saya mempunyai seorang saudara yang ingin sekali bekerja ditempat saya bekerja, yang\nsaya lakukan…",
           "options": [
             {
@@ -3892,7 +3892,7 @@
           "id": "lolosasn-098",
           "number": 98,
           "category": "TKP",
-          "subtopic": "TKP — Teknologi Informasi & Komunikasi",
+          "subtopic": "TKP: Teknologi Informasi & Komunikasi",
           "question": "Tim bola voli unit kami diperkirakan akan kalah melawat tim bola voli unit lain dalam instansi\nkami. Sikap saya dalam pertandingan…",
           "options": [
             {
@@ -3932,7 +3932,7 @@
           "id": "lolosasn-099",
           "number": 99,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Bagi saya, kegagalan adalah",
           "options": [
             {
@@ -3972,7 +3972,7 @@
           "id": "lolosasn-100",
           "number": 100,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Menurut saya, para pemimpin besar dunia itu…",
           "options": [
             {
@@ -4012,7 +4012,7 @@
           "id": "lolosasn-101",
           "number": 101,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Kadangkala saya merasa lapar ketika jam kerja, maka yang saya lakukan adalah ...",
           "options": [
             {
@@ -4052,7 +4052,7 @@
           "id": "lolosasn-102",
           "number": 102,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Karena lembur kerja kemarin, siang ini saya merasa sangat mengantuk, kerjaan tidak ada\nyang selesai karena tidak fokus, sebaiknya saya ...",
           "options": [
             {
@@ -4092,7 +4092,7 @@
           "id": "lolosasn-103",
           "number": 103,
           "category": "TKP",
-          "subtopic": "TKP — Jejaring Kerja & Sosial Budaya",
+          "subtopic": "TKP: Jejaring Kerja & Sosial Budaya",
           "question": "Saat ulang tahun pimpinan kantor, teman-teman seruangan berencana memberikan pesta\nkejutan, tapi kekurangan dana maka kami mengambil dana pembiayaan rapat, mengenai hal\nini ...",
           "options": [
             {
@@ -4132,7 +4132,7 @@
           "id": "lolosasn-104",
           "number": 104,
           "category": "TKP",
-          "subtopic": "TKP — Jejaring Kerja & Sosial Budaya",
+          "subtopic": "TKP: Jejaring Kerja & Sosial Budaya",
           "question": "Jika saya sedang mengerjakan sesuatu, kondisi yang dapat mendukung saya bekerja\noptimal adalah ...",
           "options": [
             {
@@ -4172,7 +4172,7 @@
           "id": "lolosasn-105",
           "number": 105,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Target kerja dan beban kerja yang tinggi menurut saya adalah ...",
           "options": [
             {
@@ -4212,7 +4212,7 @@
           "id": "lolosasn-106",
           "number": 106,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Ditengah proyek besar dan membutuhkan tanggung jawab besar saya mengalami\nkegagalan besar yang sangat mengancam karir saya, sebaiknya saya ..",
           "options": [
             {
@@ -4252,7 +4252,7 @@
           "id": "lolosasn-107",
           "number": 107,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Ada tawaran beasiswa melanjutkan pendidikan di luar negeri, tapi anda telat mengumpulkan\nsyarat pendaftaran sehingga tidak dapat mengikuti tes masuk, mengenai hal ini ...",
           "options": [
             {
@@ -4292,7 +4292,7 @@
           "id": "lolosasn-108",
           "number": 108,
           "category": "TKP",
-          "subtopic": "TKP — Jejaring Kerja & Sosial Budaya",
+          "subtopic": "TKP: Jejaring Kerja & Sosial Budaya",
           "question": "Saat sedang rapat bersama seluruh pegawai divisi tempat saya bekerja, saya biasanya\nmemberikan masukan berupa pendapat tetapi beberapa teman saya juga memberikan\npendapat, sikap saya akan hal ini ...",
           "options": [
             {
@@ -4332,7 +4332,7 @@
           "id": "lolosasn-109",
           "number": 109,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Jika ada waktu luang, selama akhir pekan saya biasanya ...",
           "options": [
             {
@@ -4372,7 +4372,7 @@
           "id": "lolosasn-110",
           "number": 110,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Pimpinan menginginkan agar berita-berita yang sedang hangat dibicarakan dibuat sebuah\nkumpulan berita agar memudahkan dibaca nantinya, maka sebaiknya ...",
           "options": [
             {
@@ -4412,7 +4412,7 @@
     },
     {
       "id": "paket-hots-2024-2025",
-      "title": "Paket 2 — Simulasi SKD CPNS HOTS 2024/2025",
+      "title": "Paket 2: Simulasi SKD CPNS HOTS 2024/2025",
       "description": "110 soal HOTS sesuai kisi-kisi PermenPAN-RB (30 TWK, 35 TIU termasuk figural, 45 TKP) dari modul Bank Drilling CPNS 2024/2025.",
       "durationMinutes": 100,
       "sourceTitle": "CPNS-2024-2025.pdf (Paket Soal 1 & Kunci Jawaban)",
@@ -4462,7 +4462,7 @@
           "id": "hots2024-002",
           "number": 2,
           "category": "TWK",
-          "subtopic": "Pilar Negara — Pancasila",
+          "subtopic": "Pilar Negara: Pancasila",
           "question": "Pembukaan UUD 1945 berkaitan erat dengan proklamasi dan Pancasila, dimana\ndi dalamnya tercantum pokok permasalahan cita-cita proklamasi kemerdekaan RI\nyakni menciptakan masyarakat yang adil dan makmur berlandaskan Pancasila.\nPembukaan UUD 1945 merupakan penyebab keberadaan batang tubuh UUD\n1945. Hal tersebut merupakan maksud hubungan Pembukaan UUD 1945 dengan\nBatang tubuh UUD 1945 yang bersifat...",
           "options": [
             {
@@ -4582,7 +4582,7 @@
           "id": "hots2024-005",
           "number": 5,
           "category": "TWK",
-          "subtopic": "Pilar Negara — Pancasila",
+          "subtopic": "Pilar Negara: Pancasila",
           "question": "Proklamasi Kemerdekaan Indonesia dilaksanakan pada hari Jumat, 17 Agustus\n1945 tahun Masehi, atau tanggal 17 Agustus 2605 menurut tahun Jepang, yang\ndibacakan oleh Soekarno dengan didampingi oleh Drs. Mohammad Hatta. Sebelum\nIndonesia mendapatkan kemerdekaan, banyak dibentuk organisasi maupun\nbadan-badan yang bertugas untuk mempersiapkan Indonesia merdeka. Badan\nyang bertugas untuk menyelidiki serta menyampaikan pendapat untuk\ndisampaikan kepada pemerintah Jepang sebagai bahan pertimbangan Indonesia\nmerdeka adalah...",
           "options": [
             {
@@ -4622,7 +4622,7 @@
           "id": "hots2024-006",
           "number": 6,
           "category": "TWK",
-          "subtopic": "Pilar Negara — Pancasila",
+          "subtopic": "Pilar Negara: Pancasila",
           "question": "Pengumuman negara Papua Barat yang dideklarasikan Ketua United Liberation\nMovement for West Papua (ULMWP) Benny Wenda memancing reaksi keras dari\npemerintah dan MPR RI. Benny Wenda mendeklarasikan diri menjadi presiden\nsementara Papua Barat mulai 1 Desember 2020, seraya menolak segala aturan dan\nkebijakan dari pemerintah Indonesia. Organisasi ini merupakan salah satu\norganisasi yang ingin memisahkan papua barat dari wilayah NKRI dan ingin\nmemiliki kemerdekaan sendiri karena merasa jika daerah tersebut tidak ada\nhubungannya dengan bangsa indonesia, pada kasus ini bertentangan dengan sila\nke..",
           "options": [
             {
@@ -4662,7 +4662,7 @@
           "id": "hots2024-007",
           "number": 7,
           "category": "TWK",
-          "subtopic": "Pilar Negara — Pancasila",
+          "subtopic": "Pilar Negara: Pancasila",
           "question": "Orde Baru adalah sebutan bagi masa pemerintahan Presiden Soeharto di\nIndonesia. Orde Baru menggantikan Orde Lama yang merujuk kepada era\npemerintahan Soekarno. Lahirnya Orde Baru diawali dengan dikeluarkannya Surat\nPerintah 11 Maret 1966. Orde Baru bertujuan meletakkan kembali tatanan seluruh\nkehidupan rakyat, bangsa, dan negara pada kemurnian pelaksanaan Pancasila dan\nUndang-Undang Dasar 1945. Dilihat dari historis kelahiran orde baru merupakan\nupaya pemerintah menegakkan pemerintahan yang bersifat...",
           "options": [
             {
@@ -4742,7 +4742,7 @@
           "id": "hots2024-009",
           "number": 9,
           "category": "TWK",
-          "subtopic": "Pilar Negara — UUD 1945 & Konstitusi",
+          "subtopic": "Pilar Negara: UUD 1945 & Konstitusi",
           "question": "MPR adalah lembaga legislatif bikameral yang merupakan salah satu lembaga\ntinggi negara dalam sistem ketatanegaraan Indonesia. Setelah amandemen UUD\n1945, anggota MPR terdiri dari anggota DPR dan DPD. Setiap Anggota MPR\nmemiliki beberapa hak dan kewajiban. Yang bukan merupakan hak anggota MPR\nyaitu …",
           "options": [
             {
@@ -4782,7 +4782,7 @@
           "id": "hots2024-010",
           "number": 10,
           "category": "TWK",
-          "subtopic": "Pilar Negara — Pancasila",
+          "subtopic": "Pilar Negara: Pancasila",
           "question": "Undang-undang Dasar Republik Indonesia 1945 (UUD 1945) adalah konstitusi\nNegara Kesatuan Republik Indonesia (NKRI). UUD 1945 merupakan hukum dasar\nyang menjadi sumber dasar dari seluruh peraturan perundang-undangan di\nIndonesia. Panitia Persiapan Kemerdekaan Indonesia (PPKI) telah menetapkan\nsistematika UUD 1945, terdiri dari Pembukaan UUD 1945, Batang tubuh UUD\n1945 dan Penjelasan UUD 1945. Penjelasan dalam UUD 1945 merupakan\npenafsiran otentik dari UUD 1945, karena dalam penjelasan tersebut....",
           "options": [
             {
@@ -4822,7 +4822,7 @@
           "id": "hots2024-011",
           "number": 11,
           "category": "TWK",
-          "subtopic": "Pilar Negara — Pancasila",
+          "subtopic": "Pilar Negara: Pancasila",
           "question": "Sebuah video seorang perempuan menggunting kain yang diduga bendera Merah\nPutih viral di media sosial. Dalam video tersebut juga terdapat seorang perempuan\nlainnya memegangi kain tersebut, sementara satu orang sisanya merekam\nperistiwa. Dalam video itu juga terekam seorang anak laki-laki berbaju merah yang\nmenyaksikan kejadian. Polres Sumedang masih menyelidiki perkara ini. Mereka\ntelah menyita gunting dan potongan bendera Merah Putih untuk\ndijadikan barang bukti. Kasus tersebut merupakan pelanggaran pada sila...",
           "options": [
             {
@@ -4862,7 +4862,7 @@
           "id": "hots2024-012",
           "number": 12,
           "category": "TWK",
-          "subtopic": "Pilar Negara — Pancasila",
+          "subtopic": "Pilar Negara: Pancasila",
           "question": "Ombudsman menilai penyelenggaraan pelayanan publik soal pembuatan\nelektronik kartu tanda penduduk (e-KTP) oleh Kementerian Dalam Negeri\nberlangsung lambat dan banyak persoalan. Pihaknya menemukan banyak\nkekacauan di berbagai daerah. Saat ini terjadi penurunan minat mengurus e-KTP\nyang disebabkan karena lambatnya pelayanan, sulitnya mengurus e-KTP,\npercaloan yang ditemukan Ombudsman. Pihaknya menemukan ada praktek\npercaloan, sehingga penduduk harus membayar Rp 200-300 ribu. Praktek itu\nterjadi baik di Pulau Jawa maupun luar Jawa. Sulitnya beberapa daerah dalam\npengurusan percetakan KTP merupakan pelanggaran dari pancasila sila ke?",
           "options": [
             {
@@ -4902,7 +4902,7 @@
           "id": "hots2024-013",
           "number": 13,
           "category": "TWK",
-          "subtopic": "Pilar Negara — Pembukaan UUD 1945",
+          "subtopic": "Pilar Negara: Pembukaan UUD 1945",
           "question": "Tujuan bernegara dalam Pembukaan UUD 1945 untuk membentuk Pemerintah\nyang melindungi segenap Bangsa Indonesia dan seluruh tumpah darah Indonesia\nakan gagal bila Presiden tidak mampu menjalankan tugas, wewenang, dan\ntanggung jawab konstitusional secara efektif. Presiden harus menjalankan\npemerintahan dengan \"concentration of power and responsibility upon the\npresident\", yaitu...",
           "options": [
             {
@@ -5022,7 +5022,7 @@
           "id": "hots2024-016",
           "number": 16,
           "category": "TWK",
-          "subtopic": "Pilar Negara — Pancasila",
+          "subtopic": "Pilar Negara: Pancasila",
           "question": "Kedudukan Pancasila sebagai paradigma pembangunan nasional mengandung\nsuatu konsekuensi bahwa dalam setiap pelaksanaan pembangunan nasional harus\ndidasarkan atas nilai-nilai yang terkandung dalam Pancasila. Dengan\nmenempatkan Pancasila sebagai paradigma pembangunan nasional, maka\nsemangat, arah, dan gerak pembangunan nasional harus mencerminkan\npengamalan semua sila Pancasila sebagai sebuah kesatuan yang utuh. Berikut ini\nyang bukan merupakan contoh pengamalan Pancasila sebagai paradigma\npembangunan nasional adalah...",
           "options": [
             {
@@ -5062,7 +5062,7 @@
           "id": "hots2024-017",
           "number": 17,
           "category": "TWK",
-          "subtopic": "Pilar Negara — Pancasila",
+          "subtopic": "Pilar Negara: Pancasila",
           "question": "Prinsip nasionalisme bangsa Indonesia dilandasi nilai-nilai Pancasila yang\ndiarahkan agar bangsa Indonesia senantiasa menempatkan persatuan kesatuan,\nkepentingan dan keselamatan bangsa dan negara di atas kepentingan pribadi atau\ngolongan, menunjukkan sikap rela berkorban demi kepentingan bangsa dan\nNegara, mengakui persamaan derajat,persamaan hak dan kewajiban antar sesama\nmanusia dan sesama bangsa, menumbuhkan sikap saling mencintai sesama\nmanusia dan mengembangkan sikap tenggang rasa. Adanya unsur pemersatu di\nantara warga negara Indonesia dengan semangat rela berkorban dan\nmenempatkan kepentingan bangsa dan negara di atas kepentingan pribadi atau\ngolongan adalah contoh...",
           "options": [
             {
@@ -5182,7 +5182,7 @@
           "id": "hots2024-020",
           "number": 20,
           "category": "TWK",
-          "subtopic": "Pilar Negara — UUD 1945 & Konstitusi",
+          "subtopic": "Pilar Negara: UUD 1945 & Konstitusi",
           "question": "Undang-Undang Dasar 1945 adalah suatu hukum dasar tertulis atau konstitusi\nnegara yang mejadi dasar dan sumber dari peraturan-peraturan lain atau\nperundang-udangan lain yang berlaku di wilayah negara kesatuan Republik\nIndonesia. Perencanaan pembuatan UUD 1945 sudah dilakukan sejak\nkependudukan...",
           "options": [
             {
@@ -5342,7 +5342,7 @@
           "id": "hots2024-024",
           "number": 24,
           "category": "TWK",
-          "subtopic": "Pilar Negara — UUD 1945 & Konstitusi",
+          "subtopic": "Pilar Negara: UUD 1945 & Konstitusi",
           "question": "Sistem pemerintahan negara berdasarkan UUD 1945 didasarkan pada tujuh kunci\npokok. Yang bukan termasuk dari 7 kunci pokok sistem pemerintahan negara\nyaitu...",
           "options": [
             {
@@ -5382,7 +5382,7 @@
           "id": "hots2024-025",
           "number": 25,
           "category": "TWK",
-          "subtopic": "Pilar Negara — UUD 1945 & Konstitusi",
+          "subtopic": "Pilar Negara: UUD 1945 & Konstitusi",
           "question": "Amnesti merupakan hak prerogatif presiden di bidang hukum. Amnesti yang\ndiberikan Presiden Joko Widodo kepada Baiq Nuril menjadi tonggak sejarah dalam\nsistem hukum Indonesia. Pasalnya, baru kali ini amnesti diberikan atas\npertimbangan kemanusiaan. Biasanya, amnesti diberikan dalam kasus politik.\nBaiq Nuril Maknun dinyatakan bersalah menyebarkan rekaman bermuatan\nkesusilaan dan dihukum enam bulan penjara serta denda Rp500 juta dalam\nputusan kasasi Mahkamah Agung (MA). Berdasarkan UUD 1945, setiap pemberian\namnestI harus disetujui oleh...",
           "options": [
             {
@@ -5422,7 +5422,7 @@
           "id": "hots2024-026",
           "number": 26,
           "category": "TWK",
-          "subtopic": "Pilar Negara — UUD 1945 & Konstitusi",
+          "subtopic": "Pilar Negara: UUD 1945 & Konstitusi",
           "question": "Komisi Pemberantasan Korupsi (KPK) menggeledah kantor Dinas Sosial\nKabupaten Bandung Barat dan Dinas Pendidikan Kabupaten Bandung Barat.\nPenggeledahan terkait dugaan korupsi pengadaan barang tanggap darurat\nbencana. KPK sudah menetapkan sejumlah tersangka dalam kasus tersebut. Dalam\npenegakan hukum khusus tindakan korupsi menganut asas …",
           "options": [
             {
@@ -5542,7 +5542,7 @@
           "id": "hots2024-029",
           "number": 29,
           "category": "TWK",
-          "subtopic": "Pilar Negara — Pancasila",
+          "subtopic": "Pilar Negara: Pancasila",
           "question": "Peristiwa Rengasdengklok merupakan salah satu peristiwa yang membekas di\nsepanjang sejarah Indonesia. Peristiwa Rengasdengklok menjadi peristiwa yang\nmemiliki keterkaitan terhadap pengumuman proklamasi kemerdekaan Indonesia\npada 17 Agustus 1945. Peristiwa Rengasdengklok adalah peristiwa penculikan\nterhadap Soekarno dan Hatta yang terjadi pada 16 Agustus 1945. Sebelum\nterjadinya peristiwa Rengasdengklok, terjadi perbedaan pendapat kelompok\npejuang senior dengan kelompok pemuda. Kelompok pejuang senior berpendapat\nbahwa…",
           "options": [
             {
@@ -5582,7 +5582,7 @@
           "id": "hots2024-030",
           "number": 30,
           "category": "TWK",
-          "subtopic": "Pilar Negara — Pancasila",
+          "subtopic": "Pilar Negara: Pancasila",
           "question": "Badan Penyelidik Usaha-usaha Persiapan Kemerdekaan Indonesia (BPUPKI)\nmenjadi corong bagi pemuda Indonesia untuk menyatukan pendapatnya hingga\nakhirnya dibubarkan pada masa kekuasaan Jepang dan menggantinya dengan\nPanitia Persiapan Kemerdekaan Indonesia (PPKI) atau Dokuritsu Junbi Iinkai\npada 7 Agustus 1945.Panitia Persiapan Kemerdekaan Indonesia atau disebut\ndengan PPKI adalah panitia yang bertugas untuk mempersiapkan kemerdekaan\nIndonesia. PPKI melaksanakan sidang I pada tanggal 18 Agustus 1945 yang\ndipimpin Soekarno dan Hatta. Hasil keputusan sidang tersebut adalah…",
           "options": [
             {
@@ -5622,7 +5622,7 @@
           "id": "hots2024-031",
           "number": 31,
           "category": "TIU",
-          "subtopic": "TIU Numerik — Deret, Berhitung & Soal Cerita",
+          "subtopic": "TIU Numerik: Deret, Berhitung & Soal Cerita",
           "question": "LENGAS = ...",
           "options": [
             {
@@ -5662,7 +5662,7 @@
           "id": "hots2024-032",
           "number": 32,
           "category": "TIU",
-          "subtopic": "TIU Numerik — Deret, Berhitung & Soal Cerita",
+          "subtopic": "TIU Numerik: Deret, Berhitung & Soal Cerita",
           "question": "JANJI : BUKTI = ... : ...",
           "options": [
             {
@@ -5702,7 +5702,7 @@
           "id": "hots2024-033",
           "number": 33,
           "category": "TIU",
-          "subtopic": "TIU Numerik — Deret, Berhitung & Soal Cerita",
+          "subtopic": "TIU Numerik: Deret, Berhitung & Soal Cerita",
           "question": "PENGHORMATAN : JASA = INSENTIF : …",
           "options": [
             {
@@ -5742,7 +5742,7 @@
           "id": "hots2024-034",
           "number": 34,
           "category": "TIU",
-          "subtopic": "TIU Numerik — Deret, Berhitung & Soal Cerita",
+          "subtopic": "TIU Numerik: Deret, Berhitung & Soal Cerita",
           "question": "UMUM : LAZIM = ... : ...",
           "options": [
             {
@@ -5782,7 +5782,7 @@
           "id": "hots2024-035",
           "number": 35,
           "category": "TIU",
-          "subtopic": "TIU Numerik — Deret, Berhitung & Soal Cerita",
+          "subtopic": "TIU Numerik: Deret, Berhitung & Soal Cerita",
           "question": "Barang pecah-belah adalah barang yang mudah pecah bila jatuh. Barang-barang\nyang tidak mudah pecah bila jatuh tidak lagi digolongkan dalam kategori pecahbelah. Gelas buatan PT. Rehat Sejenak tidak dapat pecah kalau jatuh. Jadi...",
           "options": [
             {
@@ -5822,7 +5822,7 @@
           "id": "hots2024-036",
           "number": 36,
           "category": "TIU",
-          "subtopic": "TIU Verbal — Analogi, Sinonim & Penalaran",
+          "subtopic": "TIU Verbal: Analogi, Sinonim & Penalaran",
           "question": "Semua pegawai PT. Rewel mendapat gaji pokok. Sebagian pegawai mendapat\nbonus penghasilan. Kesimpulannya...",
           "options": [
             {
@@ -5862,7 +5862,7 @@
           "id": "hots2024-037",
           "number": 37,
           "category": "TIU",
-          "subtopic": "TIU Verbal — Analogi, Sinonim & Penalaran",
+          "subtopic": "TIU Verbal: Analogi, Sinonim & Penalaran",
           "question": "Semua pasangan yang menikah di KUA adalah pasangan sah.\nPasangan yang sah, pasti memiliki buku nikah.\nJaka dan Tuti mempunyai buku nikah.\nKesimpulannya...",
           "options": [
             {
@@ -5902,7 +5902,7 @@
           "id": "hots2024-038",
           "number": 38,
           "category": "TIU",
-          "subtopic": "TIU Verbal — Analogi, Sinonim & Penalaran",
+          "subtopic": "TIU Verbal: Analogi, Sinonim & Penalaran",
           "question": "Semua pemilik Motor di Bandung harus mempunyai surat izin mengemudi.\nRocky memiliki 2 motor mewah di Bandung.\nKesimpulannya …",
           "options": [
             {
@@ -5982,7 +5982,7 @@
           "id": "hots2024-040",
           "number": 40,
           "category": "TIU",
-          "subtopic": "TIU Numerik — Deret, Berhitung & Soal Cerita",
+          "subtopic": "TIU Numerik: Deret, Berhitung & Soal Cerita",
           "question": "Umur Neni satu tahun lebih muda daripada Lili. Lima tahun mendatang, umur Lili\nadalah dua kali umur Neni saat ini. Berapakah umur Leli dan Neni secara berurut?",
           "options": [
             {
@@ -6062,7 +6062,7 @@
           "id": "hots2024-042",
           "number": 42,
           "category": "TIU",
-          "subtopic": "TIU Numerik — Deret, Berhitung & Soal Cerita",
+          "subtopic": "TIU Numerik: Deret, Berhitung & Soal Cerita",
           "question": "Koperasi Karang Taruna membeli suatu barang dangan harga Rp. 500.000.\nApabila koperasi tersebut menginginkan untung 20%, maka barang itu harus\ndijual dengan harga...",
           "options": [
             {
@@ -6102,7 +6102,7 @@
           "id": "hots2024-043",
           "number": 43,
           "category": "TIU",
-          "subtopic": "TIU Figural — Deret & Ketidaksamaan Gambar",
+          "subtopic": "TIU Figural: Deret & Ketidaksamaan Gambar",
           "question": "Tentukan gambar kubus yang dapat terbentuk dari jaring-jaring pada gambar soal!",
           "options": [
             {
@@ -6143,7 +6143,7 @@
           "id": "hots2024-044",
           "number": 44,
           "category": "TIU",
-          "subtopic": "TIU Figural — Deret & Ketidaksamaan Gambar",
+          "subtopic": "TIU Figural: Deret & Ketidaksamaan Gambar",
           "question": "Tentukan gambar yang sama/identik dengan susunan gambar pada kotak soal!",
           "options": [
             {
@@ -6184,7 +6184,7 @@
           "id": "hots2024-045",
           "number": 45,
           "category": "TIU",
-          "subtopic": "TIU Figural — Deret & Ketidaksamaan Gambar",
+          "subtopic": "TIU Figural: Deret & Ketidaksamaan Gambar",
           "question": "Tentukan gambar yang merupakan hasil rotasi tepat dari gambar pada kotak soal!",
           "options": [
             {
@@ -6265,7 +6265,7 @@
           "id": "hots2024-047",
           "number": 47,
           "category": "TIU",
-          "subtopic": "TIU Numerik — Deret, Berhitung & Soal Cerita",
+          "subtopic": "TIU Numerik: Deret, Berhitung & Soal Cerita",
           "question": "Berat rata - rata pegawai suatu minimarket adalah 54 kg. Berat rata - rata pegawai\nperempuan di minimarket tersebut adalah 48 kg. Sedangkan berat rata - rata\npegawai laki - laki 62 kg. Berapa perbandingan jumlah pegawai laki - laki dan\nperempuan pada minimarket tersebut?",
           "options": [
             {
@@ -6305,7 +6305,7 @@
           "id": "hots2024-048",
           "number": 48,
           "category": "TIU",
-          "subtopic": "TIU Numerik — Deret, Berhitung & Soal Cerita",
+          "subtopic": "TIU Numerik: Deret, Berhitung & Soal Cerita",
           "question": "Sebuah gedung yang tingginya 30 meter difoto dalam ukuran kecil dengan skala\n1:500, kemudian foto tersebut diperbesar dengan skala 3:1, maka tinggi gedung\ndi foto terakhir adalah...",
           "options": [
             {
@@ -6345,7 +6345,7 @@
           "id": "hots2024-049",
           "number": 49,
           "category": "TIU",
-          "subtopic": "TIU Numerik — Deret, Berhitung & Soal Cerita",
+          "subtopic": "TIU Numerik: Deret, Berhitung & Soal Cerita",
           "question": "Nilai x yang memenuhi persamaan 2(x-3) + 2x= 3(x-1) +5 adalah...",
           "options": [
             {
@@ -6385,7 +6385,7 @@
           "id": "hots2024-050",
           "number": 50,
           "category": "TIU",
-          "subtopic": "TIU Numerik — Deret, Berhitung & Soal Cerita",
+          "subtopic": "TIU Numerik: Deret, Berhitung & Soal Cerita",
           "question": "2a + 5 - 2b = 3\n3b - 12 = 12\nHubungan nilai a dan b yang tepat adalah...",
           "options": [
             {
@@ -6425,7 +6425,7 @@
           "id": "hots2024-051",
           "number": 51,
           "category": "TIU",
-          "subtopic": "TIU Numerik — Deret, Berhitung & Soal Cerita",
+          "subtopic": "TIU Numerik: Deret, Berhitung & Soal Cerita",
           "question": "Nilai mata kuliah Ica pada semester I yang lalu adalah Agama = 80, Pengantar\nPsikologi = 85, Bahasa Indonesia = 70, Matematika = 90, Bahasa Inggris = 70,\nPancasila = 80, Pengantar Ilmu Sosiologi = 70. Dari data tersebut, berapakah\nmedian dari nilai yang diperoleh Ica pada semester I yang lalu?",
           "options": [
             {
@@ -6465,7 +6465,7 @@
           "id": "hots2024-052",
           "number": 52,
           "category": "TIU",
-          "subtopic": "TIU Numerik — Deret, Berhitung & Soal Cerita",
+          "subtopic": "TIU Numerik: Deret, Berhitung & Soal Cerita",
           "question": "Nilai Ujian Ihsan termasuk dalam urutan 14 dari atas dan bawah. Ada berapa\nsiswa di dalam kelas tersebut?",
           "options": [
             {
@@ -6505,7 +6505,7 @@
           "id": "hots2024-053",
           "number": 53,
           "category": "TIU",
-          "subtopic": "TIU Numerik — Deret, Berhitung & Soal Cerita",
+          "subtopic": "TIU Numerik: Deret, Berhitung & Soal Cerita",
           "question": "Bus A berangkat dari Jakarta ke Bandung setiap 20 menit sekali, sedangkan Bus B\nberangkat dari Jakarta ke Bandung setiap 30 menit sekali. Apabila kedua bus\ntersebut bersamaan dari Jakarta pada pukul 07.40. Pada pukul berapa kedua bus\ntersebut akan berangkat bersamaan menuju Bandung?",
           "options": [
             {
@@ -6665,7 +6665,7 @@
           "id": "hots2024-057",
           "number": 57,
           "category": "TIU",
-          "subtopic": "TIU Numerik — Deret, Berhitung & Soal Cerita",
+          "subtopic": "TIU Numerik: Deret, Berhitung & Soal Cerita",
           "question": "0,25 × {(3¾ × 20) – (112,5 : 2¼)} =",
           "options": [
             {
@@ -6705,7 +6705,7 @@
           "id": "hots2024-058",
           "number": 58,
           "category": "TIU",
-          "subtopic": "TIU Figural — Deret & Ketidaksamaan Gambar",
+          "subtopic": "TIU Figural: Deret & Ketidaksamaan Gambar",
           "question": "A, B, M, N, C, D, M, N, E, ...., ....",
           "options": [
             {
@@ -6745,7 +6745,7 @@
           "id": "hots2024-059",
           "number": 59,
           "category": "TIU",
-          "subtopic": "TIU Figural — Deret & Ketidaksamaan Gambar",
+          "subtopic": "TIU Figural: Deret & Ketidaksamaan Gambar",
           "question": "40, 44, 55, 29, 70, 14, ...., ....",
           "options": [
             {
@@ -6785,7 +6785,7 @@
           "id": "hots2024-060",
           "number": 60,
           "category": "TIU",
-          "subtopic": "TIU Figural — Deret & Ketidaksamaan Gambar",
+          "subtopic": "TIU Figural: Deret & Ketidaksamaan Gambar",
           "question": "17; 7; 14,7; 10,2; 12,4; 13,4; ....; ....",
           "options": [
             {
@@ -6825,7 +6825,7 @@
           "id": "hots2024-061",
           "number": 61,
           "category": "TIU",
-          "subtopic": "TIU Numerik — Deret, Berhitung & Soal Cerita",
+          "subtopic": "TIU Numerik: Deret, Berhitung & Soal Cerita",
           "question": "2 √ 3 ( 3√ 3 - 4√ 2 ) = ….",
           "options": [
             {
@@ -6905,7 +6905,7 @@
           "id": "hots2024-063",
           "number": 63,
           "category": "TIU",
-          "subtopic": "TIU Figural — Deret & Ketidaksamaan Gambar",
+          "subtopic": "TIU Figural: Deret & Ketidaksamaan Gambar",
           "question": "Tentukan satu gambar yang berbeda dengan keempat gambar lainnya!",
           "options": [
             {
@@ -6946,7 +6946,7 @@
           "id": "hots2024-064",
           "number": 64,
           "category": "TIU",
-          "subtopic": "TIU Figural — Deret & Ketidaksamaan Gambar",
+          "subtopic": "TIU Figural: Deret & Ketidaksamaan Gambar",
           "question": "Tentukan gambar yang tepat untuk melengkapi tanda tanya (?) pada matriks pola gambar!",
           "options": [
             {
@@ -6987,7 +6987,7 @@
           "id": "hots2024-065",
           "number": 65,
           "category": "TIU",
-          "subtopic": "TIU Figural — Deret & Ketidaksamaan Gambar",
+          "subtopic": "TIU Figural: Deret & Ketidaksamaan Gambar",
           "question": "Tentukan satu gambar yang tidak sama (berbeda posisi bintang dan kotak hitam) dengan keempat gambar lainnya!",
           "options": [
             {
@@ -7028,7 +7028,7 @@
           "id": "hots2024-066",
           "number": 66,
           "category": "TKP",
-          "subtopic": "TKP — Pelayanan Publik",
+          "subtopic": "TKP: Pelayanan Publik",
           "question": "Bengkel mobil milik Jay semakin banyak pelanggan, sedangkan karyawan yang ia\nmiliki masih sangat terbatas. Untuk menghadapi situasi seperti itu, yang dilakukan\nJay sebaiknya …",
           "options": [
             {
@@ -7068,7 +7068,7 @@
           "id": "hots2024-067",
           "number": 67,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Endah senang sekali berjalan-jalan dan belanja. Terkadang ia tak pernah peduli\napakah barang yang akan ia beli benar-benar dibutuhkan atau tidak. Suatu ketika,\ndi pusat perbelanjaan sedang diadakan diskon besar-besaran untuk benda dengan\nmerek terkenal. Pada saat bersamaan, Endah ternyata lupa membawa dompet,\nmaka Endah akan ...",
           "options": [
             {
@@ -7108,7 +7108,7 @@
           "id": "hots2024-068",
           "number": 68,
           "category": "TKP",
-          "subtopic": "TKP — Jejaring Kerja & Sosial Budaya",
+          "subtopic": "TKP: Jejaring Kerja & Sosial Budaya",
           "question": "Minggu ini adalah deadline kantor untuk closing laporan keuangan tahunan yang\nmembuat seluruh tim bekerja Ekstra. Atas hal tersebut, selesainya dari closing\nkantor, Anda berniat untuk memanfaatkan libur akhir pekan untuk beristirahat.\nSaat Anda sedang menikmati istirahat, tiba-tiba Pak RT datang untuk mengajak\nAnda bekerja bakti membersihkan makam desa. Anda akan ...",
           "options": [
             {
@@ -7148,7 +7148,7 @@
           "id": "hots2024-069",
           "number": 69,
           "category": "TKP",
-          "subtopic": "TKP — Jejaring Kerja & Sosial Budaya",
+          "subtopic": "TKP: Jejaring Kerja & Sosial Budaya",
           "question": "Dalam satu divisi, Dana memiliki lima orang rekan. Di antara kelima rekan\ntersebut, ada salah satu rekan yang menjadi penghalang mereka dalam\nmenyelesaikan tugas-tugas yang diberikan perusahaan. Apa yang seharusnya\nDana lakukan?",
           "options": [
             {
@@ -7188,7 +7188,7 @@
           "id": "hots2024-070",
           "number": 70,
           "category": "TKP",
-          "subtopic": "TKP — Teknologi Informasi & Komunikasi",
+          "subtopic": "TKP: Teknologi Informasi & Komunikasi",
           "question": "Ketika Anda sedang mengerjakan tugas di rumah, karena kebetulan instansi Anda\nmenerapkan sistem kerja dari rumah. Seorang teman datang dan ingin banyak\nbercerita terkait masalah yang baru saja ia alami. Ia terlihat sangat sedih, bahkan\nbadannya jauh lebih kurus dari sebelumnya karena terlalu memikirkan masalah\nyang dialami. Sikap Anda...",
           "options": [
             {
@@ -7228,7 +7228,7 @@
           "id": "hots2024-071",
           "number": 71,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Anda sudah terbiasa bekerja di belakang meja. Pada suatu hari, Anda mendapat\ntawaran untuk melakukan tugas lapangan. Bagaimana Anda menyikapi hal\ntersebut ?",
           "options": [
             {
@@ -7268,7 +7268,7 @@
           "id": "hots2024-072",
           "number": 72,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Sebagai seorang pimpinan, Resa harus mampu menyampaikan segala hal yang\nberhubungan dengan perusahaan, baik itu hal menyenangkan ataupun tidak.\nBagaimana Resa menyampaikan kepada pegawainya tentang perusahaannya yang\nsedang merugi?",
           "options": [
             {
@@ -7308,7 +7308,7 @@
           "id": "hots2024-073",
           "number": 73,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Anda bertengkar dengan seseorang yang Anda cintai karena hal sepele. Sayangnya\nAnda terlanjur menggunakan kata-kata kasar. Apa yang akan Anda lakukan\nselanjutnya?",
           "options": [
             {
@@ -7348,7 +7348,7 @@
           "id": "hots2024-074",
           "number": 74,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Anda adalah seorang kasir di sebuah perusahaan swasta. Anda menemukan\nkelebihan uang kas pada saat membuat laporan pertanggungjawaban. Apa yang\nAnda lakukan dengan uang tersebut?",
           "options": [
             {
@@ -7388,7 +7388,7 @@
           "id": "hots2024-075",
           "number": 75,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Karier Anda semakin meningkat karena kejujuran Anda dalam melakukan dan\nmenyelesaikan setiap pekerjaan, sehingga Anda mendapatkan kepercayaan dari\npemilik perusahaan untuk memegang langsung anak perusahaan yang baru saja\nberdiri. Sikap Anda adalah …",
           "options": [
             {
@@ -7428,7 +7428,7 @@
           "id": "hots2024-076",
           "number": 76,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Ketika Toha dan Edi sedang bersama-sama membersihkan halaman rumah, Edi\ndiminta Ibu untuk pergi berbelanja, sedang halaman rumah masih sangat kotor.\nMaka, Sikap Toha adalah …",
           "options": [
             {
@@ -7468,7 +7468,7 @@
           "id": "hots2024-077",
           "number": 77,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Sebagai Satpam di sebuah perusahaan, Arjuna dituntut untuk bekerja keras\nmenjaga keamanan lingkungan tempat ia bekerja. Suatu malam, ada segerombolan\npemuda sedang mabuk-mabukkan di depan pagar perusahaan. Maka sikap Arjuna\nadalah …",
           "options": [
             {
@@ -7508,7 +7508,7 @@
           "id": "hots2024-078",
           "number": 78,
           "category": "TKP",
-          "subtopic": "TKP — Teknologi Informasi & Komunikasi",
+          "subtopic": "TKP: Teknologi Informasi & Komunikasi",
           "question": "Rini bekerja sebagai dokter umum di sebuah rumah sakit swasta. Setiap malam\nRini juga membuka praktik di dekat rumahnya. Saat tengah malam, tetangga Rini\nada yang sakit parah dan meminta bantuan Rini untuk memeriksa. Tindakan Rini\nadalah …",
           "options": [
             {
@@ -7548,7 +7548,7 @@
           "id": "hots2024-079",
           "number": 79,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Andi merupakan salah satu pegawai pemerintah yang teladan. Suatu ketika, Andi\ndiminta atasannya untuk membuat laporan yang menurutnya bertentangan\ndengan kenyataan dilapangan. Sikap Andi ...",
           "options": [
             {
@@ -7588,7 +7588,7 @@
           "id": "hots2024-080",
           "number": 80,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Tentu Anda meyakini bahwa bekerja adalah sebagian dari ibadah dan tangga\nmenuju kejayaan, sikap Anda mengenai hal – hal tersebut …",
           "options": [
             {
@@ -7628,7 +7628,7 @@
           "id": "hots2024-081",
           "number": 81,
           "category": "TKP",
-          "subtopic": "TKP — Jejaring Kerja & Sosial Budaya",
+          "subtopic": "TKP: Jejaring Kerja & Sosial Budaya",
           "question": "Dalam suatu pertemuan kelompok saya datang terlambat, ketika itu pembicaraan\nsedang berlangsung hangat. Padahal, saya sangat ingin menyumbangkan ide. Hal\nyang saya lakukan adalah...",
           "options": [
             {
@@ -7668,7 +7668,7 @@
           "id": "hots2024-082",
           "number": 82,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Ketika ada salah seorang tetangga Anda meninggal dunia, maka Anda akan …",
           "options": [
             {
@@ -7708,7 +7708,7 @@
           "id": "hots2024-083",
           "number": 83,
           "category": "TKP",
-          "subtopic": "TKP — Jejaring Kerja & Sosial Budaya",
+          "subtopic": "TKP: Jejaring Kerja & Sosial Budaya",
           "question": "Atasan saya memisahkan saya dengan rekan kerja yang saya sukai. Padahal bila\nsaya bekerja dan berkolaborasi dengannya membuat kinerja tim semakin\nmeningkat. Sikap Saya adalah ...",
           "options": [
             {
@@ -7748,7 +7748,7 @@
           "id": "hots2024-084",
           "number": 84,
           "category": "TKP",
-          "subtopic": "TKP — Jejaring Kerja & Sosial Budaya",
+          "subtopic": "TKP: Jejaring Kerja & Sosial Budaya",
           "question": "Jika perusahaan menginginkan inovasi baru dan Anda sebagai atasan apa yang\nAnda lakukan ...",
           "options": [
             {
@@ -7788,7 +7788,7 @@
           "id": "hots2024-085",
           "number": 85,
           "category": "TKP",
-          "subtopic": "TKP — Pelayanan Publik",
+          "subtopic": "TKP: Pelayanan Publik",
           "question": "Ada berita di surat kabar terkait seorang yang meninggal setelah divaksin covid19. Sebagai seorang dokter, influencer dan relawan covid-19 menyikapi\npemberitaan tersebut maka ….",
           "options": [
             {
@@ -7828,7 +7828,7 @@
           "id": "hots2024-086",
           "number": 86,
           "category": "TKP",
-          "subtopic": "TKP — Pelayanan Publik",
+          "subtopic": "TKP: Pelayanan Publik",
           "question": "Tidak dipungkiri selama menjadi relawan covid-19, sekaligus dokter yang aktif di\nmedia sosial banyak sekali warganet yang memberi komentar kurang\nmenyenangkan bahkan terkesan menyepelekan bahaya covid-19. Menyikapi hal\ntersebut …",
           "options": [
             {
@@ -7868,7 +7868,7 @@
           "id": "hots2024-087",
           "number": 87,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Salah satu anggota keluarga Anda dinyatakan covid-19, namun dokter tidak\nmengharuskan dirawat di rumah sakit. Cukup melakukan isolasi mandiri dengan\npantauan berpatok pada tingkat saturasi jika kurang dari 95 maka harus segera\ndibawa ke rumah sakit. Tentu yang merawat di rumah juga harus menjaga jarak\ndan memperhatikan protokol kesehatan selama merawat anggota keluarga yang\nsedang isolasi mandiri. Sampai pada suatu malam, ketika dicek tingkat saturasi\nmenurun kurang dari batas normal. Maka menyikapi hal tersebut Anda selaku\npihak keluarga yang merawat ….",
           "options": [
             {
@@ -7908,7 +7908,7 @@
           "id": "hots2024-088",
           "number": 88,
           "category": "TKP",
-          "subtopic": "TKP — Pelayanan Publik",
+          "subtopic": "TKP: Pelayanan Publik",
           "question": "Ada laporan bahwa seorang warga di tempat tinggal Anda mendapati hasil swab\nPCR positif covid-19 sewaktu dilakukan pemeriksaan di pabrik tempatnya bekerja.\nSementara itu warga yang dinyatakan positif covid-19 masih berada di rumahnya\ndan belum dibawa ke rumah sakit. Sebagai ketua RW menyikapi hal tersebut ….",
           "options": [
             {
@@ -7948,7 +7948,7 @@
           "id": "hots2024-089",
           "number": 89,
           "category": "TKP",
-          "subtopic": "TKP — Pelayanan Publik",
+          "subtopic": "TKP: Pelayanan Publik",
           "question": "Selama instansi menerapkan sistem bekerja dari rumah terkait pandemic covid19, maka segala layanan kepada masyarakat dilakukan secara online. Kebetulan\nada masyarakat yang protes karena merasa tidak terlayani dengan baik. Ia\nmengajukan kritikan melalui media sosial dengan menAndai akun orang-orang\npenting. Tidak lama setelah ia mengajukan kritikan, instansi Anda mendapat\nteguran dari pusat karena dirasa kurang melayani masyarakat dengan baik.\nMenyikapi hal tersebut …",
           "options": [
             {
@@ -7988,7 +7988,7 @@
           "id": "hots2024-090",
           "number": 90,
           "category": "TKP",
-          "subtopic": "TKP — Teknologi Informasi & Komunikasi",
+          "subtopic": "TKP: Teknologi Informasi & Komunikasi",
           "question": "Seorang teman membutuhkan bantuan untuk memperbaiki laptopnya yang rusak\nkarena akan segera digunakan untuk rapat dengan pimpinan. Saya memang bukan\nahli IT tetapi sedikit banyak paham soal IT. Saat dia meminta bantuan, kebetulan\nsaya sedang tidak sibuk. Maka sikap saya ...",
           "options": [
             {
@@ -8028,7 +8028,7 @@
           "id": "hots2024-091",
           "number": 91,
           "category": "TKP",
-          "subtopic": "TKP — Pelayanan Publik",
+          "subtopic": "TKP: Pelayanan Publik",
           "question": "Anda adalah seorang CS perusahaan jasa logistik. Suatu ketika Anda mendapat\ntelepon dari seseorang yang mengeluhkan bahwa barang belum sampai sementara\npemberitahuan di aplikasi melaporkan bahwa barang sudah di tangan\ncustomer. Setelah di cek ternyata si pengirim salah menempelkan resi dan alamat\nsehingga barang tertukar, barang diterima oleh pembeli lain. Sikap Anda ...",
           "options": [
             {
@@ -8068,7 +8068,7 @@
           "id": "hots2024-092",
           "number": 92,
           "category": "TKP",
-          "subtopic": "TKP — Pelayanan Publik",
+          "subtopic": "TKP: Pelayanan Publik",
           "question": "Selama masa pandemi covid-19 tentulah rumah sakit juga harus beradaptasi\ndengan keadaan. Untuk mensiasati agar tidak terjadi kerumunan dan antrean yang\nmenumpuk di loket pelayanan rumah sakit, maka yang harus dilakukan adalah ...",
           "options": [
             {
@@ -8108,7 +8108,7 @@
           "id": "hots2024-093",
           "number": 93,
           "category": "TKP",
-          "subtopic": "TKP — Anti Radikalisme & Sosial Budaya",
+          "subtopic": "TKP: Anti Radikalisme & Sosial Budaya",
           "question": "Anda sudah merasa nyaman bekerja di instansi yang lokasinya dekat dengan\ntempat tinggal dan daerah asal Anda. Ternyata ada kebijakan baru beberapa\npegawai harus dimutasi. Salah satunya adalah Anda yang harus mengalami mutasi.\nJika ternyata Anda dimutasi ke luar daerah yang jauh dari tempat tinggal Anda\nmaka sikap Anda ….",
           "options": [
             {
@@ -8148,7 +8148,7 @@
           "id": "hots2024-094",
           "number": 94,
           "category": "TKP",
-          "subtopic": "TKP — Anti Radikalisme & Sosial Budaya",
+          "subtopic": "TKP: Anti Radikalisme & Sosial Budaya",
           "question": "Ketika terjadi pandemic covid-19, sebagai upaya menurunkan risiko\npenularannya maka instansi tempat bekerja memberlakukan sistem kerja dari\nrumah. Sementara itu anak Anda juga harus mengikuti aturan baru pembelajaran\njarak jauh. Sehingga mau tidak mau ada kebiasaan baru yang di luar dugaan yang\nharus dijalani. Sikap Anda ...",
           "options": [
             {
@@ -8188,7 +8188,7 @@
           "id": "hots2024-095",
           "number": 95,
           "category": "TKP",
-          "subtopic": "TKP — Anti Radikalisme & Sosial Budaya",
+          "subtopic": "TKP: Anti Radikalisme & Sosial Budaya",
           "question": "Pandemi covid-19 membuat kita menghadapi era baru, yang semula beraktivitas\nbisa bebas di luar rumah kini dibatasi, yang semula bisa asyik berkerumun kini\ntidak diperbolehkan, keluar rumah wajib bermasker dan pastinya lebih ketat\ndalam menjaga kebersihan diri. Menyikapi kebiasaan di era baru ini maka Anda ...",
           "options": [
             {
@@ -8228,7 +8228,7 @@
           "id": "hots2024-096",
           "number": 96,
           "category": "TKP",
-          "subtopic": "TKP — Anti Radikalisme & Sosial Budaya",
+          "subtopic": "TKP: Anti Radikalisme & Sosial Budaya",
           "question": "Menikah adalah salah satu impian selain menjadi PNS. Ketika Anda sudah\nmenemukan pasangan yang cocok dan berencana menikah ternyata terjadi\npandemi covid-19. Jika Anda tetap akan merealisasikan pernikahan di saat\npandemic covid-19. Menyikapi hal tersebut maka ...",
           "options": [
             {
@@ -8268,7 +8268,7 @@
           "id": "hots2024-097",
           "number": 97,
           "category": "TKP",
-          "subtopic": "TKP — Pelayanan Publik",
+          "subtopic": "TKP: Pelayanan Publik",
           "question": "Tersiar kebijakan soal pungutan pajak untuk pembelian token listrik dan pulsa.\nMasalahnya kabar yang berembus di masyatakat ternyata salah tafsir. Bahkan\nsampai beberapa warganet melontar kritik pedas lewat media berupa video parodi\ntiktok, unggahan di instagram dan masih banyak lagi. Selaku petinggi di\nkementerian keuangan tentulah Anda terusik. Menyikapi pemberitaan yang justru\nsimpang siur di masyarakat sikap Anda ...",
           "options": [
             {
@@ -8308,7 +8308,7 @@
           "id": "hots2024-098",
           "number": 98,
           "category": "TKP",
-          "subtopic": "TKP — Teknologi Informasi & Komunikasi",
+          "subtopic": "TKP: Teknologi Informasi & Komunikasi",
           "question": "Ketika Anda akan pergi ke kantor, istri Anda meminta agar mengantar anak ke\nsekolah dulu karena kebetulan motor istri Anda mengalami kebocoran ban depan.\nPadahal Anda juga sedang terburu-buru. Sikap Anda …",
           "options": [
             {
@@ -8348,7 +8348,7 @@
           "id": "hots2024-099",
           "number": 99,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Tetangga Anda seringkali membakar sampah sehingga asap hasil pembakaran\nsampai mengenai pakaian yang Anda jemur di luar rumah dan meninggalkan bau\nasap yang kurang enak dihirup. Sikap Anda …",
           "options": [
             {
@@ -8388,7 +8388,7 @@
           "id": "hots2024-100",
           "number": 100,
           "category": "TKP",
-          "subtopic": "TKP — Pelayanan Publik",
+          "subtopic": "TKP: Pelayanan Publik",
           "question": "Anda adalah seorang dokter yang juga aktif di media sosial dan mengedukasi\nmasyarakat terkait krim wajah abal-abal. Bila Anda menemukan unggahan\nseorang artis yang jelas menawarkan produk perawatan wajah illegal yang belum\nteruji dan dinyatakan layak edar, sikap Anda …",
           "options": [
             {
@@ -8428,7 +8428,7 @@
           "id": "hots2024-101",
           "number": 101,
           "category": "TKP",
-          "subtopic": "TKP — Anti Radikalisme & Sosial Budaya",
+          "subtopic": "TKP: Anti Radikalisme & Sosial Budaya",
           "question": "Pemerintah melakukan sejumlah penangkapan pasca bom bunuh diri yang terjadi\ndi Kota Makassar terhadap orang-orang yang diduga terlibat tindakan aksi\nterorisme. Sejumlah orang yang diamankan tersebut ternyata anggota keluarga\nBudi, dan Budi juga dimintai keterangan mengenai anggota keluarga tersebut. Bila\nAnda di posisi Budi, yang akan anda lakukan dalam situasi ini adalah ...",
           "options": [
             {
@@ -8468,7 +8468,7 @@
           "id": "hots2024-102",
           "number": 102,
           "category": "TKP",
-          "subtopic": "TKP — Pelayanan Publik",
+          "subtopic": "TKP: Pelayanan Publik",
           "question": "Maraknya aksi terorisme terjadi karena masuknya paham-paham radikalisme.\nBahkan ajaran radikalisme telah menyentuh banyak anak-anak, sehingga selain\nperan Pemerintah, proses pencegahan dan penanggulangan terorisme di\nIndonesia, membutuhkan bantuan dari seluruh elemen terkecil masyarakat, salah\nsatunya keluarga. Menurut Anda, bagaimana peran keluarga yang efektif dalam\nmenekan angka terorisme dan paham radikalisme di Indonesia?",
           "options": [
             {
@@ -8508,7 +8508,7 @@
           "id": "hots2024-103",
           "number": 103,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Ketika sedang mengendarai motor di jalan raya, Anda tidak sengaja melihat\nseorang nenek yang membawa banyak barang dan kesulitan untuk menyebrang\nkarena jalanan sedang ramai oleh kendaraan yang berlalu-lalang. Apa yang akan\nAnda lakukan?",
           "options": [
             {
@@ -8548,7 +8548,7 @@
           "id": "hots2024-104",
           "number": 104,
           "category": "TKP",
-          "subtopic": "TKP — Teknologi Informasi & Komunikasi",
+          "subtopic": "TKP: Teknologi Informasi & Komunikasi",
           "question": "Pada saat presentasi tentang kinerja keuangan perusahaan, tiba-tiba layar monitor\nAnda mati. Para peserta tampak kebingungan dengan presentasi Anda yang tanpa\ndidukung slide. Dalam situasi seperti ini, yang akan Anda lakukan adalah ...",
           "options": [
             {
@@ -8588,7 +8588,7 @@
           "id": "hots2024-105",
           "number": 105,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Anda ingin pulang kekampung Anda untuk menjenguk orang tua Anda yang\nsedang sakit. Daerah Anda mengharuskan tes PCR sebagai syarat wajib masuk\ndalam masa 3x24 jam. Anda sudah membeli tiket pulang, tiba-tiba hasil tes Anda\nmenunjukan hasil positif. Anda tidak merasakan gejala apapun. Yang akan Anda\nlakukan dalam situasi ini adalah ...",
           "options": [
             {
@@ -8628,7 +8628,7 @@
           "id": "hots2024-106",
           "number": 106,
           "category": "TKP",
-          "subtopic": "TKP — Pelayanan Publik",
+          "subtopic": "TKP: Pelayanan Publik",
           "question": "Saat sedang berada di ruang tunggu Rumah Sakit, Anda melihat seorang bapakbapak menyalakan rokok dan asapnya mengenai beberapa pasien lanjut usia yang\nsedang menunggu. Apa yang akan Anda lakukan?",
           "options": [
             {
@@ -8668,7 +8668,7 @@
           "id": "hots2024-107",
           "number": 107,
           "category": "TKP",
-          "subtopic": "TKP — Teknologi Informasi & Komunikasi",
+          "subtopic": "TKP: Teknologi Informasi & Komunikasi",
           "question": "Divisi Anda sedang mengerjakan sebuah proyek besar tahunan. Anda sebagai\nketua divisi diminta untuk melakukan rapat darurat dan ternyata mendapat hasil\nyang mengecewakan. Hal yang Anda lakukan yaitu ...",
           "options": [
             {
@@ -8708,7 +8708,7 @@
           "id": "hots2024-108",
           "number": 108,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Anda sedang berjalan-jalan disekitar rumah ibadah. Tiba-tiba Anda mendengar\nsuara ledakan keras dekat dengan anda. Anda berhasil selamat namun banyak\norang-orang terluka dipelataran rumah ibadah tersebut. Anda sendiri masih\nmerasa pusing akibat ledakan yang sangat keras tersebut. Yang akan Anda lakukan\ndalam situasi ini adalah ...",
           "options": [
             {
@@ -8748,7 +8748,7 @@
           "id": "hots2024-109",
           "number": 109,
           "category": "TKP",
-          "subtopic": "TKP — Profesionalisme",
+          "subtopic": "TKP: Profesionalisme",
           "question": "Sebagai peserta lomba dalam HUT perusahaan di tempat saya bekerja, yang diikuti\noleh semua kolega perusahaan, maka saya akan ...",
           "options": [
             {
@@ -8788,7 +8788,7 @@
           "id": "hots2024-110",
           "number": 110,
           "category": "TKP",
-          "subtopic": "TKP — Teknologi Informasi & Komunikasi",
+          "subtopic": "TKP: Teknologi Informasi & Komunikasi",
           "question": "Anda baru saja di pindahkan ke departement lain di kantor Anda yang masih\nmemiliki hubungan dengan pekerjaan sebelumnya. Namun di tempat Anda yang\nbaru setiap karyawan sangat serius dalam bekerja, jarang bahkan tidak pernah\nAnda melihat mereka bekerja dengan santai dan sedikit bercanda, sikap Anda ...",
           "options": [
             {
