@@ -170,7 +170,7 @@ export const DRIVE_FILES: {
     url: 'https://drive.google.com/file/d/1JK0AJgnLxIUq4uTZ96xmYR3Ht9qhd4Rf/view',
     focus: 'Bank Drilling HOTS',
     description:
-      'E-book Bank Drilling soal SKD CPNS 2024/2025 berisi kisi-kisi terbaru, alur SSCASN, bahas per subtes, dan 3 paket latihan lengkap (sumber Paket 2 aplikasi ini).',
+      'E-book Bank Drilling soal SKD CPNS 2024/2025 berisi kisi-kisi terbaru, alur SSCASN, bahas per subtes, dan 3 paket latihan lengkap (sumber Paket 2, Paket 3, dan Paket 4 aplikasi ini).',
   },
   {
     title: 'CPNS-2025-Materi-Lengkap-TIU.pdf',

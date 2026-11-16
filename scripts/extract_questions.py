@@ -398,56 +398,45 @@ def parse_lolosasn() -> list[dict[str, Any]]:
     return questions
 
 
-def parse_cpns2024_paket1() -> list[dict[str, Any]]:
-    raw = (CACHE / "cpns_2024_2025.txt").read_text(encoding="utf-8")
-    pages = raw.split("\x0c")
+def extract_sequential_blocks(text: str, total: int = 110) -> dict[int, str]:
+    matches = list(re.finditer(r"(?:^|\n)\s*(\d{1,3})\.\s*", text))
+    blocks: dict[int, str] = {}
+    for i, m in enumerate(matches):
+        num = int(m.group(1))
+        expected = len(blocks) + 1
+        if num != expected or num > total:
+            continue
+        start = m.end()
+        end = len(text)
+        for j in range(i + 1, len(matches)):
+            if int(matches[j].group(1)) == num + 1:
+                end = matches[j].start()
+                break
+        blocks[num] = text[start:end].strip()
+    return blocks
 
-    q_text_all = strip_page_numbers(pages[101:131])
-    a_text_all = strip_page_numbers(pages[132:155])
 
-    # Normalize broken options and typos in Paket 1
-    q_text_all = q_text_all.replace("Agus!ys 1945", "Agustus 1945")
-    q_text_all = q_text_all.replace(
-        "d. F dan G e.\nM dan N",
-        "d. F dan G\ne. M dan N",
-    )
-    q_text_all = re.sub(
-        r"\nd\.\s*P\s*\n\s*e\.\s*P=Q",
-        "\nd. P<Q\ne. P=Q",
-        q_text_all,
-    )
-    # Fix stacked option letters like "a.\nb.\nc.\nd.\ne.\n\nOpt1\nOpt2\n..."
-    def fix_stacked_options(match: re.Match[str]) -> str:
-        tail = match.group(1).strip()
-        lines = [ln.strip() for ln in tail.splitlines() if ln.strip()]
-        # Merge lines that wrapped mid-sentence? Look at pages 112, 114, 118, 120, 130
-        if len(lines) == 5:
-            return "\n" + "\n".join(f"{k}. {lines[i]}" for i, k in enumerate(["a", "b", "c", "d", "e"])) + "\n"
-        return match.group(0)
-
-    # Specifically inspect stacked option layouts in Paket 1:
-    # Q43, 44, 45, 63, 64, 65 have "a.\nb.\nc.\nd.\ne.\n\nGambar A\n..."
-    q_text_all = q_text_all.replace(
+def preprocess_paket1_q(text: str) -> str:
+    text = text.replace("Agus!ys 1945", "Agustus 1945")
+    text = text.replace("d. F dan G e.\nM dan N", "d. F dan G\ne. M dan N")
+    text = re.sub(r"\nd\.\s*P\s*\n\s*e\.\s*P=Q", "\nd. P<Q\ne. P=Q", text)
+    text = text.replace(
         "a.\nb.\nc.\nd.\ne.\n\nGambar A\nGambar B\nGambar C\nGambar D\nGambar E",
         "a. Gambar A\nb. Gambar B\nc. Gambar C\nd. Gambar D\ne. Gambar E",
     )
-    # Q33: a..e followed by Hadiah..Prestasi
-    q_text_all = q_text_all.replace(
+    text = text.replace(
         "a.\nb.\nc.\nd.\ne.\n\nHadiah\nLembur\nPensiun\nPiagam\nPrestasi",
         "a. Hadiah\nb. Lembur\nc. Pensiun\nd. Piagam\ne. Prestasi",
     )
-    # Q38: a..e followed by Rocky...
-    q_text_all = q_text_all.replace(
+    text = text.replace(
         "a.\nb.\nc.\nd.\ne.\n\nRocky boleh memiliki surat mengemudi\nTidak dapat ditarik kesimpulan\nRocky wajib memiliki surat izin mengemudi\nSemua salah\nRocky tidak membutuhkan surat izin mengemudi",
         "a. Rocky boleh memiliki surat mengemudi\nb. Tidak dapat ditarik kesimpulan\nc. Rocky wajib memiliki surat izin mengemudi\nd. Semua salah\ne. Rocky tidak membutuhkan surat izin mengemudi",
     )
-    # Q69: a..e followed by Memanggilnya...
-    q_text_all = q_text_all.replace(
+    text = text.replace(
         "a.\nb.\nc.\nd.\ne.\n\nMemanggilnya dan membicarakan baik-baik dengan rekan satu tim\nMemaklumi bahwa itulah dinamika yang terjadi dalam suatu tim\nGerak langkah orang tersebut perlu diperhatikan dan diawasi\nSegera melaporkannya kepada pimpinan divisi\nMengingatkannya di depan rekan satu tim agar kedepan dapat lebih\nmeningkatkan kinerja tim",
         "a. Memanggilnya dan membicarakan baik-baik dengan rekan satu tim\nb. Memaklumi bahwa itulah dinamika yang terjadi dalam suatu tim\nc. Gerak langkah orang tersebut perlu diperhatikan dan diawasi\nd. Segera melaporkannya kepada pimpinan divisi\ne. Mengingatkannya di depan rekan satu tim agar kedepan dapat lebih meningkatkan kinerja tim",
     )
-    # Also fix Q43/44/45 ordering where 44. and 45. appeared AFTER the options on page 114
-    q_text_all = re.sub(
+    text = re.sub(
         r"43\.\s*a\. Gambar A[\s\S]*?45\.",
         (
             "43. Tentukan gambar kubus yang dapat terbentuk dari jaring-jaring pada gambar soal!\n"
@@ -457,10 +446,9 @@ def parse_cpns2024_paket1() -> list[dict[str, Any]]:
             "45. Tentukan gambar yang merupakan hasil rotasi tepat dari gambar pada kotak soal!\n"
             "a. Gambar A\nb. Gambar B\nc. Gambar C\nd. Gambar D\ne. Gambar E"
         ),
-        q_text_all,
+        text,
     )
-    # Fix Q63/64/65 ordering on pages 118-119
-    q_text_all = re.sub(
+    text = re.sub(
         r"63\.\s*a\. Gambar A[\s\S]*?(?=\n66\.)",
         (
             "63. Tentukan satu gambar yang berbeda dengan keempat gambar lainnya!\n"
@@ -470,69 +458,118 @@ def parse_cpns2024_paket1() -> list[dict[str, Any]]:
             "65. Tentukan satu gambar yang tidak sama (berbeda posisi bintang dan kotak hitam) dengan keempat gambar lainnya!\n"
             "a. Gambar A\nb. Gambar B\nc. Gambar C\nd. Gambar D\ne. Gambar E\n"
         ),
-        q_text_all,
+        text,
     )
+    return text
 
-    # Clean weird line splits on page 117/130/etc.
-    # Let's parse sequential 1..110 blocks from q_text_all
-    q_matches = list(re.finditer(r"(?:^|\n)\s*(\d{1,3})\.\s*", q_text_all))
-    q_blocks: dict[int, str] = {}
-    for i, m in enumerate(q_matches):
-        num = int(m.group(1))
-        expected = len(q_blocks) + 1
-        if num != expected:
-            continue
-        start = m.end()
-        end = len(q_text_all)
-        for j in range(i + 1, len(q_matches)):
-            if int(q_matches[j].group(1)) == num + 1:
-                end = q_matches[j].start()
-                break
-        q_blocks[num] = q_text_all[start:end].strip()
 
-    assert len(q_blocks) == 110, f"Paket 2 expected 110 question blocks, got {len(q_blocks)}. Missing: {set(range(1,111))-set(q_blocks)}"
-
-    # Parse sequential 1..110 answer blocks from a_text_all
-    a_matches = list(re.finditer(r"(?:^|\n)\s*(\d{1,3})\.\s*", a_text_all))
-    a_blocks: dict[int, str] = {}
-    for i, m in enumerate(a_matches):
-        num = int(m.group(1))
-        expected = len(a_blocks) + 1
-        if num != expected:
-            continue
-        start = m.end()
-        end = len(a_text_all)
-        for j in range(i + 1, len(a_matches)):
-            if int(a_matches[j].group(1)) == num + 1:
-                end = a_matches[j].start()
-                break
-        a_blocks[num] = a_text_all[start:end].strip()
-
-    assert len(a_blocks) == 110, f"Paket 2 expected 110 answer blocks, got {len(a_blocks)}. Missing: {set(range(1,111))-set(a_blocks)}"
-
-    figure_map = {
-        43: "/figures/paket2-q43.png",
-        44: "/figures/paket2-q44.png",
-        45: "/figures/paket2-q45.png",
-        63: "/figures/paket2-q63.png",
-        64: "/figures/paket2-q64.png",
-        65: "/figures/paket2-q65.png",
-    }
-
-    ans_patches = {
-        58: (
-            "Pola berulang: huruf pertama dan kedua maju +1 (A → B, C → D, E → F), "
-            "diselingi huruf tetap M dan N. Setelah E dilanjutkan F dan M."
+def preprocess_paket2_q(text: str) -> str:
+    text = text.replace(
+        "a.\nb.\nc.\nd.\ne.\n\nGambar A\nGambar B\nGambar C\nGambar D\nGambar E",
+        "a. Gambar A\nb. Gambar B\nc. Gambar C\nd. Gambar D\ne. Gambar E",
+    )
+    text = text.replace(
+        "b.\nc.\nd.\ne.\n\nSemua peilaku pegawai tidak patut dicontoh\nSebagian perilaku pegawai patut dicontoh\nSebagian perlaku pegawai wajib dicontoh\nSemua perilaku pegawai adalah buruk",
+        "b. Semua perilaku pegawai tidak patut dicontoh\nc. Sebagian perilaku pegawai patut dicontoh\nd. Sebagian perilaku pegawai wajib dicontoh\ne. Semua perilaku pegawai adalah buruk",
+    )
+    text = text.replace(
+        "56.\na. Gambar A",
+        "56. Tentukan gambar selanjutnya yang tepat pada deret huruf-garis berikut!\na. Gambar A",
+    )
+    text = re.sub(
+        r"59\.\s*a\. Gambar A[\s\S]*?(?=\n62\.)",
+        (
+            "59. Tentukan gambar yang tepat untuk melanjutkan deret pola gambar segi lima berikut!\n"
+            "a. Gambar A\nb. Gambar B\nc. Gambar C\nd. Gambar D\ne. Gambar E\n"
+            "60. Tentukan gambar yang tepat untuk melengkapi tanda tanya (?) pada deret pola gambar berikut!\n"
+            "a. Gambar A\nb. Gambar B\nc. Gambar C\nd. Gambar D\ne. Gambar E\n"
+            "61. Tentukan gambar yang tepat untuk melengkapi tanda tanya (?) pada matriks pola gambar 2x2 berikut!\n"
+            "a. Gambar A\nb. Gambar B\nc. Gambar C\nd. Gambar D\ne. Gambar E\n"
         ),
-        59: (
-            "Pola dua larik selang-seling: suku ganjil bertambah +15 (40 → 55 → 70 → 85), "
-            "sedangkan suku genap berkurang -15 (44 → 29 → 14 → -1). Jadi hasilnya 85 dan -1."
+        text,
+    )
+    text = text.replace(
+        "65.\na. J dan R\nb. J dan S c.\nK dan S d. I\ndan R e. I\ndan S",
+        "65. Tentukan dua huruf yang tepat untuk menggantikan tanda tanya (?) pada tabel huruf berikut!\n"
+        "a. J dan R\nb. J dan S\nc. K dan S\nd. I dan R\ne. I dan S",
+    )
+    text = text.replace(
+        "b.\nc.\nd.\ne.\n\nMeminta saran dan masukan dari seluruh tim\nCukup mendelegasikannya\nMemutuskan sendiri\nTidak perlu ada peraturan yang harus dibuat",
+        "b. Meminta saran dan masukan dari seluruh tim\nc. Cukup mendelegasikannya\nd. Memutuskan sendiri\ne. Tidak perlu ada peraturan yang harus dibuat",
+    )
+    return text
+
+
+def preprocess_paket2_a(text: str) -> str:
+    text = text.replace("Jawaba :", "Jawaban :")
+    text = text.replace(
+        "b.\nc.\nd.\ne.\n\nMemutuskan bersama – sama (point 5)\nMemaksakan kehendak (point 1)\nCukup mengutarakan ide dan pendapat (point 3)\nMembiarkan apapun keputusannya (point 2)",
+        "b. Memutuskan bersama-sama (point 5)\nc. Memaksakan kehendak (point 1)\nd. Cukup mengutarakan ide dan pendapat (point 3)\ne. Membiarkan apapun keputusannya (point 2)",
+    )
+    return text
+
+
+def preprocess_paket3_q(text: str) -> str:
+    text = text.replace(
+        "a.\nb.\nc.\nd.\ne.\n\nGambar A\nGambar B\nGambar C\nGambar D\nGambar E",
+        "a. Gambar A\nb. Gambar B\nc. Gambar C\nd. Gambar D\ne. Gambar E",
+    )
+    text = text.replace("yaitu kalimat ... a.\nPertama", "yaitu kalimat ...\na. Pertama")
+    text = text.replace(
+        "a.\nb.\nc.\nd.\ne.\n\nRp 53.500\nRp 57.500\nRp 60.000\nRp 62.500\nRp 65.500",
+        "a. Rp 53.500\nb. Rp 57.500\nc. Rp 60.000\nd. Rp 62.500\ne. Rp 65.500",
+    )
+    text = text.replace(
+        "a.\nb.\nc.\nd.\ne.\n\n17\n19\n21\n23\n25",
+        "a. 17\nb. 19\nc. 21\nd. 23\ne. 25",
+    )
+    text = text.replace(
+        "a. S b.\nT c. U\nd. V\ne. W",
+        "a. S\nb. T\nc. U\nd. V\ne. W",
+    )
+    text = re.sub(
+        r"62\.\s*a\. Gambar A[\s\S]*?(?=\n66\.)",
+        (
+            "62. Tentukan gambar yang tepat untuk melengkapi analogi perbandingan gambar berikut!\n"
+            "a. Gambar A\nb. Gambar B\nc. Gambar C\nd. Gambar D\ne. Gambar E\n"
+            "63. Tentukan gambar yang tepat untuk melengkapi matriks perbandingan empat bangun datar berikut!\n"
+            "a. Gambar A\nb. Gambar B\nc. Gambar C\nd. Gambar D\ne. Gambar E\n"
+            "64. Tentukan gambar bangun ruang yang terbentuk apabila jaring-jaring berikut dilipat!\n"
+            "a. Gambar A\nb. Gambar B\nc. Gambar C\nd. Gambar D\ne. Gambar E\n"
+            "65. Tentukan satu gambar kartu domino yang berbeda pola dengan keempat gambar lainnya!\n"
+            "a. Gambar A\nb. Gambar B\nc. Gambar C\nd. Gambar D\ne. Gambar E\n"
         ),
-        60: (
-            "Pola dua larik selang-seling: suku ganjil dikurangi 2,3 (17 → 14,7 → 12,4 → 10,1), "
-            "sedangkan suku genap ditambah 3,2 (7 → 10,2 → 13,4 → 16,6). Jadi hasilnya 10,1 dan 16,6."
-        ),
-    }
+        text,
+    )
+    return text
+
+
+def parse_cpns2024_package(
+    *,
+    label: str,
+    id_prefix: str,
+    q_page_range: tuple[int, int],
+    a_page_range: tuple[int, int],
+    figure_map: dict[int, str],
+    ans_patches: dict[int, str],
+    preprocess_q=None,
+    preprocess_a=None,
+) -> list[dict[str, Any]]:
+    raw = (CACHE / "cpns_2024_2025.txt").read_text(encoding="utf-8")
+    pages = raw.split("\x0c")
+
+    q_text_all = strip_page_numbers(pages[q_page_range[0] : q_page_range[1]])
+    a_text_all = strip_page_numbers(pages[a_page_range[0] : a_page_range[1]])
+    if preprocess_q:
+        q_text_all = preprocess_q(q_text_all)
+    if preprocess_a:
+        a_text_all = preprocess_a(a_text_all)
+
+    q_blocks = extract_sequential_blocks(q_text_all, 110)
+    assert len(q_blocks) == 110, f"{label} expected 110 question blocks, got {len(q_blocks)}"
+
+    a_blocks = extract_sequential_blocks(a_text_all, 110)
+    assert len(a_blocks) == 110, f"{label} expected 110 answer blocks, got {len(a_blocks)}"
 
     questions: list[dict[str, Any]] = []
     for num in range(1, 111):
@@ -541,7 +578,7 @@ def parse_cpns2024_paket1() -> list[dict[str, Any]]:
         category = "TWK" if num <= 30 else ("TIU" if num <= 65 else "TKP")
 
         opt_matches = list(re.finditer(r"(?:^|\n)\s*([a-e])\.\s*", qb))
-        assert len(opt_matches) >= 5, f"Paket 2 Q{num} expected 5 options, got {len(opt_matches)}:\n{qb}"
+        assert len(opt_matches) >= 5, f"{label} Q{num} expected 5 options, got {len(opt_matches)}:\n{qb}"
         if len(opt_matches) > 5:
             opt_matches = opt_matches[-5:]
 
@@ -555,8 +592,8 @@ def parse_cpns2024_paket1() -> list[dict[str, Any]]:
 
         options = []
         if category in ("TWK", "TIU"):
-            m_ans = re.match(r"Jawaban\s*:\s*([A-E])\b[^\n]*\n?([\s\S]*)", ab, re.I)
-            assert m_ans, f"Paket 2 Q{num} missing Jawaban in:\n{ab}"
+            m_ans = re.match(r"Jawaba?n?\s*:?\s*([A-E])\b[^\n]*\n?([\s\S]*)", ab, re.I)
+            assert m_ans, f"{label} Q{num} missing Jawaban in:\n{ab}"
             correct_key = m_ans.group(1).upper()
             expl_clean = clean_whitespace(m_ans.group(2))
             if num in ans_patches:
@@ -570,20 +607,20 @@ def parse_cpns2024_paket1() -> list[dict[str, Any]]:
                     }
                 )
         else:
-            # TKP: find "(point N)" for each option a..e (note Q102 in source used f..j)
+            # TKP: find "(point N)" for each option a..e (note Paket 1 Q102 used f..j)
             ab_norm = re.sub(
                 r"(?:^|\n)\s*([f-j])\.\s*",
                 lambda m: "\n" + chr(ord(m.group(1)) - 5) + ". ",
                 ab,
             )
             first_opt_in_ab = re.search(r"(?:^|\n)\s*a\.\s*", ab_norm)
-            assert first_opt_in_ab, f"Paket 2 TKP Q{num} missing option scores in:\n{ab}"
+            assert first_opt_in_ab, f"{label} TKP Q{num} missing option scores in:\n{ab}"
             expl_intro = clean_whitespace(ab_norm[: first_opt_in_ab.start()])
             pts = re.findall(r"(?:^|\n)\s*([a-e])\.\s*[\s\S]*?\(\s*poin?t\s*(\d)\s*\)", ab_norm, re.I)
-            assert len(pts) == 5, f"Paket 2 TKP Q{num} expected 5 points, got {pts} in:\n{ab}"
+            assert len(pts) == 5, f"{label} TKP Q{num} expected 5 points, got {pts} in:\n{ab}"
             score_map = {k.upper(): int(v) for k, v in pts}
             assert set(score_map.keys()) == {"A", "B", "C", "D", "E"}
-            assert set(score_map.values()) == {1, 2, 3, 4, 5}, f"Paket 2 TKP Q{num} invalid scores: {score_map}"
+            assert set(score_map.values()) == {1, 2, 3, 4, 5}, f"{label} TKP Q{num} invalid scores: {score_map}"
             correct_key = max(score_map, key=lambda k: score_map[k])
             ranking_str = ", ".join(
                 f"{score_map[k]} = {k}"
@@ -601,7 +638,7 @@ def parse_cpns2024_paket1() -> list[dict[str, Any]]:
 
         subtopic, study_url, study_label = infer_study_link(category, q_text + " " + expl_clean)
         item: dict[str, Any] = {
-            "id": f"hots2024-{num:03d}",
+            "id": f"{id_prefix}-{num:03d}",
             "number": num,
             "category": category,
             "subtopic": subtopic,
@@ -627,9 +664,80 @@ def parse_cpns2024_paket1() -> list[dict[str, Any]]:
 
 def main() -> None:
     lolosasn_qs = parse_lolosasn()
-    hots_qs = parse_cpns2024_paket1()
+    hots1_qs = parse_cpns2024_package(
+        label="Paket 2 (Buku Paket 1)",
+        id_prefix="hots2024",
+        q_page_range=(101, 131),
+        a_page_range=(132, 155),
+        figure_map={
+            43: "/figures/paket2-q43.png",
+            44: "/figures/paket2-q44.png",
+            45: "/figures/paket2-q45.png",
+            63: "/figures/paket2-q63.png",
+            64: "/figures/paket2-q64.png",
+            65: "/figures/paket2-q65.png",
+        },
+        ans_patches={
+            58: (
+                "Pola berulang: huruf pertama dan kedua maju +1 (A -> B, C -> D, E -> F), "
+                "diselingi huruf tetap M dan N. Setelah E dilanjutkan F dan M."
+            ),
+            59: (
+                "Pola dua larik selang-seling: suku ganjil bertambah +15 (40 -> 55 -> 70 -> 85), "
+                "sedangkan suku genap berkurang -15 (44 -> 29 -> 14 -> -1). Jadi hasilnya 85 dan -1."
+            ),
+            60: (
+                "Pola dua larik selang-seling: suku ganjil dikurangi 2,3 (17 -> 14,7 -> 12,4 -> 10,1), "
+                "sedangkan suku genap ditambah 3,2 (7 -> 10,2 -> 13,4 -> 16,6). Jadi hasilnya 10,1 dan 16,6."
+            ),
+        },
+        preprocess_q=preprocess_paket1_q,
+    )
+    hots2_qs = parse_cpns2024_package(
+        label="Paket 3 (Buku Paket 2)",
+        id_prefix="hots2",
+        q_page_range=(156, 180),
+        a_page_range=(181, 201),
+        figure_map={
+            56: "/figures/paket3-q56.png",
+            57: "/figures/paket3-q57.png",
+            58: "/figures/paket3-q58.png",
+            59: "/figures/paket3-q59.png",
+            60: "/figures/paket3-q60.png",
+            61: "/figures/paket3-q61.png",
+            65: "/figures/paket3-q65.png",
+        },
+        ans_patches={
+            42: (
+                "Kecepatan gabungan per hari = 1/3 + 1/6 = 2/6 + 1/6 = 3/6. "
+                "Waktu yang diperlukan bersama-sama = 1 / (3/6) = 6/3 = 2 hari."
+            ),
+        },
+        preprocess_q=preprocess_paket2_q,
+        preprocess_a=preprocess_paket2_a,
+    )
+    hots3_qs = parse_cpns2024_package(
+        label="Paket 4 (Buku Paket 3)",
+        id_prefix="hots3",
+        q_page_range=(202, 228),
+        a_page_range=(229, 249),
+        figure_map={
+            62: "/figures/paket4-q62.png",
+            63: "/figures/paket4-q63.png",
+            64: "/figures/paket4-q64.png",
+            65: "/figures/paket4-q65.png",
+        },
+        ans_patches={},
+        preprocess_q=preprocess_paket3_q,
+    )
 
-    for name, qs in [("lolosasn", lolosasn_qs), ("hots2024", hots_qs)]:
+    all_sets = [
+        ("lolosasn", lolosasn_qs),
+        ("hots1", hots1_qs),
+        ("hots2", hots2_qs),
+        ("hots3", hots3_qs),
+    ]
+    for name, qs in all_sets:
         twk = sum(1 for q in qs if q["category"] == "TWK")
         tiu = sum(1 for q in qs if q["category"] == "TIU")
         tkp = sum(1 for q in qs if q["category"] == "TKP")
@@ -637,7 +745,7 @@ def main() -> None:
         for q in qs:
             assert q["question"], f"{name} Q{q['number']} empty question"
             assert q["explanation"], f"{name} Q{q['number']} empty explanation"
-            assert all(o["text"] for o in q["options"]), f"{name} Q{q['number']} empty option"
+            assert all(o["text"] for o in q["options"]), f"{name} Q{q['number']} empty option: {q['options']}"
 
     payload = {
         "packages": [
@@ -652,19 +760,38 @@ def main() -> None:
             },
             {
                 "id": "paket-hots-2024-2025",
-                "title": "Paket 2: Simulasi SKD CPNS HOTS 2024/2025",
-                "description": "110 soal HOTS sesuai kisi-kisi PermenPAN-RB (30 TWK, 35 TIU termasuk figural, 45 TKP) dari modul Bank Drilling CPNS 2024/2025.",
+                "title": "Paket 2: Simulasi SKD CPNS HOTS 2024/2025 (Paket 1 Buku)",
+                "description": "110 soal HOTS sesuai kisi-kisi PermenPAN-RB (30 TWK, 35 TIU termasuk figural, 45 TKP) dari Paket Soal 1 modul Bank Drilling CPNS 2024/2025.",
                 "durationMinutes": 100,
                 "sourceTitle": "CPNS-2024-2025.pdf (Paket Soal 1 & Kunci Jawaban)",
                 "sourceUrl": CPNS2024_SOURCE_URL,
-                "questions": hots_qs,
+                "questions": hots1_qs,
+            },
+            {
+                "id": "paket-hots2-2024-2025",
+                "title": "Paket 3: Simulasi SKD CPNS HOTS 2024/2025 (Paket 2 Buku)",
+                "description": "110 soal HOTS lengkap (30 TWK, 35 TIU termasuk 6 soal figural & matriks huruf, 45 TKP) dari Paket Soal 2 modul Bank Drilling CPNS 2024/2025.",
+                "durationMinutes": 100,
+                "sourceTitle": "CPNS-2024-2025.pdf (Paket Soal 2 & Kunci Jawaban)",
+                "sourceUrl": CPNS2024_SOURCE_URL,
+                "questions": hots2_qs,
+            },
+            {
+                "id": "paket-hots3-2024-2025",
+                "title": "Paket 4: Simulasi SKD CPNS HOTS 2024/2025 (Paket 3 Buku)",
+                "description": "110 soal HOTS lengkap (30 TWK, 35 TIU termasuk analogi, jaring-jaring & domino figural, 45 TKP) dari Paket Soal 3 modul Bank Drilling CPNS 2024/2025.",
+                "durationMinutes": 100,
+                "sourceTitle": "CPNS-2024-2025.pdf (Paket Soal 3 & Kunci Jawaban)",
+                "sourceUrl": CPNS2024_SOURCE_URL,
+                "questions": hots3_qs,
             },
         ]
     }
 
+    total_qs = sum(len(qs) for _, qs in all_sets)
     OUT_JSON.parent.mkdir(parents=True, exist_ok=True)
     OUT_JSON.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(f"Successfully generated {OUT_JSON} with {len(lolosasn_qs)} + {len(hots_qs)} = {len(lolosasn_qs)+len(hots_qs)} verified questions.")
+    print(f"Successfully generated {OUT_JSON} with {' + '.join(str(len(qs)) for _, qs in all_sets)} = {total_qs} verified questions.")
 
 
 if __name__ == "__main__":
