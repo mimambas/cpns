@@ -69,10 +69,6 @@ export const ExamSetupView: React.FC<ExamSetupViewProps> = ({
   return (
     <div className="stack-300">
       <section className="stack-200" style={{ gap: '6px' }}>
-        <div className="row-wrap" style={{ gap: '8px' }}>
-          <span className="lozenge lozenge-info">Persiapan simulasi</span>
-          <span className="tag tag-blue">Timer belum berjalan</span>
-        </div>
         <h1 className="h-xlarge">Persiapan simulasi ujian CAT SKD CPNS</h1>
         <p className="body-large" style={{ maxWidth: '72ch' }}>
           Pilih paket soal dan kategori formasi target terlebih dahulu. Timer hitung mundur hanya akan berjalan setelah Anda menekan tombol <strong>Mulai kerjakan ujian sekarang</strong>.
