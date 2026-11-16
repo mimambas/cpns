@@ -1,13 +1,13 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import type { OptionKey, Question, QuestionCategory, QuestionPackage } from '../types';
+import type { FormationType, OptionKey, Question, QuestionCategory, QuestionPackage } from '../types';
 import { FORMATION_RULES, formatCountdown } from '../utils/scoring';
-import type { FormationType } from '../types';
 import {
   CheckCircleIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   ClockIcon,
   FlagIcon,
+  PauseIcon,
   WarningIcon,
 } from './Icons';
 
@@ -22,6 +22,7 @@ interface ExamViewProps {
   onClearAnswer: (questionId: string) => void;
   onToggleFlag: (questionId: string) => void;
   onNavigate: (index: number) => void;
+  onPauseExam: () => void;
   onFinishExam: () => void;
 }
 
@@ -36,10 +37,12 @@ export const ExamView: React.FC<ExamViewProps> = ({
   onClearAnswer,
   onToggleFlag,
   onNavigate,
+  onPauseExam,
   onFinishExam,
 }) => {
   const [navFilter, setNavFilter] = useState<'ALL' | QuestionCategory>('ALL');
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [largeFont, setLargeFont] = useState(false);
 
   const questions = pkg.questions;
   const currentQuestion: Question = questions[currentIndex] ?? questions[0];
@@ -49,6 +52,8 @@ export const ExamView: React.FC<ExamViewProps> = ({
   const answeredCount = Object.keys(answers).length;
   const unansweredCount = questions.length - answeredCount;
   const flaggedCount = flaggedIds.length;
+  const progressPct =
+    questions.length > 0 ? Math.round((answeredCount / questions.length) * 100) : 0;
 
   const urgency =
     remainingSeconds <= 300
@@ -56,6 +61,26 @@ export const ExamView: React.FC<ExamViewProps> = ({
       : remainingSeconds <= 900
         ? 'warning'
         : 'normal';
+
+  const subtestSummary = useMemo(() => {
+    const categories: QuestionCategory[] = ['TWK', 'TIU', 'TKP'];
+    return categories
+      .map((cat) => {
+        const items = questions
+          .map((q, idx) => ({ q, idx }))
+          .filter((entry) => entry.q.category === cat);
+        if (items.length === 0) return null;
+        const done = items.filter((entry) => Boolean(answers[entry.q.id])).length;
+        return {
+          category: cat,
+          firstIndex: items[0].idx,
+          total: items.length,
+          answered: done,
+          isCurrent: currentQuestion.category === cat,
+        };
+      })
+      .filter((x): x is NonNullable<typeof x> => x !== null);
+  }, [questions, answers, currentQuestion.category]);
 
   const filteredNavItems = useMemo(() => {
     return questions
@@ -73,7 +98,10 @@ export const ExamView: React.FC<ExamViewProps> = ({
         return;
       }
       const target = e.target as HTMLElement | null;
-      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT')) {
+      if (
+        target &&
+        (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT')
+      ) {
         return;
       }
       if (e.key === 'ArrowRight' && currentIndex < questions.length - 1) {
@@ -101,243 +129,306 @@ export const ExamView: React.FC<ExamViewProps> = ({
         : 'lozenge-success';
 
   return (
-    <div className="stack-300">
-      {/* Top Exam Status Bar */}
-      <header className="exam-header-bar">
-        <div className="stack-200" style={{ gap: 'var(--space-050)' }}>
-          <div className="row-wrap" style={{ gap: 'var(--space-100)' }}>
-            <h1 className="h-small">{pkg.title}</h1>
-            <span className="tag">{FORMATION_RULES[formationId].shortLabel}</span>
+    <div className="cat-classroom-shell">
+      {/* Top Distraction-Free Classroom Bar */}
+      <header className="cat-classroom-topbar">
+        <div className="cat-classroom-topbar-inner">
+          <div className="row-wrap" style={{ gap: '10px' }}>
+            <button
+              type="button"
+              className="btn btn-compact"
+              onClick={onPauseExam}
+            >
+              <PauseIcon size={14} />
+              Jeda &amp; keluar
+            </button>
+            <div className="stack-200" style={{ gap: '2px' }}>
+              <div className="row-wrap" style={{ gap: '8px' }}>
+                <h1 className="h-small">{pkg.title}</h1>
+                <span className="tag">{FORMATION_RULES[formationId].shortLabel}</span>
+              </div>
+              <span className="body-small">
+                Soal {currentIndex + 1}/{questions.length} · Dijawab {answeredCount} ({progressPct}%) · Ragu-ragu {flaggedCount}
+              </span>
+            </div>
           </div>
-          <p className="body-small">
-            Soal {currentIndex + 1} dari {questions.length} · Dijawab: {answeredCount} · Belum dijawab: {unansweredCount} · Ragu-ragu: {flaggedCount}
-          </p>
-        </div>
 
-        <div className="row-wrap">
-          <div
-            className="timer-pill"
-            data-urgency={urgency}
-            role="timer"
-            aria-live="polite"
-            aria-label={`Sisa waktu ujian ${formatCountdown(remainingSeconds)}`}
-          >
-            <ClockIcon size={16} />
-            <span>{formatCountdown(remainingSeconds)}</span>
+          {/* Subtest Quick-Jump Pills */}
+          <div className="row-wrap" style={{ gap: '6px' }} aria-label="Pindah cepat subtes">
+            {subtestSummary.map((sub) => (
+              <button
+                key={sub.category}
+                type="button"
+                className={`btn btn-compact ${sub.isCurrent ? 'btn-selected' : ''}`}
+                onClick={() => onNavigate(sub.firstIndex)}
+              >
+                <span className="mono">
+                  {sub.category} {sub.answered}/{sub.total}
+                </span>
+              </button>
+            ))}
           </div>
-          <button
-            type="button"
-            className="btn"
-            onClick={() => setConfirmOpen(true)}
-          >
-            Selesaikan ujian
-          </button>
+
+          {/* Timer & Finish */}
+          <div className="row-wrap" style={{ gap: '10px' }}>
+            <div
+              className="timer-pill"
+              data-urgency={urgency}
+              role="timer"
+              aria-live="polite"
+              aria-label={`Sisa waktu ujian ${formatCountdown(remainingSeconds)}`}
+            >
+              <ClockIcon size={16} />
+              <span>{formatCountdown(remainingSeconds)}</span>
+            </div>
+            <button
+              type="button"
+              className="btn"
+              onClick={() => setConfirmOpen(true)}
+            >
+              Selesaikan ujian
+            </button>
+          </div>
         </div>
       </header>
 
-      {/* Main Split Workspace */}
-      <div className="exam-layout">
-        {/* Question Card */}
-        <section className="card stack-300" aria-label={`Soal nomor ${currentQuestion.number}`}>
-          <div className="row-wrap" style={{ justifyContent: 'space-between' }}>
-            <div className="row-wrap" style={{ gap: 'var(--space-100)' }}>
-              <span className={`lozenge ${categoryLozengeClass}`}>
-                {currentQuestion.category} — Soal #{currentQuestion.number}
-              </span>
-              <span className="tag tag-teal">{currentQuestion.subtopic}</span>
+      <main className="cat-classroom-main stack-300">
+        {/* Progress Indicator */}
+        <div className="chart-bar-track" aria-label={`Kemajuan pengerjaan ${progressPct}%`}>
+          <div
+            className="chart-bar-fill"
+            style={{ width: `${progressPct}%`, backgroundColor: 'var(--brand-primary)' }}
+          />
+        </div>
+
+        {/* Main Split Workspace */}
+        <div className="exam-layout">
+          {/* Question Stage */}
+          <section className="card stack-300" aria-label={`Soal nomor ${currentQuestion.number}`}>
+            <div className="row-wrap" style={{ justifyContent: 'space-between' }}>
+              <div className="row-wrap" style={{ gap: '8px' }}>
+                <span className={`lozenge ${categoryLozengeClass}`}>
+                  {currentQuestion.category} — Soal #{currentQuestion.number}
+                </span>
+                <span className="tag tag-teal">{currentQuestion.subtopic}</span>
+                {isFlagged && (
+                  <span className="lozenge lozenge-warning">
+                    <FlagIcon size={12} />
+                    Ragu-ragu
+                  </span>
+                )}
+              </div>
+
+              <button
+                type="button"
+                className="btn btn-compact btn-subtle"
+                onClick={() => setLargeFont((v) => !v)}
+                aria-pressed={largeFont}
+              >
+                {largeFont ? 'Teks normal' : 'Teks besar (A+)'}
+              </button>
             </div>
-            {isFlagged && (
-              <span className="lozenge lozenge-warning">
-                <FlagIcon size={12} />
-                Ditandai ragu-ragu
-              </span>
+
+            <div className="question-stem" data-size={largeFont ? 'large' : 'normal'}>
+              {currentQuestion.question}
+            </div>
+
+            {currentQuestion.figureUrl && (
+              <div className="figure-box">
+                <span className="body-small">Gambar soal figural (perhatikan opsi gambar A sampai E):</span>
+                <img
+                  src={currentQuestion.figureUrl}
+                  alt={`Gambar figural soal nomor ${currentQuestion.number}`}
+                  className="figure-img"
+                />
+              </div>
             )}
-          </div>
 
-          <div className="question-stem">{currentQuestion.question}</div>
-
-          {currentQuestion.figureUrl && (
-            <div className="figure-box">
-              <span className="body-small">Gambar soal figural (perhatikan opsi gambar A sampai E):</span>
-              <img
-                src={currentQuestion.figureUrl}
-                alt={`Gambar figural soal nomor ${currentQuestion.number}`}
-                className="figure-img"
-              />
-            </div>
-          )}
-
-          {/* Options A-E */}
-          <div
-            className="options-list"
-            role="radiogroup"
-            aria-label={`Pilihan jawaban soal nomor ${currentQuestion.number}`}
-          >
-            {currentQuestion.options.map((opt) => {
-              const isSelected = selectedKey === opt.key;
-              return (
-                <button
-                  key={opt.key}
-                  type="button"
-                  role="radio"
-                  aria-checked={isSelected}
-                  className="option-item"
-                  onClick={() => onSelectAnswer(currentQuestion.id, opt.key)}
-                >
-                  <span className="option-key" aria-hidden="true">
-                    {opt.key}
-                  </span>
-                  <span className="body" style={{ flex: 1, paddingTop: '2px', color: 'inherit' }}>
-                    {opt.text}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Question Footer Controls */}
-          <div
-            className="row-wrap"
-            style={{
-              justifyContent: 'space-between',
-              paddingTop: 'var(--space-4)',
-              borderTop: '1px solid var(--border-faint)',
-            }}
-          >
-            <div className="row-wrap" style={{ gap: 'var(--space-100)' }}>
-              <button
-                type="button"
-                className="btn"
-                disabled={currentIndex === 0}
-                onClick={() => onNavigate(currentIndex - 1)}
-              >
-                <ChevronLeftIcon size={16} />
-                Sebelumnya
-              </button>
-
-              <button
-                type="button"
-                className={isFlagged ? 'btn btn-warning' : 'btn'}
-                aria-pressed={isFlagged}
-                onClick={() => onToggleFlag(currentQuestion.id)}
-              >
-                <FlagIcon size={16} />
-                {isFlagged ? 'Batal ragu-ragu' : 'Tandai ragu-ragu'}
-              </button>
-
-              {selectedKey && (
-                <button
-                  type="button"
-                  className="btn btn-subtle"
-                  onClick={() => onClearAnswer(currentQuestion.id)}
-                >
-                  Kosongkan jawaban
-                </button>
-              )}
-            </div>
-
-            <div>
-              {currentIndex < questions.length - 1 ? (
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={() => onNavigate(currentIndex + 1)}
-                >
-                  Simpan &amp; lanjutkan
-                  <ChevronRightIcon size={16} />
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={() => setConfirmOpen(true)}
-                >
-                  Tinjau &amp; selesaikan ujian
-                  <CheckCircleIcon size={16} />
-                </button>
-              )}
-            </div>
-          </div>
-
-          <p className="body-small text-subtlest">
-            Pintasan papan ketik: tekan huruf A sampai E untuk memilih jawaban, atau panah kiri/kanan untuk berpindah nomor soal.
-          </p>
-        </section>
-
-        {/* Sunken Sidebar Question Navigator */}
-        <aside className="well-sunken stack-200" aria-label="Navigasi nomor soal">
-          <div className="stack-200" style={{ gap: 'var(--space-100)' }}>
-            <h2 className="h-small">Navigasi nomor soal</h2>
-            <div className="row-wrap" style={{ gap: 'var(--space-050)' }}>
-              {(['ALL', 'TWK', 'TIU', 'TKP'] as const).map((cat) => {
-                const count =
-                  cat === 'ALL'
-                    ? questions.length
-                    : questions.filter((q) => q.category === cat).length;
-                if (cat !== 'ALL' && count === 0) return null;
-                const active = navFilter === cat;
+            {/* Options A-E */}
+            <div
+              className="options-list"
+              role="radiogroup"
+              aria-label={`Pilihan jawaban soal nomor ${currentQuestion.number}`}
+            >
+              {currentQuestion.options.map((opt) => {
+                const isSelected = selectedKey === opt.key;
                 return (
                   <button
-                    key={cat}
+                    key={opt.key}
                     type="button"
-                    className={`btn btn-compact ${active ? 'btn-selected' : ''}`}
-                    onClick={() => setNavFilter(cat)}
+                    role="radio"
+                    aria-checked={isSelected}
+                    className="option-item"
+                    onClick={() => onSelectAnswer(currentQuestion.id, opt.key)}
                   >
-                    {cat === 'ALL' ? 'Semua' : cat} ({count})
+                    <span className="option-key" aria-hidden="true">
+                      {opt.key}
+                    </span>
+                    <span
+                      className="body"
+                      style={{
+                        flex: 1,
+                        paddingTop: '3px',
+                        color: 'inherit',
+                        fontSize: largeFont ? '16px' : undefined,
+                        lineHeight: largeFont ? '24px' : undefined,
+                      }}
+                    >
+                      {opt.text}
+                    </span>
                   </button>
                 );
               })}
             </div>
-          </div>
 
-          <div className="nav-grid">
-            {filteredNavItems.map(({ question, index }) => {
-              const isCurrent = index === currentIndex;
-              const isAns = Boolean(answers[question.id]);
-              const isFlg = flaggedIds.includes(question.id);
-              const state = isFlg ? 'flagged' : isAns ? 'answered' : 'unanswered';
-              const chosen = answers[question.id];
-
-              return (
+            {/* Footer Navigation Controls */}
+            <div
+              className="row-wrap"
+              style={{
+                justifyContent: 'space-between',
+                paddingTop: '16px',
+                borderTop: '1px solid var(--border-faint)',
+              }}
+            >
+              <div className="row-wrap" style={{ gap: '8px' }}>
                 <button
-                  key={question.id}
                   type="button"
-                  className="nav-num-btn"
-                  data-state={state}
-                  data-current={isCurrent}
-                  onClick={() => onNavigate(index)}
-                  aria-label={`Soal ${question.number}${chosen ? `, dijawab ${chosen}` : ', belum dijawab'}${isFlg ? ', ditandai ragu-ragu' : ''}`}
+                  className="btn"
+                  disabled={currentIndex === 0}
+                  onClick={() => onNavigate(currentIndex - 1)}
                 >
-                  <span>
-                    {question.number}
-                    {chosen ? `.${chosen}` : ''}
-                  </span>
+                  <ChevronLeftIcon size={16} />
+                  Sebelumnya
                 </button>
-              );
-            })}
-          </div>
 
-          {/* Non-color Legend */}
-          <div
-            className="stack-200"
-            style={{
-              gap: 'var(--space-2)',
-              paddingTop: 'var(--space-3)',
-              borderTop: '1px solid var(--border-faint)',
-            }}
-          >
-            <div className="row-wrap" style={{ gap: 'var(--space-100)' }}>
-              <span className="lozenge lozenge-success">Sudah dijawab ({answeredCount})</span>
-              <span className="lozenge lozenge-warning">Ragu-ragu ({flaggedCount})</span>
-              <span className="lozenge">Kosong ({unansweredCount})</span>
+                <button
+                  type="button"
+                  className={isFlagged ? 'btn btn-warning' : 'btn'}
+                  aria-pressed={isFlagged}
+                  onClick={() => onToggleFlag(currentQuestion.id)}
+                >
+                  <FlagIcon size={16} />
+                  {isFlagged ? 'Batal ragu-ragu' : 'Tandai ragu-ragu'}
+                </button>
+
+                {selectedKey && (
+                  <button
+                    type="button"
+                    className="btn btn-subtle"
+                    onClick={() => onClearAnswer(currentQuestion.id)}
+                  >
+                    Kosongkan jawaban
+                  </button>
+                )}
+              </div>
+
+              <div>
+                {currentIndex < questions.length - 1 ? (
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={() => onNavigate(currentIndex + 1)}
+                  >
+                    Simpan &amp; lanjutkan
+                    <ChevronRightIcon size={16} />
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={() => setConfirmOpen(true)}
+                  >
+                    Tinjau &amp; selesaikan ujian
+                    <CheckCircleIcon size={16} />
+                  </button>
+                )}
+              </div>
             </div>
-          </div>
-        </aside>
-      </div>
 
-      {/* Confirmation Modal Dialog */}
+            <p className="body-small text-subtlest">
+              Pintasan papan ketik: tekan A sampai E untuk memilih jawaban, atau panah kiri/kanan untuk berpindah soal.
+            </p>
+          </section>
+
+          {/* Right Question Number Navigator Sidebar */}
+          <aside className="well-sunken stack-200" aria-label="Navigasi nomor soal">
+            <div className="stack-200" style={{ gap: '8px' }}>
+              <h2 className="h-small">Navigasi nomor soal</h2>
+              <div className="row-wrap" style={{ gap: '6px' }}>
+                {(['ALL', 'TWK', 'TIU', 'TKP'] as const).map((cat) => {
+                  const count =
+                    cat === 'ALL'
+                      ? questions.length
+                      : questions.filter((q) => q.category === cat).length;
+                  if (cat !== 'ALL' && count === 0) return null;
+                  const active = navFilter === cat;
+                  return (
+                    <button
+                      key={cat}
+                      type="button"
+                      className={`btn btn-compact ${active ? 'btn-selected' : ''}`}
+                      onClick={() => setNavFilter(cat)}
+                    >
+                      {cat === 'ALL' ? 'Semua' : cat} ({count})
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="nav-grid">
+              {filteredNavItems.map(({ question, index }) => {
+                const isCurrent = index === currentIndex;
+                const isAns = Boolean(answers[question.id]);
+                const isFlg = flaggedIds.includes(question.id);
+                const state = isFlg ? 'flagged' : isAns ? 'answered' : 'unanswered';
+                const chosen = answers[question.id];
+
+                return (
+                  <button
+                    key={question.id}
+                    type="button"
+                    className="nav-num-btn"
+                    data-state={state}
+                    data-current={isCurrent}
+                    onClick={() => onNavigate(index)}
+                    aria-label={`Soal ${question.number}${chosen ? `, dijawab ${chosen}` : ', belum dijawab'}${isFlg ? ', ditandai ragu-ragu' : ''}`}
+                  >
+                    <span>
+                      {question.number}
+                      {chosen ? `.${chosen}` : ''}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div
+              className="stack-200"
+              style={{
+                gap: '8px',
+                paddingTop: '12px',
+                borderTop: '1px solid var(--border-faint)',
+              }}
+            >
+              <div className="row-wrap" style={{ gap: '8px' }}>
+                <span className="lozenge lozenge-success">Dijawab ({answeredCount})</span>
+                <span className="lozenge lozenge-warning">Ragu ({flaggedCount})</span>
+                <span className="lozenge">Kosong ({unansweredCount})</span>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </main>
+
+      {/* Finish Confirmation Modal */}
       {confirmOpen && (
-        <div className="modal-blanket" role="dialog" aria-modal="true" aria-labelledby="finish-modal-title">
+        <div
+          className="modal-blanket"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="finish-modal-title"
+        >
           <div className="modal-dialog">
             <div className="modal-header">
               <h2 id="finish-modal-title" className="h-medium">

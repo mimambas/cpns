@@ -1,7 +1,7 @@
-import React from 'react';
-import type { ActiveExamSession, FormationType, QuestionPackage } from '../types';
+import React, { useMemo, useState } from 'react';
+import type { ActiveExamSession, ExamAttempt, FormationType, QuestionPackage } from '../types';
 import { ALL_PACKAGES } from '../data/questionBank';
-import { FORMATION_RULES, formatCountdown } from '../utils/scoring';
+import { FORMATION_RULES, formatCountdown, summarizeAttempt } from '../utils/scoring';
 import {
   CheckCircleIcon,
   ChevronRightIcon,
@@ -14,6 +14,7 @@ interface ExamSetupViewProps {
   selectedPackage: QuestionPackage;
   selectedFormation: FormationType;
   activeSession: ActiveExamSession | null;
+  history: ExamAttempt[];
   onChangePackage: (pkgId: string) => void;
   onChangeFormation: (formation: FormationType) => void;
   onConfirmStartExam: (pkg: QuestionPackage, formationId: FormationType) => void;
@@ -21,35 +22,64 @@ interface ExamSetupViewProps {
   onDiscardActiveSession: () => void;
 }
 
+type PackageFilter = 'ALL' | 'FULL' | 'FOCUSED';
+
 export const ExamSetupView: React.FC<ExamSetupViewProps> = ({
   selectedPackage,
   selectedFormation,
   activeSession,
+  history,
   onChangePackage,
   onChangeFormation,
   onConfirmStartExam,
   onResumeActiveSession,
   onDiscardActiveSession,
 }) => {
+  const [pkgFilter, setPkgFilter] = useState<PackageFilter>('ALL');
+
+  const filteredPackages = useMemo(() => {
+    if (pkgFilter === 'FULL') return ALL_PACKAGES.filter((p) => p.isFullSimulation);
+    if (pkgFilter === 'FOCUSED') return ALL_PACKAGES.filter((p) => !p.isFullSimulation);
+    return ALL_PACKAGES;
+  }, [pkgFilter]);
+
+  const bestByPkg = useMemo(() => {
+    const map = new Map<string, { score: number; max: number; count: number }>();
+    for (const item of history) {
+      const ev = summarizeAttempt(item);
+      const prev = map.get(item.packageId);
+      if (!prev) {
+        map.set(item.packageId, { score: ev.totalScore, max: ev.maxTotalScore, count: 1 });
+      } else {
+        map.set(item.packageId, {
+          score: Math.max(prev.score, ev.totalScore),
+          max: ev.maxTotalScore,
+          count: prev.count + 1,
+        });
+      }
+    }
+    return map;
+  }, [history]);
+
   const twkCount = selectedPackage.questions.filter((q) => q.category === 'TWK').length;
   const tiuCount = selectedPackage.questions.filter((q) => q.category === 'TIU').length;
   const tkpCount = selectedPackage.questions.filter((q) => q.category === 'TKP').length;
   const maxScore = selectedPackage.questions.length * 5;
 
   return (
-    <div className="stack-400">
-      <section className="stack-200">
-        <div className="row-wrap">
+    <div className="stack-300">
+      <section className="stack-200" style={{ gap: '6px' }}>
+        <div className="row-wrap" style={{ gap: '8px' }}>
           <span className="lozenge lozenge-info">Persiapan simulasi</span>
           <span className="tag tag-blue">Timer belum berjalan</span>
         </div>
         <h1 className="h-xlarge">Persiapan simulasi ujian CAT SKD CPNS</h1>
         <p className="body-large" style={{ maxWidth: '72ch' }}>
-          Atur paket soal dan kategori formasi terlebih dahulu. Waktu hitung mundur hanya akan mulai berjalan setelah Anda menekan tombol <strong>Mulai kerjakan ujian sekarang</strong>.
+          Pilih paket soal dan kategori formasi target terlebih dahulu. Timer hitung mundur hanya akan berjalan setelah Anda menekan tombol <strong>Mulai kerjakan ujian sekarang</strong>.
         </p>
       </section>
 
-      {/* Paused session card when user previously started an exam and navigated away or refreshed */}
+      {/* Paused session banner */}
       {activeSession && (
         <div className="section-message section-message-warning" role="status">
           <span className="section-message-icon">
@@ -62,7 +92,7 @@ export const ExamSetupView: React.FC<ExamSetupViewProps> = ({
               <strong>{activeSession.packageTitle}</strong> ({Object.keys(activeSession.answers).length} soal terjawab, sisa waktu{' '}
               <span className="mono">{formatCountdown(activeSession.remainingSeconds)}</span>). Waktu tidak berkurang selama Anda berada di halaman persiapan ini.
             </p>
-            <div className="row-wrap" style={{ marginTop: 'var(--space-100)' }}>
+            <div className="row-wrap" style={{ marginTop: '8px' }}>
               <button
                 type="button"
                 className="btn btn-primary"
@@ -83,28 +113,89 @@ export const ExamSetupView: React.FC<ExamSetupViewProps> = ({
         </div>
       )}
 
-      {/* Package & Formation Selection Card */}
-      <div className="grid-2">
-        <section className="card stack-300">
-          <div className="stack-200" style={{ gap: 'var(--space-100)' }}>
-            <h2 className="h-medium">1. Pilih paket dan formasi</h2>
-            <div className="form-field">
-              <label htmlFor="setup-package-select" className="form-label">
-                Paket soal simulasi
-              </label>
-              <select
-                id="setup-package-select"
-                className="select-input"
-                value={selectedPackage.id}
-                onChange={(e) => onChangePackage(e.target.value)}
-              >
-                {ALL_PACKAGES.map((pkg) => (
-                  <option key={pkg.id} value={pkg.id}>
-                    {pkg.title} ({pkg.questions.length} soal · {pkg.durationMinutes} mnt)
-                  </option>
-                ))}
-              </select>
+      {/* Two-Column Assessment Hub */}
+      <div className="setup-layout">
+        {/* Left: Visual Package Browser + Synced Select */}
+        <section className="stack-200">
+          <div className="row-wrap" style={{ justifyContent: 'space-between' }}>
+            <h2 className="h-medium">1. Pilih paket simulasi atau latihan</h2>
+            <div className="row-wrap" style={{ gap: '6px' }}>
+              {(
+                [
+                  { id: 'ALL', label: `Semua (${ALL_PACKAGES.length})` },
+                  { id: 'FULL', label: 'Simulasi penuh 110 soal' },
+                  { id: 'FOCUSED', label: 'Latihan fokus' },
+                ] as { id: PackageFilter; label: string }[]
+              ).map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  className={`btn btn-compact ${pkgFilter === tab.id ? 'btn-selected' : ''}`}
+                  onClick={() => setPkgFilter(tab.id)}
+                >
+                  {tab.label}
+                </button>
+              ))}
             </div>
+          </div>
+
+          <div className="form-field">
+            <label htmlFor="setup-package-select" className="form-label">
+              Pilihan cepat paket soal
+            </label>
+            <select
+              id="setup-package-select"
+              className="select-input"
+              value={selectedPackage.id}
+              onChange={(e) => onChangePackage(e.target.value)}
+            >
+              {ALL_PACKAGES.map((pkg) => (
+                <option key={pkg.id} value={pkg.id}>
+                  {pkg.title} ({pkg.questions.length} soal · {pkg.durationMinutes} mnt)
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="stack-200" style={{ gap: '10px' }} role="radiogroup" aria-label="Daftar paket soal">
+            {filteredPackages.map((pkg) => {
+              const isSelected = pkg.id === selectedPackage.id;
+              const best = bestByPkg.get(pkg.id);
+              return (
+                <button
+                  key={pkg.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={isSelected}
+                  data-selected={isSelected}
+                  className="pkg-choice-card"
+                  onClick={() => onChangePackage(pkg.id)}
+                >
+                  <div className="row-wrap" style={{ justifyContent: 'space-between', width: '100%' }}>
+                    <div className="row-wrap" style={{ gap: '8px' }}>
+                      <span className={pkg.isFullSimulation ? 'lozenge lozenge-success' : 'tag tag-teal'}>
+                        {pkg.compositionLabel}
+                      </span>
+                      <span className="tag tag-blue">{pkg.durationMinutes} mnt</span>
+                    </div>
+                    {best && (
+                      <span className="lozenge lozenge-info mono">
+                        Skor terbaik: {best.score}/{best.max}
+                      </span>
+                    )}
+                  </div>
+                  <div className="h-small">{pkg.title}</div>
+                  <p className="body text-subtle">{pkg.description}</p>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* Right Sticky: Briefing & Confirmation Card */}
+        <aside className="card briefing-card stack-300" aria-label="Ringkasan dan mulai ujian">
+          <div className="stack-200" style={{ gap: '12px' }}>
+            <h2 className="h-medium">2. Lembar briefing &amp; mulai</h2>
 
             <div className="form-field">
               <label htmlFor="setup-formation-select" className="form-label">
@@ -126,30 +217,23 @@ export const ExamSetupView: React.FC<ExamSetupViewProps> = ({
                 {FORMATION_RULES[selectedFormation].description}
               </span>
             </div>
-          </div>
 
-          <div className="well-sunken stack-200" style={{ gap: 'var(--space-075)' }}>
-            <div className="h-xsmall">Ringkasan paket terpilih</div>
-            <p className="body">{selectedPackage.description}</p>
-            <div className="body-small">
-              <strong>Sumber soal:</strong>{' '}
-              <a
-                href={selectedPackage.sourceUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="link"
-              >
-                {selectedPackage.sourceTitle}
-                <ExternalLinkIcon size={12} />
-              </a>
+            <div className="well-sunken stack-200" style={{ gap: '6px' }}>
+              <div className="h-xsmall">{selectedPackage.title}</div>
+              <div className="body-small">
+                <strong>Sumber soal:</strong>{' '}
+                <a
+                  href={selectedPackage.sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="link"
+                >
+                  {selectedPackage.sourceTitle}
+                  <ExternalLinkIcon size={12} />
+                </a>
+              </div>
             </div>
-          </div>
-        </section>
 
-        {/* Rules & Launch Card */}
-        <section className="card stack-300">
-          <div className="stack-200" style={{ gap: 'var(--space-100)' }}>
-            <h2 className="h-medium">2. Ketentuan pengerjaan &amp; mulai ujian</h2>
             <div className="table-wrap">
               <table className="ads-table">
                 <tbody>
@@ -194,22 +278,21 @@ export const ExamSetupView: React.FC<ExamSetupViewProps> = ({
             </span>
             <div className="section-message-content">
               <p className="section-message-body">
-                Anda dapat menandai soal ragu-ragu, berpindah bebas antar nomor, dan mengunduh hasil akhir beserta pembahasan dan link sumber dalam format PDF.
+                Saat masuk ruang ujian, tampilan fokus aktif penuh dan Anda tetap dapat menjeda ujian kapan saja tanpa kehilangan jawaban.
               </p>
             </div>
           </div>
 
-          <div className="row-wrap" style={{ marginTop: 'auto' }}>
-            <button
-              type="button"
-              className={activeSession ? 'btn' : 'btn btn-primary'}
-              onClick={() => onConfirmStartExam(selectedPackage, selectedFormation)}
-            >
-              <CheckCircleIcon size={16} />
-              {activeSession ? 'Mulai sesi baru sekarang' : 'Mulai kerjakan ujian sekarang'}
-            </button>
-          </div>
-        </section>
+          <button
+            type="button"
+            className={activeSession ? 'btn' : 'btn btn-primary'}
+            style={{ width: '100%' }}
+            onClick={() => onConfirmStartExam(selectedPackage, selectedFormation)}
+          >
+            <CheckCircleIcon size={16} />
+            {activeSession ? 'Mulai sesi baru sekarang' : 'Mulai kerjakan ujian sekarang'}
+          </button>
+        </aside>
       </div>
     </div>
   );

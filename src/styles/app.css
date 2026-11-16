@@ -51,28 +51,28 @@ select {
   }
 }
 
-/* Typography Scale (Firecrawl hierarchy) */
+/* Typography Scale */
 .h-xlarge {
-  font-size: 36px;
+  font-size: 28px;
   font-weight: var(--weight-medium);
-  line-height: 40px;
-  letter-spacing: -0.36px;
-  color: var(--text-primary);
-}
-
-.h-large {
-  font-size: 32px;
-  font-weight: var(--weight-medium);
-  line-height: 36px;
+  line-height: 34px;
   letter-spacing: -0.32px;
   color: var(--text-primary);
 }
 
-.h-medium {
+.h-large {
   font-size: 24px;
   font-weight: var(--weight-medium);
-  line-height: 32px;
+  line-height: 30px;
   letter-spacing: -0.24px;
+  color: var(--text-primary);
+}
+
+.h-medium {
+  font-size: 20px;
+  font-weight: var(--weight-medium);
+  line-height: 28px;
+  letter-spacing: -0.18px;
   color: var(--text-primary);
 }
 
@@ -130,68 +130,67 @@ select {
 }
 
 .metric-large {
-  font-size: 32px;
+  font-size: 28px;
   font-weight: var(--weight-medium);
-  line-height: 36px;
+  line-height: 34px;
   letter-spacing: -0.32px;
   color: var(--text-primary);
 }
 
 .metric-medium {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: var(--weight-medium);
-  line-height: 32px;
-  letter-spacing: -0.24px;
+  line-height: 28px;
+  letter-spacing: -0.2px;
   color: var(--text-primary);
 }
 
-/* App Shell & Navigation */
-.app-shell {
+/* ==========================================================================
+   LMS Shell (Left Navigation Sidebar + Contextual Topbar + Main Canvas)
+   ========================================================================== */
+.lms-shell {
   min-height: 100vh;
+  display: grid;
+  grid-template-columns: 276px minmax(0, 1fr);
   background-color: var(--background-base);
-  display: flex;
-  flex-direction: column;
 }
 
-.topbar {
+.lms-sidebar {
   position: sticky;
   top: 0;
-  z-index: 20;
+  height: 100vh;
+  overflow-y: auto;
   background-color: var(--surface);
-  border-block-end: 1px solid var(--border-muted);
+  border-inline-end: 1px solid var(--border-muted);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: var(--space-4);
+  gap: var(--space-4);
 }
 
-.topbar-inner {
-  max-width: 1200px;
-  margin-inline: auto;
-  padding-inline: var(--space-6);
-  min-height: 60px;
+.lms-sidebar-top {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.lms-brand {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--space-4);
-  flex-wrap: wrap;
-}
-
-.brand-link {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
+  gap: 10px;
+  width: 100%;
   background: transparent;
-  border: none;
-  padding: var(--space-1) var(--space-2);
+  border: 1px solid transparent;
+  padding: 8px 10px;
   border-radius: var(--rounded-sm);
   cursor: pointer;
   color: var(--text-primary);
-  font-size: 16px;
-  font-weight: var(--weight-medium);
-  line-height: 24px;
-  letter-spacing: -0.1px;
   text-align: start;
   transition: var(--transition-firecrawl);
 }
 
-.brand-link:hover {
+.lms-brand:hover {
   background-color: var(--black-alpha-4);
 }
 
@@ -200,6 +199,195 @@ select {
   flex-shrink: 0;
 }
 
+.lms-brand-title {
+  display: block;
+  font-size: 15px;
+  font-weight: var(--weight-medium);
+  line-height: 20px;
+  color: var(--text-primary);
+}
+
+.lms-brand-sub {
+  display: block;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--text-subtlest);
+}
+
+.lms-nav-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.lms-nav-label {
+  padding: 0 10px 4px;
+  font-size: 11px;
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-subtlest);
+}
+
+.lms-nav-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--rounded-sm);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-subtle);
+  font-size: 14px;
+  font-weight: var(--weight-label);
+  line-height: 20px;
+  cursor: pointer;
+  text-align: start;
+  transition: var(--transition-firecrawl);
+}
+
+.lms-nav-item:hover {
+  background-color: var(--black-alpha-4);
+  color: var(--text-primary);
+}
+
+.lms-nav-item[aria-current='page'] {
+  background-color: var(--brand-selected);
+  border-color: var(--info-border-subtle);
+  color: var(--brand-primary);
+  font-weight: var(--weight-medium);
+}
+
+.lms-nav-item-left {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.lms-sidebar-footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  border-top: 1px solid var(--border-faint);
+  padding-top: var(--space-4);
+}
+
+.lms-sidebar-widget {
+  background-color: var(--background-lighter);
+  border: 1px solid var(--border-faint);
+  border-radius: var(--rounded-sm);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.lms-workspace {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 100vh;
+}
+
+.lms-contextbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background-color: var(--surface);
+  border-block-end: 1px solid var(--border-muted);
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.lms-mobile-header-brand {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+}
+
+.lms-mobile-nav {
+  display: none;
+  background-color: var(--surface);
+  border-block-end: 1px solid var(--border-muted);
+  padding: 6px 12px;
+  gap: 4px;
+  overflow-x: auto;
+}
+
+.lms-main {
+  flex: 1;
+  width: 100%;
+  max-width: 1120px;
+  margin-inline: auto;
+  padding: var(--space-6);
+}
+
+.footer {
+  border-block-start: 1px solid var(--border-muted);
+  padding: var(--space-4) var(--space-6);
+  background-color: var(--surface);
+}
+
+.footer-inner {
+  max-width: 1120px;
+  margin-inline: auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+/* Fullscreen Distraction-Free CAT Classroom */
+.cat-classroom-shell {
+  min-height: 100vh;
+  background-color: var(--background-base);
+  display: flex;
+  flex-direction: column;
+}
+
+.cat-classroom-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 25;
+  background-color: var(--surface);
+  border-block-end: 1px solid var(--border-muted);
+  padding: 10px 24px;
+}
+
+.cat-classroom-topbar-inner {
+  max-width: 1240px;
+  margin-inline: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.cat-classroom-main {
+  width: 100%;
+  max-width: 1240px;
+  margin-inline: auto;
+  padding: var(--space-6);
+  flex: 1;
+}
+
+/* Tab Buttons (used cleanly inside mobile nav & filters) */
 .tablist {
   display: flex;
   align-items: center;
@@ -214,8 +402,8 @@ select {
   background: transparent;
   border: none;
   border-block-end: 2px solid transparent;
-  padding: 16px 14px;
-  font-size: 14px;
+  padding: 10px 14px;
+  font-size: 13px;
   font-weight: var(--weight-label);
   line-height: 20px;
   color: var(--text-subtle);
@@ -237,31 +425,7 @@ select {
   border-block-end-color: var(--brand-primary);
 }
 
-.main-container {
-  width: 100%;
-  max-width: 1200px;
-  margin-inline: auto;
-  padding: var(--space-8) var(--space-6);
-  flex: 1;
-}
-
-.footer {
-  border-block-start: 1px solid var(--border-muted);
-  padding: var(--space-6);
-  background-color: var(--surface);
-}
-
-.footer-inner {
-  max-width: 1200px;
-  margin-inline: auto;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
-  gap: var(--space-4);
-}
-
-/* Buttons (Firecrawl shape/spacing + brand blue primary) */
+/* Buttons */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -359,7 +523,7 @@ select {
   color: var(--brand-primary);
 }
 
-/* Cards & Subtle Separated Wells */
+/* Cards & Wells */
 .card {
   background-color: var(--surface);
   border: 1px solid var(--border-muted);
@@ -372,6 +536,174 @@ select {
   border: 1px solid var(--border-faint);
   border-radius: var(--rounded-sm);
   padding: var(--space-4);
+}
+
+/* LMS Dashboard KPI & Roadmap Cards */
+.kpi-card {
+  background-color: var(--surface);
+  border: 1px solid var(--border-muted);
+  border-radius: var(--rounded-md);
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.roadmap-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.roadmap-card {
+  background-color: var(--surface);
+  border: 1px solid var(--border-muted);
+  border-radius: var(--rounded-md);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.roadmap-step-num {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--rounded-full);
+  background-color: var(--brand-selected);
+  border: 1px solid var(--info-border-subtle);
+  color: var(--brand-primary);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: var(--weight-medium);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* LMS Course Player Layout */
+.course-layout {
+  display: grid;
+  grid-template-columns: 310px minmax(0, 1fr);
+  gap: var(--space-6);
+  align-items: start;
+}
+
+.course-sidebar {
+  position: sticky;
+  top: 76px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.course-module-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.course-module-item {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: var(--rounded-sm);
+  border: 1px solid var(--border-muted);
+  background-color: var(--surface);
+  color: var(--text-primary);
+  text-align: start;
+  cursor: pointer;
+  transition: var(--transition-firecrawl);
+}
+
+.course-module-item:hover {
+  background-color: var(--background-lighter);
+  border-color: var(--black-alpha-20);
+}
+
+.course-module-item[data-active='true'] {
+  background-color: var(--brand-selected);
+  border-color: var(--brand-selected-border);
+  box-shadow: 0 0 0 1px var(--brand-selected-hovered);
+}
+
+.course-module-status {
+  width: 22px;
+  height: 22px;
+  border-radius: var(--rounded-full);
+  border: 1px solid var(--border-loud);
+  background-color: var(--background-lighter);
+  color: var(--text-subtle);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-block-start: 2px;
+}
+
+.course-module-item[data-completed='true'] .course-module-status {
+  background-color: var(--success-bg-subtler);
+  border-color: var(--success-border);
+  color: var(--success-text-bolder);
+}
+
+.course-module-item[data-active='true'][data-completed='false'] .course-module-status {
+  background-color: var(--brand-primary);
+  border-color: var(--brand-primary);
+  color: var(--text-inverse);
+}
+
+.course-stage {
+  background-color: var(--surface);
+  border: 1px solid var(--border-muted);
+  border-radius: var(--rounded-md);
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+/* LMS Pre-Exam Assessment Hub */
+.setup-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(320px, 1fr);
+  gap: var(--space-6);
+  align-items: start;
+}
+
+.pkg-choice-card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 18px;
+  border-radius: var(--rounded-md);
+  border: 1px solid var(--border-muted);
+  background-color: var(--surface);
+  color: var(--text-primary);
+  text-align: start;
+  cursor: pointer;
+  transition: var(--transition-firecrawl);
+}
+
+.pkg-choice-card:hover {
+  background-color: var(--background-lighter);
+  border-color: var(--black-alpha-20);
+}
+
+.pkg-choice-card[data-selected='true'] {
+  background-color: var(--brand-selected);
+  border-color: var(--brand-selected-border);
+  box-shadow: 0 0 0 1px var(--brand-selected-hovered);
+}
+
+.briefing-card {
+  position: sticky;
+  top: 76px;
 }
 
 /* SectionMessage / Callout Notices */
@@ -440,7 +772,7 @@ select {
   color: var(--text-primary);
 }
 
-/* Status Pills & Tags (Geist Mono / Crisp Borders) */
+/* Status Pills & Tags */
 .lozenge {
   display: inline-flex;
   align-items: center;
@@ -518,13 +850,12 @@ select {
   color: var(--discovery-text-bolder);
 }
 
-/* Badge */
 .badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   min-width: 22px;
-  padding: 2px 6px;
+  padding: 2px 7px;
   border-radius: var(--rounded-full);
   background-color: var(--black-alpha-6);
   color: var(--text-primary);
@@ -623,9 +954,9 @@ select {
   border: 1px solid var(--border-muted);
   border-radius: var(--rounded-sm);
   color: var(--text-primary);
-  font-size: 15px;
+  font-size: 14px;
   font-weight: var(--weight-regular);
-  line-height: 24px;
+  line-height: 20px;
   transition: var(--transition-firecrawl);
 }
 
@@ -638,7 +969,7 @@ select {
   color: var(--text-subtlest);
 }
 
-/* Page Layouts & Grids (Three-step cadence: 8 / 16 / 32px) */
+/* Page Layouts & Grids */
 .stack-200 {
   display: flex;
   flex-direction: column;
@@ -740,28 +1071,16 @@ select {
 }
 
 /* Exam Workspace Layout */
-.exam-header-bar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-4);
-  padding: var(--space-4) var(--space-6);
-  border: 1px solid var(--border-muted);
-  border-radius: var(--rounded-md);
-  background-color: var(--surface);
-}
-
 .timer-pill {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  padding: 8px 14px;
+  padding: 6px 14px;
   border-radius: var(--rounded-sm);
   border: 1px solid var(--border-muted);
   background-color: var(--background-lighter);
   font-family: var(--font-mono);
-  font-size: 16px;
+  font-size: 15px;
   font-weight: var(--weight-medium);
   color: var(--text-primary);
 }
@@ -790,6 +1109,11 @@ select {
   font-size: 16px;
   line-height: 26px;
   color: var(--text-primary);
+}
+
+.question-stem[data-size='large'] {
+  font-size: 18px;
+  line-height: 30px;
 }
 
 .figure-box {
@@ -835,7 +1159,6 @@ select {
   border-color: var(--black-alpha-20);
 }
 
-/* Selected State */
 .option-item[aria-checked='true'] {
   background-color: var(--brand-selected);
   border-color: var(--brand-selected-border);
@@ -917,6 +1240,52 @@ select {
   font-weight: var(--weight-medium);
 }
 
+/* Result Review Question Jumper */
+.review-jumper-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+  gap: 6px;
+}
+
+.review-num-btn {
+  min-height: 32px;
+  border-radius: var(--rounded-sm);
+  border: 1px solid var(--border-muted);
+  background-color: var(--surface);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-firecrawl);
+}
+
+.review-num-btn[data-score='full'] {
+  background-color: var(--success-bg);
+  border-color: var(--success-border);
+  color: var(--success-text-bolder);
+}
+
+.review-num-btn[data-score='partial'] {
+  background-color: var(--warning-bg);
+  border-color: var(--warning-border);
+  color: var(--warning-text-bolder);
+}
+
+.review-num-btn[data-score='zero'] {
+  background-color: var(--danger-bg);
+  border-color: var(--danger-border-subtle);
+  color: var(--danger-text);
+}
+
+.review-num-btn[data-active='true'] {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 1px;
+  font-weight: var(--weight-medium);
+}
+
 /* Progress / Chart Bars */
 .chart-bar-track {
   width: 100%;
@@ -978,7 +1347,7 @@ select {
   display: block;
 }
 
-/* Modal Dialog (Overlay Surface) */
+/* Modal Dialog */
 .modal-blanket {
   position: fixed;
   inset: 0;
@@ -1019,10 +1388,34 @@ select {
   gap: var(--space-2);
 }
 
-/* Breakpoints: 996px (lg), 768px (md), 576px (sm) */
+/* Responsive Breakpoints */
 @media (max-width: 996px) {
-  .exam-layout {
+  .lms-shell {
     grid-template-columns: 1fr;
+  }
+
+  .lms-sidebar {
+    display: none;
+  }
+
+  .lms-mobile-header-brand {
+    display: inline-flex;
+  }
+
+  .lms-mobile-nav {
+    display: flex;
+  }
+
+  .course-layout,
+  .setup-layout,
+  .exam-layout,
+  .roadmap-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .course-sidebar,
+  .briefing-card {
+    position: static;
   }
 
   .grid-4 {
@@ -1038,24 +1431,27 @@ select {
 
 @media (max-width: 576px) {
   .h-xlarge {
-    font-size: 28px;
-    line-height: 34px;
-  }
-
-  .h-large {
     font-size: 24px;
     line-height: 30px;
   }
 
-  .main-container {
-    padding: var(--space-6) var(--space-4);
+  .h-large {
+    font-size: 20px;
+    line-height: 26px;
   }
 
-  .topbar-inner {
-    padding-inline: var(--space-4);
+  .lms-main,
+  .cat-classroom-main {
+    padding: var(--space-4);
   }
 
-  .card {
+  .lms-contextbar,
+  .cat-classroom-topbar {
+    padding: 10px 16px;
+  }
+
+  .card,
+  .course-stage {
     padding: var(--space-4);
   }
 

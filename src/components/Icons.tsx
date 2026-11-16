@@ -24,6 +24,160 @@ export const AppLogoIcon: React.FC<IconProps> = ({ size = 20, className }) => (
   </svg>
 );
 
+export const DashboardIcon: React.FC<IconProps> = ({ size = 16, className }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 16 16"
+    fill="none"
+    aria-hidden="true"
+    className={className}
+  >
+    <rect x="2" y="2" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.5" />
+    <rect x="9" y="2" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.5" />
+    <rect x="2" y="9" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.5" />
+    <rect x="9" y="9" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.5" />
+  </svg>
+);
+
+export const CourseIcon: React.FC<IconProps> = ({ size = 16, className }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 16 16"
+    fill="none"
+    aria-hidden="true"
+    className={className}
+  >
+    <path
+      d="M8 2.5L1.75 5.75 8 9l6.25-3.25L8 2.5z"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M4 7.5v3.25c0 1.25 1.8 2.25 4 2.25s4-1 4-2.25V7.5"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+export const ExamIcon: React.FC<IconProps> = ({ size = 16, className }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 16 16"
+    fill="none"
+    aria-hidden="true"
+    className={className}
+  >
+    <rect x="3" y="2" width="10" height="12" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
+    <path d="M5.5 5.5h5M5.5 8.25h5M5.5 11h3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+  </svg>
+);
+
+export const ReportIcon: React.FC<IconProps> = ({ size = 16, className }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 16 16"
+    fill="none"
+    aria-hidden="true"
+    className={className}
+  >
+    <path d="M2.5 13.5h11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    <rect x="3.5" y="8" width="2" height="5.5" rx="0.5" fill="currentColor" />
+    <rect x="7" y="5.5" width="2" height="8" rx="0.5" fill="currentColor" />
+    <rect x="10.5" y="3" width="2" height="10.5" rx="0.5" fill="currentColor" />
+  </svg>
+);
+
+export const PlayIcon: React.FC<IconProps> = ({ size = 16, className }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 16 16"
+    fill="none"
+    aria-hidden="true"
+    className={className}
+  >
+    <path
+      d="M4.5 3.25l8 4.75-8 4.75V3.25z"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+export const PauseIcon: React.FC<IconProps> = ({ size = 16, className }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 16 16"
+    fill="none"
+    aria-hidden="true"
+    className={className}
+  >
+    <rect x="4" y="3.25" width="2.75" height="9.5" rx="0.75" stroke="currentColor" strokeWidth="1.5" />
+    <rect x="9.25" y="3.25" width="2.75" height="9.5" rx="0.75" stroke="currentColor" strokeWidth="1.5" />
+  </svg>
+);
+
+export const SparklesIcon: React.FC<IconProps> = ({ size = 16, className }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 16 16"
+    fill="none"
+    aria-hidden="true"
+    className={className}
+  >
+    <path
+      d="M8 2l1.2 3.3L12.5 6.5 9.2 7.7 8 11 6.8 7.7 3.5 6.5l3.3-1.2L8 2z"
+      stroke="currentColor"
+      strokeWidth="1.4"
+      strokeLinejoin="round"
+    />
+    <path d="M12.5 11v2.5M11.25 12.25h2.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+  </svg>
+);
+
+export const ListIcon: React.FC<IconProps> = ({ size = 16, className }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 16 16"
+    fill="none"
+    aria-hidden="true"
+    className={className}
+  >
+    <circle cx="3" cy="4.25" r="1" fill="currentColor" />
+    <circle cx="3" cy="8" r="1" fill="currentColor" />
+    <circle cx="3" cy="11.75" r="1" fill="currentColor" />
+    <path d="M5.75 4.25h7.75M5.75 8h7.75M5.75 11.75h7.75" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+  </svg>
+);
+
+export const GridIcon: React.FC<IconProps> = ({ size = 16, className }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 16 16"
+    fill="none"
+    aria-hidden="true"
+    className={className}
+  >
+    <rect x="2.25" y="2.25" width="4.5" height="4.5" rx="0.75" stroke="currentColor" strokeWidth="1.4" />
+    <rect x="9.25" y="2.25" width="4.5" height="4.5" rx="0.75" stroke="currentColor" strokeWidth="1.4" />
+    <rect x="2.25" y="9.25" width="4.5" height="4.5" rx="0.75" stroke="currentColor" strokeWidth="1.4" />
+    <rect x="9.25" y="9.25" width="4.5" height="4.5" rx="0.75" stroke="currentColor" strokeWidth="1.4" />
+  </svg>
+);
+
 export const InfoIcon: React.FC<IconProps> = ({ size = 16, className }) => (
   <svg
     width={size}

@@ -1,14 +1,17 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import type { ActiveExamSession, ExamAttempt, FormationType, QuestionPackage } from '../types';
 import { ALL_PACKAGES, SSCASN_PORTAL } from '../data/questionBank';
-import { FORMATION_RULES, formatCountdown } from '../utils/scoring';
+import { FORMATION_RULES, formatCountdown, summarizeAttempt } from '../utils/scoring';
+import type { StudyModuleId } from './StudyView';
 import {
   BookIcon,
   CheckCircleIcon,
-  ClockIcon,
-  ExternalLinkIcon,
-  InfoIcon,
   ChevronRightIcon,
+  ClockIcon,
+  CourseIcon,
+  ExternalLinkIcon,
+  PlayIcon,
+  ReportIcon,
 } from './Icons';
 
 interface HomeViewProps {
@@ -16,11 +19,13 @@ interface HomeViewProps {
   onSelectFormation: (formation: FormationType) => void;
   activeSession: ActiveExamSession | null;
   history: ExamAttempt[];
+  completedModules: string[];
+  totalModulesCount: number;
   onStartPackage: (pkg: QuestionPackage) => void;
   onResumeExam: () => void;
   onDiscardSession: () => void;
-  onOpenStudy: () => void;
-  onOpenHistory: () => void;
+  onOpenStudy: (moduleId?: StudyModuleId) => void;
+  onOpenHistory: (attemptId?: string) => void;
 }
 
 export const HomeView: React.FC<HomeViewProps> = ({
@@ -28,6 +33,8 @@ export const HomeView: React.FC<HomeViewProps> = ({
   onSelectFormation,
   activeSession,
   history,
+  completedModules,
+  totalModulesCount,
   onStartPackage,
   onResumeExam,
   onDiscardSession,
@@ -36,57 +43,70 @@ export const HomeView: React.FC<HomeViewProps> = ({
 }) => {
   const fullPackages = ALL_PACKAGES.filter((p) => p.isFullSimulation);
   const focusedPackages = ALL_PACKAGES.filter((p) => !p.isFullSimulation);
+  const activeRule = FORMATION_RULES[selectedFormation];
+
+  const stats = useMemo(() => {
+    const byPackage = new Map<string, { attempts: number; bestScore: number; maxScore: number }>();
+    let bestFullScore = 0;
+    let bestAttemptId: string | undefined;
+
+    for (const item of history) {
+      const ev = summarizeAttempt(item);
+      const prev = byPackage.get(item.packageId);
+      if (!prev) {
+        byPackage.set(item.packageId, {
+          attempts: 1,
+          bestScore: ev.totalScore,
+          maxScore: ev.maxTotalScore,
+        });
+      } else {
+        byPackage.set(item.packageId, {
+          attempts: prev.attempts + 1,
+          bestScore: Math.max(prev.bestScore, ev.totalScore),
+          maxScore: ev.maxTotalScore,
+        });
+      }
+
+      if (ev.totalScore >= bestFullScore) {
+        bestFullScore = ev.totalScore;
+        bestAttemptId = item.id;
+      }
+    }
+
+    const latestAttempt = history[0];
+    const latestEval = latestAttempt ? summarizeAttempt(latestAttempt) : null;
+
+    return {
+      byPackage,
+      bestAttemptId,
+      latestAttempt,
+      latestEval,
+    };
+  }, [history]);
+
+  const modulePct =
+    totalModulesCount > 0
+      ? Math.round((completedModules.length / totalModulesCount) * 100)
+      : 0;
 
   return (
     <div className="stack-400">
-      {/* Hero / Page Header */}
-      <section className="stack-200">
-        <div className="row-wrap">
-          <span className="lozenge lozenge-info">Simulasi CAT BKN</span>
-          <span className="tag tag-blue">Tanpa login · Ekspor PDF langsung</span>
-        </div>
-        <h1 className="h-xlarge">
-          Latihan simulasi ujian dan pusat belajar SKD CPNS
-        </h1>
-        <p className="body-large" style={{ maxWidth: '72ch' }}>
-          Kerjakan try out dengan komposisi resmi 110 soal (30 TWK, 35 TIU, 45 TKP) dalam waktu 100 menit, evaluasi skor berdasarkan aturan Kepmenpan RB Nomor 321 Tahun 2024, tinjau link sumber pada tiap butir soal, lalu ekspor hasil lengkapnya ke berkas PDF.
-        </p>
-        <div className="row-wrap">
-          <button
-            type="button"
-            className="btn btn-primary"
-            onClick={() => onStartPackage(fullPackages[0])}
-          >
-            Siapkan simulasi 110 soal (Paket 1)
-            <ChevronRightIcon size={16} />
-          </button>
-          <button type="button" className="btn" onClick={onOpenStudy}>
-            <BookIcon size={16} />
-            Buka pusat belajar materi
-          </button>
-          {history.length > 0 && (
-            <button type="button" className="btn btn-subtle" onClick={onOpenHistory}>
-              Lihat riwayat ujian ({history.length})
-            </button>
-          )}
-        </div>
-      </section>
-
-      {/* Active Session Resume Notice */}
+      {/* Paused / Active Session Resume Notice */}
       {activeSession && (
         <div className="section-message section-message-warning" role="status">
           <span className="section-message-icon">
             <ClockIcon size={18} />
           </span>
           <div className="section-message-content">
-            <h2 className="h-small">Sesi try out belum diselesaikan</h2>
+            <h2 className="h-small">Sesi try out belum diselesaikan (timer dijeda)</h2>
             <p className="section-message-body">
-              Anda memiliki sesi aktif pada <strong>{activeSession.packageTitle}</strong> dengan{' '}
+              Anda memiliki sesi tersimpan pada <strong>{activeSession.packageTitle}</strong> dengan{' '}
               {Object.keys(activeSession.answers).length} soal terjawab dan sisa waktu{' '}
               <span className="mono">{formatCountdown(activeSession.remainingSeconds)}</span>.
             </p>
-            <div className="row-wrap" style={{ marginTop: 'var(--space-100)' }}>
+            <div className="row-wrap" style={{ marginTop: '8px' }}>
               <button type="button" className="btn btn-warning" onClick={onResumeExam}>
+                <PlayIcon size={16} />
                 Lanjutkan ujian sekarang
               </button>
               <button type="button" className="btn btn-subtle" onClick={onDiscardSession}>
@@ -97,121 +117,278 @@ export const HomeView: React.FC<HomeViewProps> = ({
         </div>
       )}
 
-      {/* Rules SectionMessage */}
-      <div className="section-message section-message-info">
-        <span className="section-message-icon">
-          <InfoIcon size={18} />
-        </span>
-        <div className="section-message-content">
-          <h2 className="h-small">Komposisi soal dan aturan penilaian resmi SKD CPNS</h2>
-          <p className="section-message-body">
-            Simulasi ini mengikuti ketentuan Kepmenpan RB Nomor 321 Tahun 2024: TWK (30 soal, benar +5, salah/kosong 0, maksimal 150), TIU (35 soal, benar +5, salah/kosong 0, maksimal 175), dan TKP (45 soal, skor bertingkat 1 sampai 5, tidak menjawab 0, maksimal 225). Total nilai kumulatif maksimal adalah 550 dengan durasi 100 menit.
-          </p>
-          <div style={{ marginTop: 'var(--space-050)' }}>
-            <a
-              href={SSCASN_PORTAL.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="link body"
-            >
-              Buka portal resmi SSCASN BKN
-              <ExternalLinkIcon size={14} />
-            </a>
+      {/* Dashboard Header */}
+      <section className="stack-200" style={{ gap: '8px' }}>
+        <div className="row-wrap" style={{ gap: '8px' }}>
+          <span className="lozenge lozenge-info">LMS Persiapan CPNS</span>
+          <span className="tag tag-blue">Tanpa login · Progres tersimpan otomatis</span>
+        </div>
+        <h1 className="h-xlarge">Beranda belajar &amp; simulasi CAT SKD CPNS</h1>
+        <p className="body-large" style={{ maxWidth: '72ch' }}>
+          Ikuti alur belajar terstruktur mulai dari modul materi, latihan fokus subtes, hingga simulasi 110 soal berstandar Kepmenpan RB No. 321 Tahun 2024 lengkap dengan pembahasan, link sumber, dan ekspor PDF.
+        </p>
+      </section>
+
+      {/* 4 LMS KPI Cards */}
+      <section className="grid-4" aria-label="Ringkasan progres belajar">
+        {/* Card 1: Target Formasi */}
+        <article className="kpi-card">
+          <span className="body-small">Target formasi aktif</span>
+          <select
+            aria-label="Pilih target formasi aktif"
+            className="select-input"
+            value={selectedFormation}
+            onChange={(e) => onSelectFormation(e.target.value as FormationType)}
+          >
+            {(Object.keys(FORMATION_RULES) as FormationType[]).map((key) => (
+              <option key={key} value={key}>
+                {FORMATION_RULES[key].shortLabel}
+              </option>
+            ))}
+          </select>
+          <span className="body-small">{activeRule.description}</span>
+        </article>
+
+        {/* Card 2: Progres Kelas Modul */}
+        <article className="kpi-card">
+          <div className="row-wrap" style={{ justifyContent: 'space-between' }}>
+            <span className="body-small">Progres kelas modul</span>
+            <span className="lozenge lozenge-info mono">{modulePct}%</span>
           </div>
-        </div>
-      </div>
+          <div className="metric-medium mono">
+            {completedModules.length} / {totalModulesCount}{' '}
+            <span className="body text-subtle">modul</span>
+          </div>
+          <div className="chart-bar-track" aria-label={`Progres kelas ${modulePct}%`}>
+            <div
+              className="chart-bar-fill"
+              style={{ width: `${modulePct}%`, backgroundColor: 'var(--brand-primary)' }}
+            />
+          </div>
+          <div style={{ marginTop: 'auto' }}>
+            <button
+              type="button"
+              className="btn btn-compact"
+              onClick={() => onOpenStudy()}
+            >
+              <CourseIcon size={14} />
+              Lanjutkan modul belajar
+            </button>
+          </div>
+        </article>
 
-      {/* Formation Selector */}
+        {/* Card 3: Hasil Terakhir / Riwayat */}
+        <article className="kpi-card">
+          <div className="row-wrap" style={{ justifyContent: 'space-between' }}>
+            <span className="body-small">Simulasi diselesaikan</span>
+            <span className="badge">{history.length}x</span>
+          </div>
+          {stats.latestEval && stats.latestAttempt ? (
+            <>
+              <div className="metric-medium mono">
+                {stats.latestEval.totalScore}{' '}
+                <span className="body text-subtle">/ {stats.latestEval.maxTotalScore}</span>
+              </div>
+              <span className="body-small">
+                Terakhir: {stats.latestEval.passed ? 'Lulus PG' : 'Belum lulus PG'}
+              </span>
+              <div style={{ marginTop: 'auto' }}>
+                <button
+                  type="button"
+                  className="btn btn-compact"
+                  onClick={() => onOpenHistory(stats.latestAttempt.id)}
+                >
+                  <ReportIcon size={14} />
+                  Buka rapor terakhir
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="metric-medium text-subtle">—</div>
+              <span className="body-small">Belum ada riwayat pengerjaan</span>
+              <div style={{ marginTop: 'auto' }}>
+                <button
+                  type="button"
+                  className="btn btn-compact"
+                  onClick={() => onStartPackage(focusedPackages[0])}
+                >
+                  Mulai latihan 30 soal
+                </button>
+              </div>
+            </>
+          )}
+        </article>
+
+        {/* Card 4: Main Primary Action */}
+        <article className="kpi-card" style={{ justifyContent: 'space-between' }}>
+          <div className="stack-200" style={{ gap: '4px' }}>
+            <span className="body-small">Simulasi penuh CAT BKN</span>
+            <div className="h-small">110 soal · 100 menit</div>
+            <span className="body-small">
+              Timer mulai hanya setelah Anda menekan konfirmasi mulai ujian.
+            </span>
+          </div>
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() => onStartPackage(fullPackages[0])}
+          >
+            Siapkan simulasi 110 soal (Paket 1)
+            <ChevronRightIcon size={16} />
+          </button>
+        </article>
+      </section>
+
+      {/* Guided 3-Step LMS Learning Roadmap */}
       <section className="stack-200">
-        <div>
-          <h2 className="h-medium">Pilih jenis formasi acuan ambang batas</h2>
-          <p className="body text-subtle" style={{ marginTop: 'var(--space-050)' }}>
-            Penentuan status lulus nilai ambang batas (passing grade) pada hasil ujian mengikuti kategori formasi yang Anda pilih.
-          </p>
+        <div className="row-wrap" style={{ justifyContent: 'space-between' }}>
+          <div>
+            <h2 className="h-medium">Alur belajar terpandu (3 langkah persiapan)</h2>
+            <p className="body text-subtle" style={{ marginTop: '4px' }}>
+              Ikuti tahapan berikut agar belajar materi dan latihan soal terasa lebih terarah.
+            </p>
+          </div>
+          <a
+            href={SSCASN_PORTAL.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="link body-small"
+          >
+            Portal resmi SSCASN BKN
+            <ExternalLinkIcon size={12} />
+          </a>
         </div>
 
-        <div className="formation-grid" role="radiogroup" aria-label="Pilih jenis formasi">
-          {(Object.keys(FORMATION_RULES) as FormationType[]).map((key) => {
-            const rule = FORMATION_RULES[key];
-            const isSelected = selectedFormation === key;
-            return (
-              <button
-                key={rule.id}
-                type="button"
-                role="radio"
-                aria-checked={isSelected}
-                data-selected={isSelected}
-                className="formation-option"
-                onClick={() => onSelectFormation(rule.id)}
-              >
-                <span className="radio-circle" data-checked={isSelected} aria-hidden="true">
-                  {isSelected && <span className="radio-dot" />}
-                </span>
-                <span className="stack-200" style={{ gap: 'var(--space-050)' }}>
-                  <span className="h-xsmall">{rule.label}</span>
-                  <span className="body-small">{rule.description}</span>
-                </span>
+        <div className="roadmap-grid">
+          <article className="roadmap-card">
+            <div className="row-wrap" style={{ gap: '10px' }}>
+              <span className="roadmap-step-num">1</span>
+              <span className="h-small">Pelajari 5 modul kelas</span>
+            </div>
+            <p className="body">
+              Pahami aturan Passing Grade Kepmenpan RB 321/2024, rangkuman TWK Kerjago, video pembahasan TIU Figural, dan trik skor 5 TKP.
+            </p>
+            <div style={{ marginTop: 'auto' }}>
+              <button type="button" className="btn btn-compact" onClick={() => onOpenStudy('modul-regulasi')}>
+                <BookIcon size={14} />
+                Buka kelas &amp; modul ({completedModules.length}/{totalModulesCount})
               </button>
-            );
-          })}
+            </div>
+          </article>
+
+          <article className="roadmap-card">
+            <div className="row-wrap" style={{ gap: '10px' }}>
+              <span className="roadmap-step-num">2</span>
+              <span className="h-small">Latihan fokus subtes</span>
+            </div>
+            <p className="body">
+              Latih kecepatan per subtes dengan paket singkat (30 soal TWK, 35 soal TIU, atau 45 soal TKP) sebelum mengerjakan 110 soal penuh.
+            </p>
+            <div style={{ marginTop: 'auto' }}>
+              <button
+                type="button"
+                className="btn btn-compact"
+                onClick={() => onStartPackage(focusedPackages[0])}
+              >
+                <PlayIcon size={14} />
+                Pilih latihan fokus subtes
+              </button>
+            </div>
+          </article>
+
+          <article className="roadmap-card">
+            <div className="row-wrap" style={{ gap: '10px' }}>
+              <span className="roadmap-step-num">3</span>
+              <span className="h-small">Simulasi penuh &amp; unduh PDF</span>
+            </div>
+            <p className="body">
+              Uji kesiapan pada paket penuh 110 soal selama 100 menit, evaluasi kelulusan Passing Grade, lalu unduh laporan PDF beserta pembahasan &amp; link sumber.
+            </p>
+            <div style={{ marginTop: 'auto' }}>
+              <button
+                type="button"
+                className="btn btn-compact"
+                onClick={() => onStartPackage(fullPackages[0])}
+              >
+                <ChevronRightIcon size={14} />
+                Siapkan simulasi 110 soal
+              </button>
+            </div>
+          </article>
         </div>
       </section>
 
-      {/* Full CAT Simulation Packages */}
+      {/* Full Simulation Packages Catalog */}
       <section className="stack-200">
         <div>
           <h2 className="h-medium">Paket simulasi penuh CAT SKD (110 soal · 100 menit)</h2>
-          <p className="body text-subtle" style={{ marginTop: 'var(--space-050)' }}>
+          <p className="body text-subtle" style={{ marginTop: '4px' }}>
             Soal diambil langsung dari arsip modul Tryout LolosASN dan Bank Drilling CPNS 2024/2025 pada Google Drive sumber belajar.
           </p>
         </div>
 
         <div className="grid-2">
-          {fullPackages.map((pkg, idx) => (
-            <article key={pkg.id} className="card stack-200">
-              <div className="row-wrap" style={{ justifyContent: 'space-between' }}>
-                <span className="lozenge lozenge-success">
-                  <CheckCircleIcon size={14} />
-                  Komposisi asli BKN
-                </span>
-                <span className="tag tag-blue">{pkg.durationMinutes} menit</span>
-              </div>
-
-              <div className="stack-200" style={{ gap: 'var(--space-100)' }}>
-                <h3 className="h-small">{pkg.title}</h3>
-                <p className="body">{pkg.description}</p>
-              </div>
-
-              <div className="well-sunken stack-200" style={{ gap: 'var(--space-050)', padding: 'var(--space-150)' }}>
-                <div className="body-small">
-                  <strong>Rincian soal:</strong> 30 TWK · 35 TIU · 45 TKP (total 110 butir)
+          {fullPackages.map((pkg, idx) => {
+            const pkgStats = stats.byPackage.get(pkg.id);
+            return (
+              <article key={pkg.id} className="card stack-200">
+                <div className="row-wrap" style={{ justifyContent: 'space-between' }}>
+                  <span className="lozenge lozenge-success">
+                    <CheckCircleIcon size={14} />
+                    Komposisi asli BKN
+                  </span>
+                  <div className="row-wrap" style={{ gap: '6px' }}>
+                    {pkgStats && (
+                      <span className="lozenge lozenge-info mono">
+                        Terbaik: {pkgStats.bestScore}/{pkgStats.maxScore}
+                      </span>
+                    )}
+                    <span className="tag tag-blue">{pkg.durationMinutes} menit</span>
+                  </div>
                 </div>
-                <div className="body-small">
-                  <strong>Sumber dokumen:</strong>{' '}
-                  <a
-                    href={pkg.sourceUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="link"
+
+                <div className="stack-200" style={{ gap: '6px' }}>
+                  <h3 className="h-small">{pkg.title}</h3>
+                  <p className="body">{pkg.description}</p>
+                </div>
+
+                <div className="well-sunken stack-200" style={{ gap: '4px', padding: '12px 14px' }}>
+                  <div className="body-small">
+                    <strong>Rincian soal:</strong> 30 TWK · 35 TIU · 45 TKP (total 110 butir)
+                  </div>
+                  <div className="body-small">
+                    <strong>Sumber dokumen:</strong>{' '}
+                    <a
+                      href={pkg.sourceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="link"
+                    >
+                      {pkg.sourceTitle}
+                      <ExternalLinkIcon size={12} />
+                    </a>
+                  </div>
+                </div>
+
+                <div className="row-wrap" style={{ justifyContent: 'space-between', marginTop: 'auto' }}>
+                  <button
+                    type="button"
+                    className="btn"
+                    onClick={() => onStartPackage(pkg)}
                   >
-                    {pkg.sourceTitle}
-                    <ExternalLinkIcon size={12} />
-                  </a>
+                    Pilih paket {idx + 1}
+                    <ChevronRightIcon size={16} />
+                  </button>
+                  {pkgStats && (
+                    <span className="body-small text-subtlest">
+                      Dikerjakan {pkgStats.attempts}x
+                    </span>
+                  )}
                 </div>
-              </div>
-
-              <div className="row-wrap" style={{ justifyContent: 'space-between', marginTop: 'auto' }}>
-                <button
-                  type="button"
-                  className="btn"
-                  onClick={() => onStartPackage(pkg)}
-                >
-                  Pilih paket {idx + 1}
-                  <ChevronRightIcon size={16} />
-                </button>
-              </div>
-            </article>
-          ))}
+              </article>
+            );
+          })}
         </div>
       </section>
 
@@ -219,77 +396,40 @@ export const HomeView: React.FC<HomeViewProps> = ({
       <section className="stack-200">
         <div>
           <h2 className="h-medium">Latihan fokus per subtes</h2>
-          <p className="body text-subtle" style={{ marginTop: 'var(--space-050)' }}>
-            Cocok jika Anda ingin melatih kecepatan pada satu subtes tertentu sebelum mengerjakan paket lengkap 110 soal.
+          <p className="body text-subtle" style={{ marginTop: '4px' }}>
+            Latihan ringkas untuk mengasah kecepatan pada satu subtes tertentu.
           </p>
         </div>
 
         <div className="grid-3">
-          {focusedPackages.map((pkg) => (
-            <article key={pkg.id} className="card stack-200">
-              <div className="row-wrap" style={{ justifyContent: 'space-between' }}>
-                <span className="tag tag-teal">{pkg.compositionLabel}</span>
-                <span className="body-small mono">{pkg.durationMinutes} mnt</span>
-              </div>
-              <h3 className="h-small">{pkg.title}</h3>
-              <p className="body">{pkg.description}</p>
-              <div style={{ marginTop: 'auto' }}>
-                <button
-                  type="button"
-                  className="btn"
-                  onClick={() => onStartPackage(pkg)}
-                >
-                  Pilih latihan fokus
-                  <ChevronRightIcon size={16} />
-                </button>
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      {/* Passing Grade Reference Table */}
-      <section className="stack-200">
-        <h2 className="h-medium">Tabel acuan ambang batas SKD CPNS (Kepmenpan RB 321/2024)</h2>
-        <div className="table-wrap">
-          <table className="ads-table">
-            <thead>
-              <tr>
-                <th>Kategori formasi</th>
-                <th>Minimal TWK</th>
-                <th>Minimal TIU</th>
-                <th>Minimal TKP</th>
-                <th>Kumulatif minimal</th>
-                <th>Skor maksimal</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Kebutuhan Umum &amp; Putra/Putri Kalimantan</td>
-                <td className="mono">65</td>
-                <td className="mono">80</td>
-                <td className="mono">166</td>
-                <td className="mono">311 (akumulasi)</td>
-                <td className="mono">550</td>
-              </tr>
-              <tr>
-                <td>Khusus Lulusan Terbaik (Cumlaude) &amp; Diaspora</td>
-                <td>Tidak dibatasi</td>
-                <td className="mono">85</td>
-                <td>Tidak dibatasi</td>
-                <td className="mono">311</td>
-                <td className="mono">550</td>
-              </tr>
-              <tr>
-                <td>Khusus Disabilitas, Putra/Putri Papua &amp; 3T</td>
-                <td>Tidak dibatasi</td>
-                <td className="mono">60</td>
-                <td>Tidak dibatasi</td>
-                <td className="mono">286</td>
-                <td className="mono">550</td>
-              </tr>
-            </tbody>
-          </table>
+          {focusedPackages.map((pkg) => {
+            const pkgStats = stats.byPackage.get(pkg.id);
+            return (
+              <article key={pkg.id} className="card stack-200">
+                <div className="row-wrap" style={{ justifyContent: 'space-between' }}>
+                  <span className="tag tag-teal">{pkg.compositionLabel}</span>
+                  <span className="body-small mono">{pkg.durationMinutes} mnt</span>
+                </div>
+                <h3 className="h-small">{pkg.title}</h3>
+                <p className="body">{pkg.description}</p>
+                {pkgStats && (
+                  <span className="body-small">
+                    Skor terbaik: <strong>{pkgStats.bestScore}</strong>/{pkgStats.maxScore} ({pkgStats.attempts}x)
+                  </span>
+                )}
+                <div style={{ marginTop: 'auto' }}>
+                  <button
+                    type="button"
+                    className="btn"
+                    onClick={() => onStartPackage(pkg)}
+                  >
+                    Pilih latihan fokus
+                    <ChevronRightIcon size={16} />
+                  </button>
+                </div>
+              </article>
+            );
+          })}
         </div>
       </section>
     </div>
