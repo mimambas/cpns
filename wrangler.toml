@@ -1,0 +1,16 @@
+name = "cpns-simulasi"
+compatibility_date = "2026-11-16"
+
+routes = [
+  { pattern = "cpns.imambas.my.id", custom_domain = true }
+]
+
+[assets]
+directory = "./dist"
+not_found_handling = "single-page-application"
+
+# Siap ditambahkan binding Cloudflare D1 (100% Gratis: 5 GB storage, 5 juta rows read/hari):
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "cpns-db"
+# database_id = "<akan-diisi-saat-membuat-d1>"
