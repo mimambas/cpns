@@ -788,10 +788,16 @@ def main() -> None:
         ]
     }
 
-    total_qs = sum(len(qs) for _, qs in all_sets)
+    from extract_modul_resmi import extract_modul_resmi_packages
+
+    modul_packages = extract_modul_resmi_packages()
+    payload["packages"].extend(modul_packages)
+
+    total_qs = sum(len(pkg["questions"]) for pkg in payload["packages"])
     OUT_JSON.parent.mkdir(parents=True, exist_ok=True)
     OUT_JSON.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(f"Successfully generated {OUT_JSON} with {' + '.join(str(len(qs)) for _, qs in all_sets)} = {total_qs} verified questions.")
+    counts = " + ".join(str(len(pkg["questions"])) for pkg in payload["packages"])
+    print(f"Successfully generated {OUT_JSON} with {len(payload['packages'])} packages ({counts} = {total_qs} verified questions).")
 
 
 if __name__ == "__main__":

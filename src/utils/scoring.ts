@@ -98,9 +98,15 @@ export function evaluateExam(
 
     let passingGrade: number | null = null;
     if (isFullSimulation) {
-      if (cat === 'TWK') passingGrade = formation.twkMin;
-      if (cat === 'TIU') passingGrade = formation.tiuMin;
-      if (cat === 'TKP') passingGrade = formation.tkpMin;
+      if (cat === 'TWK' && formation.twkMin !== null) {
+        passingGrade = maxScore === 150 ? formation.twkMin : Math.round((formation.twkMin * maxScore) / 150);
+      }
+      if (cat === 'TIU') {
+        passingGrade = maxScore === 175 ? formation.tiuMin : Math.round((formation.tiuMin * maxScore) / 175);
+      }
+      if (cat === 'TKP' && formation.tkpMin !== null) {
+        passingGrade = maxScore === 225 ? formation.tkpMin : Math.round((formation.tkpMin * maxScore) / 225);
+      }
     }
 
     const passed =
@@ -122,37 +128,48 @@ export function evaluateExam(
   let passed = false;
   let reason = '';
 
+  const scaleNote =
+    maxTotalScore !== 550 && maxTotalScore > 0
+      ? ` (penyesuaian proporsional paket ${questions.length} soal)`
+      : '';
+
   if (!isFullSimulation) {
     const targetPct = maxTotalScore > 0 ? Math.round((totalScore / maxTotalScore) * 100) : 0;
     passed = targetPct >= 60;
-    reason = `Mode latihan fokus subtes selesai dengan capaian ${totalScore} dari ${maxTotalScore} poin (${targetPct}%). Evaluasi ambang batas penuh berlaku pada simulasi lengkap 110 soal.`;
+    reason = `Mode latihan fokus subtes selesai dengan capaian ${totalScore} dari ${maxTotalScore} poin (${targetPct}%). Evaluasi ambang batas penuh berlaku pada paket simulasi CAT.`;
   } else if (formation.id === 'umum') {
+    const twkMin = subtests.TWK.passingGrade ?? 0;
+    const tiuMin = subtests.TIU.passingGrade ?? 0;
+    const tkpMin = subtests.TKP.passingGrade ?? 0;
     const failedParts: string[] = [];
-    if (subtests.TWK.score < (formation.twkMin ?? 0)) {
-      failedParts.push(`TWK (${subtests.TWK.score} < ${formation.twkMin})`);
+    if (subtests.TWK.score < twkMin) {
+      failedParts.push(`TWK (${subtests.TWK.score} < ${twkMin})`);
     }
-    if (subtests.TIU.score < formation.tiuMin) {
-      failedParts.push(`TIU (${subtests.TIU.score} < ${formation.tiuMin})`);
+    if (subtests.TIU.score < tiuMin) {
+      failedParts.push(`TIU (${subtests.TIU.score} < ${tiuMin})`);
     }
-    if (subtests.TKP.score < (formation.tkpMin ?? 0)) {
-      failedParts.push(`TKP (${subtests.TKP.score} < ${formation.tkpMin})`);
+    if (subtests.TKP.score < tkpMin) {
+      failedParts.push(`TKP (${subtests.TKP.score} < ${tkpMin})`);
     }
     passed = failedParts.length === 0;
     reason = passed
-      ? `Seluruh subtes memenuhi nilai ambang batas ${formation.label} (TWK ≥ 65, TIU ≥ 80, TKP ≥ 166).`
-      : `Belum memenuhi nilai ambang batas pada: ${failedParts.join(', ')}.`;
+      ? `Seluruh subtes memenuhi nilai ambang batas ${formation.label} (TWK >= ${twkMin}, TIU >= ${tiuMin}, TKP >= ${tkpMin})${scaleNote}.`
+      : `Belum memenuhi nilai ambang batas pada: ${failedParts.join(', ')}${scaleNote}.`;
   } else {
+    const totalMin =
+      maxTotalScore === 550 ? formation.totalMin : Math.round((formation.totalMin * maxTotalScore) / 550);
+    const tiuMin = subtests.TIU.passingGrade ?? formation.tiuMin;
     const failedParts: string[] = [];
-    if (totalScore < formation.totalMin) {
-      failedParts.push(`Total SKD (${totalScore} < ${formation.totalMin})`);
+    if (totalScore < totalMin) {
+      failedParts.push(`Total SKD (${totalScore} < ${totalMin})`);
     }
-    if (subtests.TIU.score < formation.tiuMin) {
-      failedParts.push(`TIU (${subtests.TIU.score} < ${formation.tiuMin})`);
+    if (subtests.TIU.score < tiuMin) {
+      failedParts.push(`TIU (${subtests.TIU.score} < ${tiuMin})`);
     }
     passed = failedParts.length === 0;
     reason = passed
-      ? `Memenuhi nilai ambang batas ${formation.label} (Total ≥ ${formation.totalMin} dan TIU ≥ ${formation.tiuMin}).`
-      : `Belum memenuhi ambang batas ${formation.label} pada: ${failedParts.join(', ')}.`;
+      ? `Memenuhi nilai ambang batas ${formation.label} (Total >= ${totalMin} dan TIU >= ${tiuMin})${scaleNote}.`
+      : `Belum memenuhi ambang batas ${formation.label} pada: ${failedParts.join(', ')}${scaleNote}.`;
   }
 
   return {

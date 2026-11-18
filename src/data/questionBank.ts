@@ -13,11 +13,16 @@ interface RawPackage {
 
 const typedPackages = (rawData as { packages: RawPackage[] }).packages;
 
-export const FULL_PACKAGES: QuestionPackage[] = typedPackages.map((pkg) => ({
-  ...pkg,
-  isFullSimulation: true,
-  compositionLabel: '110 soal (30 TWK · 35 TIU · 45 TKP)',
-}));
+export const FULL_PACKAGES: QuestionPackage[] = typedPackages.map((pkg) => {
+  const twk = pkg.questions.filter((q) => q.category === 'TWK').length;
+  const tiu = pkg.questions.filter((q) => q.category === 'TIU').length;
+  const tkp = pkg.questions.filter((q) => q.category === 'TKP').length;
+  return {
+    ...pkg,
+    isFullSimulation: true,
+    compositionLabel: `${pkg.questions.length} soal (${twk} TWK · ${tiu} TIU · ${tkp} TKP)`,
+  };
+});
 
 function buildFocusedPackage(
   id: string,
@@ -179,6 +184,14 @@ export const DRIVE_FILES: {
     focus: 'TIU Lengkap',
     description:
       'Kompilasi materi, rumus hitung cepat, penalaran logis, analitis, dan deret angka khusus Tes Intelegensia Umum.',
+  },
+  {
+    title: 'Modul Resmi SKD + SKB CPNS 2024-2025.pdf',
+    format: 'PDF (758 halaman · 10 paket CAT)',
+    url: 'https://drive.google.com/file/d/10LeWsUT4p1HUR-_ilMr2hjnMHcoPkzuu/view',
+    focus: 'TWK · TIU · TKP',
+    description:
+      'Buku latihan sistem CAT lengkap berisi 10 paket soal SKD (masing-masing 100 soal: 30 TWK, 30 TIU, 40 TKP) beserta pembahasan dan tabel poin TKP (sumber Paket 5 sampai Paket 14 aplikasi ini).',
   },
   {
     title: 'SUKSES SKD CPNS 2023-2024.pdf',

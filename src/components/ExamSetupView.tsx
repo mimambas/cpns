@@ -117,7 +117,7 @@ export const ExamSetupView: React.FC<ExamSetupViewProps> = ({
               {(
                 [
                   { id: 'ALL', label: `Semua (${ALL_PACKAGES.length})` },
-                  { id: 'FULL', label: 'Simulasi penuh 110 soal' },
+                  { id: 'FULL', label: 'Simulasi CAT lengkap' },
                   { id: 'FOCUSED', label: 'Latihan fokus' },
                 ] as { id: PackageFilter; label: string }[]
               ).map((tab) => (

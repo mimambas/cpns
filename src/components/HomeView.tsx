@@ -121,7 +121,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
           </a>
         </div>
         <p className="body-large" style={{ maxWidth: '72ch' }}>
-          Pelajari 5 modul materi tanpa login, latih kecepatan tiap subtes, atau kerjakan simulasi penuh 110 soal berstandar Kepmenpan RB No. 321 Tahun 2024 lengkap dengan link sumber soal dan ekspor PDF.
+          Pelajari 5 modul materi tanpa login, latih kecepatan tiap subtes, atau kerjakan 14 paket simulasi CAT SKD (1.440 soal total) berstandar Kepmenpan RB No. 321 Tahun 2024 lengkap dengan link sumber soal dan ekspor PDF.
         </p>
       </section>
 
@@ -240,9 +240,9 @@ export const HomeView: React.FC<HomeViewProps> = ({
       {/* Full Simulation Packages Catalog */}
       <section className="stack-200">
         <div>
-          <h2 className="h-medium">Paket simulasi penuh CAT SKD (110 soal · 100 menit)</h2>
+          <h2 className="h-medium">Paket simulasi CAT SKD ({fullPackages.length} paket)</h2>
           <p className="body text-subtle" style={{ marginTop: '4px' }}>
-            Soal diambil langsung dari arsip modul Tryout LolosASN dan Bank Drilling CPNS 2024/2025 pada Google Drive sumber belajar.
+            Soal diambil langsung dari arsip Tryout LolosASN, Bank Drilling CPNS 2024/2025, dan 10 paket CAT Modul Resmi SKD + SKB CPNS 2024-2025 pada Google Drive sumber belajar.
           </p>
         </div>
 
@@ -253,7 +253,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
               <article key={pkg.id} className="card stack-200">
                 <div className="row-wrap" style={{ justifyContent: 'space-between' }}>
                   <span className="body-small mono">
-                    30 TWK · 35 TIU · 45 TKP · {pkg.durationMinutes} menit
+                    {pkg.compositionLabel} · {pkg.durationMinutes} menit
                   </span>
                   {pkgStats && (
                     <span className="lozenge lozenge-info mono">

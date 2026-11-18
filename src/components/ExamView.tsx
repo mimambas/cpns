@@ -232,7 +232,11 @@ export const ExamView: React.FC<ExamViewProps> = ({
 
             {currentQuestion.figureUrl && (
               <div className="figure-box">
-                <span className="body-small">Gambar soal figural (perhatikan opsi gambar A sampai E):</span>
+                <span className="body-small">
+                  {currentQuestion.category === 'TIU'
+                    ? 'Gambar soal figural (perhatikan opsi gambar A sampai E):'
+                    : 'Lampiran tabel atau diagram pendukung soal:'}
+                </span>
                 <img
                   width={560}
                   height={220}
