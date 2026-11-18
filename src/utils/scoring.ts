@@ -55,7 +55,7 @@ export const CATEGORY_LABELS: Record<QuestionCategory, string> = {
 export function getQuestionScore(question: Question, selected?: OptionKey): number {
   if (!selected) return 0;
   const opt = question.options.find((o) => o.key === selected);
-  return opt ? opt.score : 0;
+  return opt && typeof opt.score === 'number' ? opt.score : 0;
 }
 
 export function evaluateExam(

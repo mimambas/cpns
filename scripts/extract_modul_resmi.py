@@ -930,7 +930,7 @@ def extract_modul_resmi_packages() -> list[dict]:
                 explanation = "\n".join(ln for ln in pinfo["lines"] if ln).strip()
                 explanation = re.sub(r"\n?Jawaban\s*[:;.]?\s*[A-E]\.?\s*$", "", explanation, flags=re.I).strip()
                 explanation = f"{explanation}\n\nJawaban: {ans}" if explanation else f"Jawaban: {ans}"
-                options = [{"key": k, "text": opt_map[k]} for k in "ABCDE"]
+                options = [{"key": k, "text": opt_map[k], "score": 5 if k == ans else 0} for k in "ABCDE"]
             else:
                 tinfo = pmb_61_100[qn]
                 ans = tinfo["best"]
