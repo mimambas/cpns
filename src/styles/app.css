@@ -1522,6 +1522,64 @@ input:disabled {
   border-color: var(--brand-selected-border);
 }
 
+/* Subtopic Weakness Analytics & Interactive SVG Radar Chart */
+.analytics-radar-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  gap: var(--space-6);
+  align-items: start;
+}
+
+.radar-svg-wrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.radar-svg {
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+  display: block;
+}
+
+.radar-axis-group {
+  cursor: pointer;
+}
+
+.radar-axis-label {
+  user-select: none;
+  transition: fill 0.15s ease;
+}
+
+.radar-axis-group:hover .radar-axis-label {
+  fill: var(--brand-primary);
+}
+
+.subtopic-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px;
+  border-radius: var(--rounded-sm);
+  border: 1px solid var(--border-muted);
+  background-color: var(--surface);
+  cursor: pointer;
+  transition: var(--transition-firecrawl);
+}
+
+.subtopic-row:hover {
+  background-color: var(--background-lighter);
+  border-color: var(--black-alpha-20);
+}
+
+.subtopic-row[data-selected='true'] {
+  background-color: var(--brand-selected);
+  border-color: var(--brand-selected-border);
+  box-shadow: 0 0 0 1px var(--brand-selected-hovered);
+}
+
 .modal-header {
   padding: var(--space-6) var(--space-6) var(--space-4);
 }
@@ -1621,6 +1679,7 @@ input:disabled {
   .course-layout,
   .setup-layout,
   .exam-layout,
+  .analytics-radar-layout,
   .roadmap-grid {
     grid-template-columns: 1fr;
   }

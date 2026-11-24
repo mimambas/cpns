@@ -22,6 +22,7 @@ import { exportResultToPdf } from './utils/pdfExport';
 import {
   type AppTab,
   buildActiveExamPath,
+  buildAnalyticsPath,
   buildExamHubPath,
   buildHistoryPath,
   buildHomePath,
@@ -51,6 +52,7 @@ import {
   DashboardIcon,
   DownloadIcon,
   ExamIcon,
+  RadarIcon,
   ReportIcon,
   TrophyIcon,
 } from './components/Icons';
@@ -62,6 +64,7 @@ import { STUDY_MODULES, StudyView } from './components/StudyView';
 import { ShareLinkButton } from './components/ShareLinkButton';
 import { CloudSyncModal } from './components/CloudSyncModal';
 import { LeaderboardView } from './components/LeaderboardView';
+import { AnalyticsView } from './components/AnalyticsView';
 
 const STORAGE_ACTIVE_KEY = 'cpns_active_session_v1';
 const STORAGE_HISTORY_KEY = 'cpns_exam_history_v1';
@@ -98,7 +101,7 @@ function mergeAttempts(cloudDtos: SyncResponse['attempts'], localHistory: ExamAt
 
 interface InitialRouteResolution {
   tab: AppTab;
-  historySubview: 'attempts' | 'leaderboard';
+  historySubview: 'attempts' | 'analytics' | 'leaderboard';
   leaderboardPkgId: string;
   moduleId: StudyModuleId;
   packageId: string;
@@ -237,6 +240,20 @@ function resolveRouteState(
     };
   }
 
+  if (parsed.subview === 'analytics') {
+    return {
+      tab: 'history',
+      historySubview: 'analytics',
+      leaderboardPkgId: FULL_PACKAGES[0].id,
+      moduleId: 'modul-regulasi',
+      packageId: FULL_PACKAGES[0].id,
+      isRunning: false,
+      resultId: null,
+      canonicalPath: '/analitik',
+      needsReplace: pathname !== '/analitik',
+    };
+  }
+
   if (parsed.attemptId) {
     const attemptPath = buildHistoryPath(parsed.attemptId);
     return {
@@ -296,7 +313,7 @@ export const App: React.FC = () => {
   const [selectedPackageId, setSelectedPackageId] = useState<string>(initRoute.packageId);
   const [isSessionRunning, setIsSessionRunning] = useState<boolean>(initRoute.isRunning);
   const [selectedResultId, setSelectedResultId] = useState<string | null>(initRoute.resultId);
-  const [historySubview, setHistorySubview] = useState<'attempts' | 'leaderboard'>(
+  const [historySubview, setHistorySubview] = useState<'attempts' | 'analytics' | 'leaderboard'>(
     initRoute.historySubview,
   );
   const [leaderboardPkgId, setLeaderboardPkgId] = useState<string>(initRoute.leaderboardPkgId);
@@ -776,6 +793,13 @@ export const App: React.FC = () => {
     pushPath(pkgId ? buildLeaderboardPath(targetPkg) : buildLeaderboardPath());
   };
 
+  const handleOpenAnalytics = () => {
+    setSelectedResultId(null);
+    setHistorySubview('analytics');
+    setActiveTab('history');
+    pushPath(buildAnalyticsPath());
+  };
+
   const handleManualSync = async (): Promise<boolean> => {
     setSyncStatus('syncing');
     const res = await syncWithCloud(cloudProfile.syncCode, {
@@ -914,9 +938,11 @@ export const App: React.FC = () => {
             : 'Persiapan Simulasi CAT SKD CPNS | CPNS Learning Hub'
           : displayedAttempt
             ? `Rapor Hasil: ${displayedAttempt.packageTitle} | CPNS Learning Hub`
-            : historySubview === 'leaderboard'
-              ? 'Papan Peringkat Nasional Simulasi CAT | CPNS Learning Hub'
-              : 'Hasil & Riwayat Simulasi CAT | CPNS Learning Hub';
+            : historySubview === 'analytics'
+              ? 'Analitik Peta Kelemahan & Radar Chart | CPNS Learning Hub'
+              : historySubview === 'leaderboard'
+                ? 'Papan Peringkat Nasional Simulasi CAT | CPNS Learning Hub'
+                : 'Hasil & Riwayat Simulasi CAT | CPNS Learning Hub';
 
   useEffect(() => {
     document.title = pageTitle;
@@ -1010,9 +1036,11 @@ export const App: React.FC = () => {
           ? 'Pusat asesmen & persiapan CAT'
           : displayedAttempt
             ? `Rapor detail: ${displayedAttempt.packageTitle}`
-            : historySubview === 'leaderboard'
-              ? 'Papan peringkat nasional per paket'
-              : 'Rapor hasil & riwayat simulasi';
+            : historySubview === 'analytics'
+              ? 'Analitik peta kelemahan per subtopik'
+              : historySubview === 'leaderboard'
+                ? 'Papan peringkat nasional per paket'
+                : 'Rapor hasil & riwayat simulasi';
 
   const cloudStatusLabel =
     syncStatus === 'syncing'
@@ -1281,12 +1309,13 @@ export const App: React.FC = () => {
                 setHistorySubview('attempts');
                 pushPath(buildHistoryPath(attemptId));
               }}
+              onOpenAnalytics={handleOpenAnalytics}
             />
           )}
 
           {activeTab === 'history' && !sharedReportLoading && !displayedAttempt && (
             <div className="stack-300">
-              {/* Subview Switcher: Riwayat Saya <-> Papan Peringkat */}
+              {/* Subview Switcher: Riwayat Saya <-> Analitik Radar <-> Papan Peringkat */}
               <div className="row-wrap" style={{ gap: '8px' }}>
                 <a
                   href={buildHistoryPath(null)}
@@ -1304,6 +1333,20 @@ export const App: React.FC = () => {
                   <span>Riwayat saya ({history.length})</span>
                 </a>
                 <a
+                  href={buildAnalyticsPath()}
+                  className={`btn btn-compact ${
+                    historySubview === 'analytics' ? 'btn-selected' : ''
+                  }`}
+                  onClick={(e) => {
+                    if (!shouldHandleClientClick(e)) return;
+                    e.preventDefault();
+                    handleOpenAnalytics();
+                  }}
+                >
+                  <RadarIcon size={14} />
+                  <span>Analitik &amp; radar</span>
+                </a>
+                <a
                   href={buildLeaderboardPath(leaderboardPkgId)}
                   className={`btn btn-compact ${
                     historySubview === 'leaderboard' ? 'btn-selected' : ''
@@ -1319,7 +1362,22 @@ export const App: React.FC = () => {
                 </a>
               </div>
 
-              {historySubview === 'leaderboard' ? (
+              {historySubview === 'analytics' ? (
+                <AnalyticsView
+                  history={history}
+                  onStartPackage={handleOpenExamPrep}
+                  onOpenStudy={(moduleId) => {
+                    setActiveModuleId(moduleId);
+                    setActiveTab('study');
+                    pushPath(buildStudyPath(moduleId));
+                  }}
+                  onOpenAttempt={(attemptId) => {
+                    setSelectedResultId(attemptId);
+                    setHistorySubview('attempts');
+                    pushPath(buildHistoryPath(attemptId));
+                  }}
+                />
+              ) : historySubview === 'leaderboard' ? (
                 <LeaderboardView
                   selectedPackageId={leaderboardPkgId}
                   onSelectPackage={(pkgId) => {

@@ -536,3 +536,28 @@ export const CopyIcon: React.FC<IconProps> = ({ size = 16, className }) => (
     />
   </svg>
 );
+
+export const RadarIcon: React.FC<IconProps> = ({ size = 16, className }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 16 16"
+    fill="none"
+    aria-hidden="true"
+    className={className}
+  >
+    <polygon
+      points="8,1.75 13.9,6.05 11.65,13 4.35,13 2.1,6.05"
+      stroke="currentColor"
+      strokeWidth="1.4"
+      strokeLinejoin="round"
+    />
+    <polygon
+      points="8,4.75 10.9,6.9 9.8,10.35 6.2,10.35 5.1,6.9"
+      stroke="currentColor"
+      strokeWidth="1.2"
+      strokeLinejoin="round"
+    />
+    <circle cx="8" cy="8" r="1" fill="currentColor" />
+  </svg>
+);

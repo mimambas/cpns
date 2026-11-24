@@ -44,6 +44,13 @@ export const ExamSetupView: React.FC<ExamSetupViewProps> = ({
     return ALL_PACKAGES;
   }, [pkgFilter]);
 
+  const selectPackages = useMemo(() => {
+    if (ALL_PACKAGES.some((p) => p.id === selectedPackage.id)) {
+      return ALL_PACKAGES;
+    }
+    return [selectedPackage, ...ALL_PACKAGES];
+  }, [selectedPackage]);
+
   const bestByPkg = useMemo(() => {
     const map = new Map<string, { score: number; max: number; count: number }>();
     for (const item of history) {
@@ -146,7 +153,7 @@ export const ExamSetupView: React.FC<ExamSetupViewProps> = ({
               value={selectedPackage.id}
               onChange={(e) => onChangePackage(e.target.value)}
             >
-              {ALL_PACKAGES.map((pkg) => (
+              {selectPackages.map((pkg) => (
                 <option key={pkg.id} value={pkg.id}>
                   {pkg.title} ({pkg.questions.length} soal · {pkg.durationMinutes} mnt)
                 </option>
@@ -226,7 +233,7 @@ export const ExamSetupView: React.FC<ExamSetupViewProps> = ({
                 value={selectedPackage.id}
                 onChange={(e) => onChangePackage(e.target.value)}
               >
-                {ALL_PACKAGES.map((pkg) => (
+                {selectPackages.map((pkg) => (
                   <option key={pkg.id} value={pkg.id}>
                     {pkg.title} ({pkg.questions.length} soal)
                   </option>

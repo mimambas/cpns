@@ -35,6 +35,9 @@ export const LeaderboardView: React.FC<LeaderboardViewProps> = ({
   const [reloadTick, setReloadTick] = useState(0);
 
   const activePkg = getPackageById(selectedPackageId) ?? ALL_PACKAGES[0];
+  const selectPackages = ALL_PACKAGES.some((p) => p.id === activePkg.id)
+    ? ALL_PACKAGES
+    : [activePkg, ...ALL_PACKAGES];
   const limit = embedded ? 10 : 25;
 
   useEffect(() => {
@@ -86,7 +89,7 @@ export const LeaderboardView: React.FC<LeaderboardViewProps> = ({
               value={activePkg.id}
               onChange={(e) => onSelectPackage?.(e.target.value)}
             >
-              {ALL_PACKAGES.map((pkg) => (
+              {selectPackages.map((pkg) => (
                 <option key={pkg.id} value={pkg.id}>
                   {pkg.title} ({pkg.questions.length} soal)
                 </option>

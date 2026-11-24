@@ -9,10 +9,13 @@ import {
 } from '../utils/scoring';
 import { exportResultToPdf } from '../utils/pdfExport';
 import {
+  buildAnalyticsPath,
   buildExamHubPath,
   buildHistoryPath,
   shouldHandleClientClick,
 } from '../utils/router';
+import { computeSubtopicAnalytics, getDrillPackageId } from '../utils/analytics';
+import { getSubtopicQuestionCount } from '../data/questionBank';
 import {
   CheckCircleIcon,
   ChevronLeftIcon,
@@ -24,6 +27,7 @@ import {
   GridIcon,
   InfoIcon,
   ListIcon,
+  RadarIcon,
   TrophyIcon,
 } from './Icons';
 import { ShareLinkButton } from './ShareLinkButton';
@@ -41,6 +45,7 @@ interface ResultViewProps {
   syncCode?: string;
   onOpenLeaderboard?: (pkgId: string) => void;
   onOpenAttempt?: (attemptId: string) => void;
+  onOpenAnalytics?: () => void;
 }
 
 type ReviewFilter = 'ALL' | QuestionCategory | 'IMPROVABLE' | 'UNANSWERED';
@@ -60,6 +65,7 @@ export const ResultView: React.FC<ResultViewProps> = ({
   syncCode = '',
   onOpenLeaderboard,
   onOpenAttempt,
+  onOpenAnalytics,
 }) => {
   const [filter, setFilter] = useState<ReviewFilter>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
@@ -83,6 +89,14 @@ export const ResultView: React.FC<ResultViewProps> = ({
     attempt.questions.length > 0
       ? Math.round(attempt.elapsedSeconds / attempt.questions.length)
       : 0;
+
+  const attemptSubtopics = useMemo(() => {
+    const analytics = computeSubtopicAnalytics([attempt]);
+    return (['TWK', 'TIU', 'TKP'] as const)
+      .flatMap((cat) => analytics.clustersByCategory[cat])
+      .filter((s) => s.totalSeen > 0)
+      .sort((a, b) => a.masteryPct - b.masteryPct);
+  }, [attempt]);
 
   const filteredQuestions = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
@@ -516,6 +530,81 @@ export const ResultView: React.FC<ResultViewProps> = ({
             })}
         </div>
       </section>
+
+      {/* Single-Attempt Subtopic Weakness Breakdown */}
+      {attemptSubtopics.length > 0 && (
+        <section className="card stack-200" aria-label="Peta subtopik simulasi ini">
+          <div className="row-wrap" style={{ justifyContent: 'space-between' }}>
+            <div>
+              <h2 className="h-medium">Peta subtopik pada simulasi ini</h2>
+              <p className="body-small text-subtle">
+                Diurutkan dari topik dengan akurasi terendah agar fokus perbaikan tepat sasaran.
+              </p>
+            </div>
+            {onOpenAnalytics && (
+              <a
+                href={buildAnalyticsPath()}
+                className="btn btn-compact"
+                onClick={(e) => {
+                  if (!shouldHandleClientClick(e)) return;
+                  e.preventDefault();
+                  onOpenAnalytics();
+                }}
+              >
+                <RadarIcon size={14} />
+                Buka Radar Chart lengkap
+              </a>
+            )}
+          </div>
+
+          <div className="grid-2" style={{ gap: '12px' }}>
+            {attemptSubtopics.slice(0, 6).map((stat) => {
+              const barColor =
+                stat.level === 'weak'
+                  ? 'var(--chart-danger)'
+                  : stat.level === 'moderate'
+                    ? 'var(--warning-bold)'
+                    : 'var(--chart-brand)';
+              const drillId = getDrillPackageId(stat.cluster.id);
+              const drillCount = getSubtopicQuestionCount(stat.cluster.id);
+              return (
+                <div key={stat.cluster.id} className="well-sunken stack-200" style={{ gap: '8px', padding: '12px 14px' }}>
+                  <div className="row-wrap" style={{ justifyContent: 'space-between' }}>
+                    <span className="h-xsmall">
+                      {stat.cluster.category}: {stat.cluster.shortLabel}
+                    </span>
+                    <span className="body-small mono">
+                      {stat.cluster.category === 'TKP'
+                        ? `${stat.avgPointsPerQuestion.toFixed(1)}/5.0 · ${stat.masteryPct}%`
+                        : `${stat.perfectCount}/${stat.totalSeen} benar · ${stat.masteryPct}%`}
+                    </span>
+                  </div>
+                  <div className="chart-bar-track">
+                    <div
+                      className="chart-bar-fill"
+                      style={{ width: `${stat.masteryPct}%`, backgroundColor: barColor }}
+                    />
+                  </div>
+                  <div className="row-wrap" style={{ justifyContent: 'space-between' }}>
+                    <span className="body-small text-subtle">{stat.totalSeen} soal diuji</span>
+                    <a
+                      href={buildExamHubPath(drillId)}
+                      className="link body-small"
+                      onClick={(e) => {
+                        if (!shouldHandleClientClick(e)) return;
+                        e.preventDefault();
+                        onRetakePackage(drillId);
+                      }}
+                    >
+                      Latih ({drillCount} soal)
+                    </a>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       {/* Embedded Package Leaderboard */}
       <LeaderboardView

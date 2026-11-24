@@ -61,13 +61,17 @@ export function buildLeaderboardPath(packageId?: string): string {
   return `/peringkat/${encodeURIComponent(packageId)}`;
 }
 
+export function buildAnalyticsPath(): string {
+  return '/analitik';
+}
+
 export type ParsedRoute =
   | { tab: 'home'; replaceWith?: string }
   | { tab: 'study'; moduleId: StudyModuleId; replaceWith?: string }
   | { tab: 'exam'; packageId?: string; running: boolean; replaceWith?: string }
   | {
       tab: 'history';
-      subview: 'attempts' | 'leaderboard';
+      subview: 'attempts' | 'analytics' | 'leaderboard';
       attemptId: string | null;
       leaderboardPkgId?: string;
       replaceWith?: string;
@@ -180,6 +184,15 @@ export function parsePathname(rawPathname: string): ParsedRoute {
       subview: 'leaderboard',
       attemptId: null,
       leaderboardPkgId: pkgId,
+    };
+  }
+
+  if (head === 'analitik') {
+    return {
+      tab: 'history',
+      subview: 'analytics',
+      attemptId: null,
+      replaceWith: rawPathname !== '/analitik' ? '/analitik' : undefined,
     };
   }
 

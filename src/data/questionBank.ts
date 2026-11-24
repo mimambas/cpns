@@ -1,5 +1,11 @@
 import rawData from './questions.json';
 import type { Question, QuestionCategory, QuestionPackage, StudyLinkItem } from '../types';
+import {
+  classifySubtopic,
+  getDrillPackageId,
+  getSubtopicClusterMeta,
+  type SubtopicClusterId,
+} from '../utils/analytics';
 
 interface RawPackage {
   id: string;
@@ -80,8 +86,62 @@ export const ALL_PACKAGES: QuestionPackage[] = [
   ),
 ];
 
+const drillPackageCache = new Map<string, QuestionPackage>();
+
+export function getSubtopicDrillPackage(clusterId: string): QuestionPackage | undefined {
+  const cached = drillPackageCache.get(clusterId);
+  if (cached) return cached;
+
+  const meta = getSubtopicClusterMeta(clusterId);
+  if (!meta) return undefined;
+
+  const collected: Question[] = [];
+  const seenIds = new Set<string>();
+
+  for (const pkg of FULL_PACKAGES) {
+    for (const q of pkg.questions) {
+      if (q.category !== meta.category) continue;
+      if (classifySubtopic(q.category, q.subtopic).id !== meta.id) continue;
+      if (seenIds.has(q.id)) continue;
+      seenIds.add(q.id);
+      collected.push({
+        ...q,
+        number: collected.length + 1,
+      });
+      if (collected.length >= 20) break;
+    }
+    if (collected.length >= 20) break;
+  }
+
+  if (collected.length === 0) return undefined;
+
+  const built: QuestionPackage = {
+    id: getDrillPackageId(meta.id),
+    title: `Latihan subtopik ${meta.category}: ${meta.label}`,
+    description: `${collected.length} soal terfokus pada rumpun subtopik ${meta.label} (${meta.description})`,
+    durationMinutes: Math.max(10, collected.length),
+    sourceTitle: 'Bank Soal Gabungan CPNS Learning Hub',
+    sourceUrl: 'https://drive.google.com/drive/folders/1Ezv-eN2_sMBPWDpVsPInxOXzowBhlG15',
+    isFullSimulation: false,
+    compositionLabel: `${collected.length} soal subtopik ${meta.shortLabel}`,
+    questions: collected,
+  };
+
+  drillPackageCache.set(clusterId, built);
+  return built;
+}
+
+export function getSubtopicQuestionCount(clusterId: SubtopicClusterId): number {
+  return getSubtopicDrillPackage(clusterId)?.questions.length ?? 0;
+}
+
 export function getPackageById(id: string): QuestionPackage | undefined {
-  return ALL_PACKAGES.find((p) => p.id === id);
+  const standard = ALL_PACKAGES.find((p) => p.id === id);
+  if (standard) return standard;
+  if (id.startsWith('drill-')) {
+    return getSubtopicDrillPackage(id.slice('drill-'.length));
+  }
+  return undefined;
 }
 
 export const SSCASN_PORTAL = {
