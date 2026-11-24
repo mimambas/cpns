@@ -29,10 +29,10 @@ function polarToCartesian(
 }
 
 function getPointColor(value: number, tested: boolean): string {
-  if (!tested) return '#94a3b8';
-  if (value < 60) return '#d32f2f';
-  if (value < 80) return '#d97706';
-  return '#1868db';
+  if (!tested) return 'var(--radar-untested)';
+  if (value < 60) return 'var(--radar-danger)';
+  if (value < 80) return 'var(--radar-warning)';
+  return 'var(--radar-strong)';
 }
 
 export const RadarChart: React.FC<RadarChartProps> = ({
@@ -95,8 +95,8 @@ export const RadarChart: React.FC<RadarChartProps> = ({
           <polygon
             key={lvl}
             points={pts}
-            fill={lvl === 100 ? 'rgba(24, 104, 219, 0.02)' : 'none'}
-            stroke="#e2e8f0"
+            fill={lvl === 100 ? 'var(--radar-grid-fill)' : 'none'}
+            stroke="var(--radar-grid-stroke)"
             strokeWidth={lvl === 100 ? 1.25 : 1}
           />
         ))}
@@ -111,7 +111,7 @@ export const RadarChart: React.FC<RadarChartProps> = ({
               y1={cy}
               x2={end.x}
               y2={end.y}
-              stroke="#e2e8f0"
+              stroke="var(--radar-grid-stroke)"
               strokeWidth={1}
             />
           );
@@ -126,7 +126,7 @@ export const RadarChart: React.FC<RadarChartProps> = ({
               x={cx + 4}
               y={y - 3}
               fontSize="9.5"
-              fill="#64748b"
+              fill="var(--radar-tick)"
               fontFamily="var(--font-mono)"
             >
               {lvl}%
@@ -138,7 +138,7 @@ export const RadarChart: React.FC<RadarChartProps> = ({
         <polygon
           points={targetPolygonPts}
           fill="none"
-          stroke="#64748b"
+          stroke="var(--radar-axis)"
           strokeWidth={1.35}
           strokeDasharray="4 4"
         />
@@ -147,8 +147,8 @@ export const RadarChart: React.FC<RadarChartProps> = ({
         {hasTestedAny && (
           <polygon
             points={scorePolygonPts}
-            fill="rgba(24, 104, 219, 0.18)"
-            stroke="#1868db"
+            fill="var(--radar-area-fill)"
+            stroke="var(--radar-area-stroke)"
             strokeWidth={2.25}
             strokeLinejoin="round"
           />
@@ -179,8 +179,8 @@ export const RadarChart: React.FC<RadarChartProps> = ({
                   cx={pt.x}
                   cy={pt.y}
                   r={9}
-                  fill="rgba(24, 104, 219, 0.14)"
-                  stroke="#1868db"
+                  fill="var(--radar-compare-fill)"
+                  stroke="var(--radar-area-stroke)"
                   strokeWidth={1.5}
                 />
               )}
@@ -189,7 +189,7 @@ export const RadarChart: React.FC<RadarChartProps> = ({
                 cy={pt.y}
                 r={isSelected ? 5.5 : 4.5}
                 fill={color}
-                stroke="#ffffff"
+                stroke="var(--radar-point-ring)"
                 strokeWidth={1.5}
               />
               <text
@@ -198,7 +198,7 @@ export const RadarChart: React.FC<RadarChartProps> = ({
                 textAnchor={textAnchor}
                 fontSize="11.5"
                 fontWeight={isSelected ? '600' : '500'}
-                fill={isSelected ? '#1868db' : '#1e293b'}
+                fill={isSelected ? 'var(--radar-label-selected)' : 'var(--radar-label)'}
                 className="radar-axis-label"
               >
                 {axis.label}

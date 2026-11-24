@@ -8,7 +8,9 @@ import {
   ClockIcon,
   FlagIcon,
   GridIcon,
+  MoonIcon,
   PauseIcon,
+  SunIcon,
   WarningIcon,
 } from './Icons';
 
@@ -19,6 +21,8 @@ interface ExamViewProps {
   answers: Record<string, OptionKey>;
   flaggedIds: string[];
   remainingSeconds: number;
+  theme?: 'light' | 'dark';
+  onToggleTheme?: () => void;
   onSelectAnswer: (questionId: string, optionKey: OptionKey) => void;
   onClearAnswer: (questionId: string) => void;
   onToggleFlag: (questionId: string) => void;
@@ -34,6 +38,8 @@ export const ExamView: React.FC<ExamViewProps> = ({
   answers,
   flaggedIds,
   remainingSeconds,
+  theme = 'light',
+  onToggleTheme,
   onSelectAnswer,
   onClearAnswer,
   onToggleFlag,
@@ -235,14 +241,28 @@ export const ExamView: React.FC<ExamViewProps> = ({
                 )}
               </div>
 
-              <button
-                type="button"
-                className="btn btn-compact btn-subtle"
-                onClick={() => setLargeFont((v) => !v)}
-                aria-pressed={largeFont}
-              >
-                {largeFont ? 'Teks normal' : 'Teks besar (A+)'}
-              </button>
+              <div className="row-wrap" style={{ gap: '8px' }}>
+                <button
+                  type="button"
+                  className="btn btn-compact btn-subtle"
+                  onClick={() => setLargeFont((v) => !v)}
+                  aria-pressed={largeFont}
+                >
+                  {largeFont ? 'Teks normal' : 'Teks besar (A+)'}
+                </button>
+                {onToggleTheme && (
+                  <button
+                    type="button"
+                    className="btn btn-compact btn-subtle btn-icon-only"
+                    onClick={onToggleTheme}
+                    aria-pressed={theme === 'dark'}
+                    aria-label={theme === 'dark' ? 'Beralih ke mode terang' : 'Beralih ke mode gelap'}
+                    title={theme === 'dark' ? 'Beralih ke mode terang' : 'Beralih ke mode gelap'}
+                  >
+                    {theme === 'dark' ? <SunIcon size={15} /> : <MoonIcon size={15} />}
+                  </button>
+                )}
+              </div>
             </div>
 
             <div className="question-stem" data-size={largeFont ? 'large' : 'normal'}>

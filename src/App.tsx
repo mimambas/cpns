@@ -60,9 +60,11 @@ import {
   DashboardIcon,
   DownloadIcon,
   ExamIcon,
+  MoonIcon,
   RadarIcon,
   ReportIcon,
   SearchIcon,
+  SunIcon,
   TrophyIcon,
 } from './components/Icons';
 import { HomeView } from './components/HomeView';
@@ -95,6 +97,30 @@ const STORAGE_ACTIVE_KEY = 'cpns_active_session_v1';
 const STORAGE_HISTORY_KEY = 'cpns_exam_history_v1';
 const STORAGE_FORMATION_KEY = 'cpns_formation_v1';
 const STORAGE_COMPLETED_MODULES_KEY = 'cpns_completed_modules_v1';
+const STORAGE_THEME_KEY = 'cpns_theme_v1';
+
+type ThemeMode = 'light' | 'dark';
+
+function readInitialTheme(): ThemeMode {
+  if (typeof document !== 'undefined') {
+    const preset = document.documentElement.dataset.theme;
+    if (preset === 'dark' || preset === 'light') return preset;
+  }
+  try {
+    const saved = localStorage.getItem(STORAGE_THEME_KEY);
+    if (saved === 'dark' || saved === 'light') return saved;
+    if (
+      typeof window !== 'undefined' &&
+      window.matchMedia &&
+      window.matchMedia('(prefers-color-scheme: dark)').matches
+    ) {
+      return 'dark';
+    }
+  } catch {
+    // Ignore localStorage access errors.
+  }
+  return 'light';
+}
 
 function loadJson<T>(key: string, fallback: T): T {
   try {
@@ -332,6 +358,28 @@ const LazyFallback: React.FC<{ label?: string }> = ({ label = 'Memuat halaman...
 );
 
 export const App: React.FC = () => {
+  const [theme, setTheme] = useState<ThemeMode>(() => readInitialTheme());
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    if (metaTheme) {
+      metaTheme.setAttribute('content', theme === 'dark' ? '#0d1117' : '#ffffff');
+    }
+  }, [theme]);
+
+  const toggleTheme = useCallback(() => {
+    setTheme((prev) => {
+      const next: ThemeMode = prev === 'dark' ? 'light' : 'dark';
+      try {
+        localStorage.setItem(STORAGE_THEME_KEY, next);
+      } catch {
+        // Ignore localStorage access errors.
+      }
+      return next;
+    });
+  }, []);
+
   const [cloudProfile, setCloudProfile] = useState<CloudProfile>(() => loadOrCreateCloudProfile());
   const [syncStatus, setSyncStatus] = useState<CloudSyncStatus>('idle');
   const [syncModalOpen, setSyncModalOpen] = useState(false);
@@ -1092,6 +1140,8 @@ export const App: React.FC = () => {
           answers={activeSession.answers}
           flaggedIds={activeSession.flaggedIds}
           remainingSeconds={activeSession.remainingSeconds}
+          theme={theme}
+          onToggleTheme={toggleTheme}
           onSelectAnswer={handleSelectAnswer}
           onClearAnswer={handleClearAnswer}
           onToggleFlag={handleToggleFlag}
@@ -1271,6 +1321,16 @@ export const App: React.FC = () => {
               <CloudIcon size={14} />
               <span>Sinkronisasi perangkat</span>
             </button>
+            <button
+              type="button"
+              className="btn btn-compact"
+              onClick={toggleTheme}
+              aria-pressed={theme === 'dark'}
+              title={theme === 'dark' ? 'Beralih ke mode terang' : 'Beralih ke mode gelap'}
+            >
+              {theme === 'dark' ? <SunIcon size={14} /> : <MoonIcon size={14} />}
+              <span>{theme === 'dark' ? 'Mode terang' : 'Mode gelap'}</span>
+            </button>
           </div>
 
           {/* Target Formasi Widget */}
@@ -1356,6 +1416,17 @@ export const App: React.FC = () => {
             >
               <CloudIcon size={14} />
               <span>{cloudStatusLabel}</span>
+            </button>
+
+            <button
+              type="button"
+              className="btn btn-compact btn-icon-only"
+              onClick={toggleTheme}
+              aria-pressed={theme === 'dark'}
+              aria-label={theme === 'dark' ? 'Beralih ke mode terang' : 'Beralih ke mode gelap'}
+              title={theme === 'dark' ? 'Beralih ke mode terang' : 'Beralih ke mode gelap'}
+            >
+              {theme === 'dark' ? <SunIcon size={15} /> : <MoonIcon size={15} />}
             </button>
 
             <ShareLinkButton

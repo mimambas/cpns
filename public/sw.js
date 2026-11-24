@@ -1,4 +1,4 @@
-const CACHE_STATIC = 'cpns-static-v1';
+const CACHE_STATIC = 'cpns-static-v2';
 const CACHE_DATA = 'cpns-data-v1';
 const PRECACHE_URLS = ['/', '/index.html', '/manifest.webmanifest', '/icon.svg'];
 

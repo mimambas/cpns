@@ -8,6 +8,22 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="CPNS CAT" />
+    <script>
+      (function () {
+        try {
+          var saved = localStorage.getItem('cpns_theme_v1');
+          var dark =
+            saved === 'dark' ||
+            (saved !== 'light' &&
+              window.matchMedia &&
+              window.matchMedia('(prefers-color-scheme: dark)').matches);
+          var theme = dark ? 'dark' : 'light';
+          document.documentElement.dataset.theme = theme;
+          var meta = document.querySelector('meta[name="theme-color"]');
+          if (meta) meta.setAttribute('content', dark ? '#0d1117' : '#ffffff');
+        } catch (e) {}
+      })();
+    </script>
     <title>Simulasi CAT SKD &amp; Pusat Belajar CPNS | cpns.imambas.my.id</title>
     <meta
       name="description"
