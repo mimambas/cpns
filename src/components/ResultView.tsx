@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import type { ExamAttempt, FormationType, Question, QuestionCategory } from '../types';
+import type { ExamAttempt, FormationType, Question, QuestionCategory, RankInfo } from '../types';
 import {
   FORMATION_RULES,
   evaluateExam,
@@ -22,15 +22,25 @@ import {
   DownloadIcon,
   ExternalLinkIcon,
   GridIcon,
+  InfoIcon,
   ListIcon,
+  TrophyIcon,
 } from './Icons';
 import { ShareLinkButton } from './ShareLinkButton';
+import { LeaderboardView } from './LeaderboardView';
 
 interface ResultViewProps {
   attempt: ExamAttempt;
   onUpdateFormation: (attemptId: string, formationId: FormationType) => void;
   onRetakePackage: (packageId: string) => void;
   onBackHome: () => void;
+  isSharedAttempt?: boolean;
+  sharedOwnerName?: string;
+  rankInfo?: RankInfo | null;
+  currentUserId?: string;
+  syncCode?: string;
+  onOpenLeaderboard?: (pkgId: string) => void;
+  onOpenAttempt?: (attemptId: string) => void;
 }
 
 type ReviewFilter = 'ALL' | QuestionCategory | 'IMPROVABLE' | 'UNANSWERED';
@@ -43,6 +53,13 @@ export const ResultView: React.FC<ResultViewProps> = ({
   onUpdateFormation,
   onRetakePackage,
   onBackHome,
+  isSharedAttempt = false,
+  sharedOwnerName,
+  rankInfo,
+  currentUserId = '',
+  syncCode = '',
+  onOpenLeaderboard,
+  onOpenAttempt,
 }) => {
   const [filter, setFilter] = useState<ReviewFilter>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
@@ -275,9 +292,9 @@ export const ResultView: React.FC<ResultViewProps> = ({
 
         <div className="row-wrap" style={{ gap: '8px' }}>
           <ShareLinkButton
-            path={buildExamHubPath(attempt.packageId)}
-            shareTitle={`Coba paket soal: ${attempt.packageTitle}`}
-            label="Share paket"
+            path={buildHistoryPath(attempt.id)}
+            shareTitle={`Rapor SKD CPNS: ${attempt.packageTitle} (Skor ${evaluation.totalScore}/${evaluation.maxTotalScore})`}
+            label="Share hasil"
             copiedLabel="Link tersalin"
           />
           <a
@@ -303,6 +320,35 @@ export const ResultView: React.FC<ResultViewProps> = ({
         </div>
       </div>
 
+      {isSharedAttempt && (
+        <div className="section-message section-message-info" role="status">
+          <span className="section-message-icon">
+            <InfoIcon size={18} />
+          </span>
+          <div className="section-message-content">
+            <h2 className="h-small">
+              Rapor hasil simulasi milik {sharedOwnerName ?? 'Peserta CPNS'}
+            </h2>
+            <p className="section-message-body">
+              Anda sedang melihat tautan rapor hasil ujian yang tersimpan di Cloudflare D1. Ingin mengukur kemampuan Anda pada paket yang sama?
+            </p>
+            <div className="row-wrap" style={{ marginTop: '8px' }}>
+              <a
+                href={buildExamHubPath(attempt.packageId)}
+                className="btn btn-primary btn-compact"
+                onClick={(e) => {
+                  if (!shouldHandleClientClick(e)) return;
+                  e.preventDefault();
+                  onRetakePackage(attempt.packageId);
+                }}
+              >
+                Kerjakan paket soal ini sekarang
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Passing Grade Status Banner */}
       <div
         className={`section-message ${
@@ -318,11 +364,19 @@ export const ResultView: React.FC<ResultViewProps> = ({
           )}
         </span>
         <div className="section-message-content">
-          <h2 className="h-small">
-            {evaluation.passed
-              ? 'Selamat, skor Anda memenuhi nilai ambang batas (passing grade)'
-              : 'Belum memenuhi nilai ambang batas (passing grade)'}
-          </h2>
+          <div className="row-wrap" style={{ justifyContent: 'space-between' }}>
+            <h2 className="h-small">
+              {evaluation.passed
+                ? 'Selamat, skor Anda memenuhi nilai ambang batas (passing grade)'
+                : 'Belum memenuhi nilai ambang batas (passing grade)'}
+            </h2>
+            {rankInfo && (
+              <span className="lozenge lozenge-info mono">
+                <TrophyIcon size={12} />
+                Peringkat #{rankInfo.rank} dari {rankInfo.totalParticipants} peserta
+              </span>
+            )}
+          </div>
           <p className="section-message-body">{evaluation.reason}</p>
         </div>
       </div>
@@ -462,6 +516,16 @@ export const ResultView: React.FC<ResultViewProps> = ({
             })}
         </div>
       </section>
+
+      {/* Embedded Package Leaderboard */}
+      <LeaderboardView
+        selectedPackageId={attempt.packageId}
+        currentUserId={currentUserId}
+        syncCode={syncCode}
+        onOpenAttempt={onOpenAttempt}
+        embedded
+        onOpenFullLeaderboard={onOpenLeaderboard}
+      />
 
       {/* Interactive Question Jumper Map */}
       <section className="card stack-200" aria-label="Peta nomor pembahasan soal">

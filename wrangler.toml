@@ -1,4 +1,5 @@
 name = "cpns-simulasi"
+main = "worker/index.ts"
 compatibility_date = "2026-11-16"
 
 routes = [
@@ -7,10 +8,11 @@ routes = [
 
 [assets]
 directory = "./dist"
+binding = "ASSETS"
 not_found_handling = "single-page-application"
+run_worker_first = ["/api/*"]
 
-# Siap ditambahkan binding Cloudflare D1 (100% Gratis: 5 GB storage, 5 juta rows read/hari):
-# [[d1_databases]]
-# binding = "DB"
-# database_name = "cpns-db"
-# database_id = "<akan-diisi-saat-membuat-d1>"
+[[d1_databases]]
+binding = "DB"
+database_name = "cpns-db"
+database_id = "2518ae48-b8e9-404d-8614-350b4f03ceac"

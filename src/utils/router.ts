@@ -56,11 +56,22 @@ export function buildHistoryPath(attemptId?: string | null): string {
   return `/hasil/${encodeURIComponent(attemptId)}`;
 }
 
+export function buildLeaderboardPath(packageId?: string): string {
+  if (!packageId) return '/peringkat';
+  return `/peringkat/${encodeURIComponent(packageId)}`;
+}
+
 export type ParsedRoute =
   | { tab: 'home'; replaceWith?: string }
   | { tab: 'study'; moduleId: StudyModuleId; replaceWith?: string }
   | { tab: 'exam'; packageId?: string; running: boolean; replaceWith?: string }
-  | { tab: 'history'; attemptId: string | null; replaceWith?: string };
+  | {
+      tab: 'history';
+      subview: 'attempts' | 'leaderboard';
+      attemptId: string | null;
+      leaderboardPkgId?: string;
+      replaceWith?: string;
+    };
 
 export function parsePathname(rawPathname: string): ParsedRoute {
   const normalized =
@@ -141,6 +152,7 @@ export function parsePathname(rawPathname: string): ParsedRoute {
     if (segments.length === 1) {
       return {
         tab: 'history',
+        subview: 'attempts',
         attemptId: null,
         replaceWith: rawPathname !== '/hasil' ? '/hasil' : undefined,
       };
@@ -148,7 +160,26 @@ export function parsePathname(rawPathname: string): ParsedRoute {
     const attemptId = decodeURIComponent(segments[1]);
     return {
       tab: 'history',
+      subview: 'attempts',
       attemptId,
+    };
+  }
+
+  if (head === 'peringkat') {
+    if (segments.length === 1) {
+      return {
+        tab: 'history',
+        subview: 'leaderboard',
+        attemptId: null,
+        replaceWith: rawPathname !== '/peringkat' ? '/peringkat' : undefined,
+      };
+    }
+    const pkgId = decodeURIComponent(segments[1]);
+    return {
+      tab: 'history',
+      subview: 'leaderboard',
+      attemptId: null,
+      leaderboardPkgId: pkgId,
     };
   }
 

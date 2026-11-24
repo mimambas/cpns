@@ -472,3 +472,67 @@ export const ShareIcon: React.FC<IconProps> = ({ size = 16, className }) => (
     />
   </svg>
 );
+
+export const CloudIcon: React.FC<IconProps> = ({ size = 16, className }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 16 16"
+    fill="none"
+    aria-hidden="true"
+    className={className}
+  >
+    <path
+      d="M4.5 12.75h7.25a2.5 2.5 0 00.38-4.97 3.75 3.75 0 00-7.24-.88A2.75 2.75 0 004.5 12.75z"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+export const TrophyIcon: React.FC<IconProps> = ({ size = 16, className }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 16 16"
+    fill="none"
+    aria-hidden="true"
+    className={className}
+  >
+    <path
+      d="M5 2.5h6v3.75a3 3 0 01-6 0V2.5zM5 3.75H2.5v1.5A2 2 0 004.5 7.25M11 3.75h2.5v1.5a2 2 0 01-2 2M8 9.25v3M5.5 13.5h5"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+export const CopyIcon: React.FC<IconProps> = ({ size = 16, className }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 16 16"
+    fill="none"
+    aria-hidden="true"
+    className={className}
+  >
+    <rect
+      x="5.5"
+      y="5.5"
+      width="8"
+      height="8"
+      rx="1.25"
+      stroke="currentColor"
+      strokeWidth="1.5"
+    />
+    <path
+      d="M10.5 3.5a1 1 0 00-1-1h-6a1 1 0 00-1 1v6a1 1 0 001 1"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+    />
+  </svg>
+);

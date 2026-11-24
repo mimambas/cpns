@@ -1,10 +1,13 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import type {
   ActiveExamSession,
+  CloudProfile,
+  CloudSyncStatus,
   ExamAttempt,
   FormationType,
   OptionKey,
   QuestionPackage,
+  RankInfo,
   StudyModuleId,
 } from './types';
 import { FULL_PACKAGES, getPackageById } from './data/questionBank';
@@ -22,19 +25,34 @@ import {
   buildExamHubPath,
   buildHistoryPath,
   buildHomePath,
+  buildLeaderboardPath,
   buildStudyPath,
   parsePathname,
   shouldHandleClientClick,
 } from './utils/router';
 import {
+  clearCloudAttempts,
+  fetchPublicAttempt,
+  generateAttemptId,
+  loadOrCreateCloudProfile,
+  postFinishedAttempt,
+  rehydrateCloudAttempt,
+  saveCloudProfile,
+  syncWithCloud,
+  type SyncResponse,
+  toCloudAttemptPayload,
+} from './utils/cloudSync';
+import {
   AppLogoIcon,
   CheckCircleIcon,
+  CloudIcon,
   CourseIcon,
   CrossCircleIcon,
   DashboardIcon,
   DownloadIcon,
   ExamIcon,
   ReportIcon,
+  TrophyIcon,
 } from './components/Icons';
 import { HomeView } from './components/HomeView';
 import { ExamView } from './components/ExamView';
@@ -42,6 +60,8 @@ import { ExamSetupView } from './components/ExamSetupView';
 import { ResultView } from './components/ResultView';
 import { STUDY_MODULES, StudyView } from './components/StudyView';
 import { ShareLinkButton } from './components/ShareLinkButton';
+import { CloudSyncModal } from './components/CloudSyncModal';
+import { LeaderboardView } from './components/LeaderboardView';
 
 const STORAGE_ACTIVE_KEY = 'cpns_active_session_v1';
 const STORAGE_HISTORY_KEY = 'cpns_exam_history_v1';
@@ -58,8 +78,28 @@ function loadJson<T>(key: string, fallback: T): T {
   }
 }
 
+function mergeAttempts(cloudDtos: SyncResponse['attempts'], localHistory: ExamAttempt[]): ExamAttempt[] {
+  const byId = new Map<string, ExamAttempt>();
+  for (const dto of cloudDtos) {
+    const hydrated = rehydrateCloudAttempt(dto);
+    if (hydrated) {
+      byId.set(hydrated.id, hydrated);
+    }
+  }
+  for (const local of localHistory) {
+    if (!byId.has(local.id)) {
+      byId.set(local.id, local);
+    }
+  }
+  return Array.from(byId.values()).sort(
+    (a, b) => new Date(b.finishedAt).getTime() - new Date(a.finishedAt).getTime(),
+  );
+}
+
 interface InitialRouteResolution {
   tab: AppTab;
+  historySubview: 'attempts' | 'leaderboard';
+  leaderboardPkgId: string;
   moduleId: StudyModuleId;
   packageId: string;
   isRunning: boolean;
@@ -71,13 +111,14 @@ interface InitialRouteResolution {
 function resolveRouteState(
   pathname: string,
   activeSession: ActiveExamSession | null,
-  history: ExamAttempt[],
 ): InitialRouteResolution {
   const parsed = parsePathname(pathname);
 
   if (parsed.tab === 'home') {
     return {
       tab: 'home',
+      historySubview: 'attempts',
+      leaderboardPkgId: FULL_PACKAGES[0].id,
       moduleId: 'modul-regulasi',
       packageId: FULL_PACKAGES[0].id,
       isRunning: false,
@@ -91,6 +132,8 @@ function resolveRouteState(
     const targetPath = buildStudyPath(parsed.moduleId);
     return {
       tab: 'study',
+      historySubview: 'attempts',
+      leaderboardPkgId: FULL_PACKAGES[0].id,
       moduleId: parsed.moduleId,
       packageId: FULL_PACKAGES[0].id,
       isRunning: false,
@@ -111,6 +154,8 @@ function resolveRouteState(
         const activePath = buildActiveExamPath(requestedPkg.id);
         return {
           tab: 'exam',
+          historySubview: 'attempts',
+          leaderboardPkgId: FULL_PACKAGES[0].id,
           moduleId: 'modul-regulasi',
           packageId: requestedPkg.id,
           isRunning: true,
@@ -119,10 +164,11 @@ function resolveRouteState(
           needsReplace: pathname !== activePath,
         };
       }
-      // Never auto-start timer when opening a cold /ujian/:packageId link
       const safePath = requestedPkg ? buildExamHubPath(requestedPkg.id) : '/simulasi';
       return {
         tab: 'exam',
+        historySubview: 'attempts',
+        leaderboardPkgId: FULL_PACKAGES[0].id,
         moduleId: 'modul-regulasi',
         packageId: requestedPkg?.id ?? FULL_PACKAGES[0].id,
         isRunning: false,
@@ -137,6 +183,8 @@ function resolveRouteState(
         const pkgPath = buildExamHubPath(requestedPkg.id);
         return {
           tab: 'exam',
+          historySubview: 'attempts',
+          leaderboardPkgId: FULL_PACKAGES[0].id,
           moduleId: 'modul-regulasi',
           packageId: requestedPkg.id,
           isRunning: false,
@@ -147,6 +195,8 @@ function resolveRouteState(
       }
       return {
         tab: 'exam',
+        historySubview: 'attempts',
+        leaderboardPkgId: FULL_PACKAGES[0].id,
         moduleId: 'modul-regulasi',
         packageId: FULL_PACKAGES[0].id,
         isRunning: false,
@@ -158,6 +208,8 @@ function resolveRouteState(
 
     return {
       tab: 'exam',
+      historySubview: 'attempts',
+      leaderboardPkgId: FULL_PACKAGES[0].id,
       moduleId: 'modul-regulasi',
       packageId: activeSession?.packageId ?? FULL_PACKAGES[0].id,
       isRunning: false,
@@ -168,33 +220,42 @@ function resolveRouteState(
   }
 
   // parsed.tab === 'history'
-  if (parsed.attemptId) {
-    const exists = history.some((h) => h.id === parsed.attemptId);
-    if (exists) {
-      const attemptPath = buildHistoryPath(parsed.attemptId);
-      return {
-        tab: 'history',
-        moduleId: 'modul-regulasi',
-        packageId: FULL_PACKAGES[0].id,
-        isRunning: false,
-        resultId: parsed.attemptId,
-        canonicalPath: attemptPath,
-        needsReplace: pathname !== attemptPath,
-      };
-    }
+  if (parsed.subview === 'leaderboard') {
+    const validPkg = parsed.leaderboardPkgId ? getPackageById(parsed.leaderboardPkgId) : undefined;
+    const pkgId = validPkg?.id ?? FULL_PACKAGES[0].id;
+    const targetPath = validPkg ? buildLeaderboardPath(pkgId) : '/peringkat';
     return {
       tab: 'history',
+      historySubview: 'leaderboard',
+      leaderboardPkgId: pkgId,
       moduleId: 'modul-regulasi',
       packageId: FULL_PACKAGES[0].id,
       isRunning: false,
       resultId: null,
-      canonicalPath: '/hasil',
-      needsReplace: true,
+      canonicalPath: targetPath,
+      needsReplace: pathname !== targetPath,
+    };
+  }
+
+  if (parsed.attemptId) {
+    const attemptPath = buildHistoryPath(parsed.attemptId);
+    return {
+      tab: 'history',
+      historySubview: 'attempts',
+      leaderboardPkgId: FULL_PACKAGES[0].id,
+      moduleId: 'modul-regulasi',
+      packageId: FULL_PACKAGES[0].id,
+      isRunning: false,
+      resultId: parsed.attemptId,
+      canonicalPath: attemptPath,
+      needsReplace: pathname !== attemptPath,
     };
   }
 
   return {
     tab: 'history',
+    historySubview: 'attempts',
+    leaderboardPkgId: FULL_PACKAGES[0].id,
     moduleId: 'modul-regulasi',
     packageId: FULL_PACKAGES[0].id,
     isRunning: false,
@@ -205,6 +266,10 @@ function resolveRouteState(
 }
 
 export const App: React.FC = () => {
+  const [cloudProfile, setCloudProfile] = useState<CloudProfile>(() => loadOrCreateCloudProfile());
+  const [syncStatus, setSyncStatus] = useState<CloudSyncStatus>('idle');
+  const [syncModalOpen, setSyncModalOpen] = useState(false);
+
   const [selectedFormation, setSelectedFormation] = useState<FormationType>(() =>
     loadJson<FormationType>(STORAGE_FORMATION_KEY, 'umum'),
   );
@@ -223,7 +288,6 @@ export const App: React.FC = () => {
     initialRouteRef.current = resolveRouteState(
       typeof window !== 'undefined' ? window.location.pathname : '/',
       activeSession,
-      history,
     );
   }
   const initRoute = initialRouteRef.current;
@@ -232,13 +296,41 @@ export const App: React.FC = () => {
   const [selectedPackageId, setSelectedPackageId] = useState<string>(initRoute.packageId);
   const [isSessionRunning, setIsSessionRunning] = useState<boolean>(initRoute.isRunning);
   const [selectedResultId, setSelectedResultId] = useState<string | null>(initRoute.resultId);
+  const [historySubview, setHistorySubview] = useState<'attempts' | 'leaderboard'>(
+    initRoute.historySubview,
+  );
+  const [leaderboardPkgId, setLeaderboardPkgId] = useState<string>(initRoute.leaderboardPkgId);
   const [activeTab, setActiveTab] = useState<AppTab>(initRoute.tab);
   const [currentPath, setCurrentPath] = useState<string>(initRoute.canonicalPath);
+
+  const [latestRankInfo, setLatestRankInfo] = useState<{
+    attemptId: string;
+    rankInfo: RankInfo;
+  } | null>(null);
+  const [sharedReport, setSharedReport] = useState<{
+    attempt: ExamAttempt;
+    ownerName: string;
+    rankInfo: RankInfo;
+  } | null>(null);
+  const [sharedReportLoading, setSharedReportLoading] = useState(false);
 
   const activeSessionRef = useRef(activeSession);
   activeSessionRef.current = activeSession;
   const historyRef = useRef(history);
   historyRef.current = history;
+  const completedModulesRef = useRef(completedModules);
+  completedModulesRef.current = completedModules;
+  const selectedFormationRef = useRef(selectedFormation);
+  selectedFormationRef.current = selectedFormation;
+  const cloudProfileRef = useRef(cloudProfile);
+  cloudProfileRef.current = cloudProfile;
+
+  const hasInitialSyncRef = useRef(false);
+  const skipNextMetaSyncRef = useRef(false);
+
+  useEffect(() => {
+    saveCloudProfile(cloudProfile);
+  }, [cloudProfile]);
 
   useEffect(() => {
     try {
@@ -276,6 +368,120 @@ export const App: React.FC = () => {
     }
   }, [completedModules]);
 
+  const applySyncResult = useCallback(
+    (res: SyncResponse, baseProfile: CloudProfile) => {
+      skipNextMetaSyncRef.current = true;
+      setCloudProfile({
+        syncCode: baseProfile.syncCode,
+        userId: res.profile.userId,
+        displayName: res.profile.displayName,
+        lastSyncedAt: res.profile.updatedAt,
+      });
+
+      setSelectedFormation(res.profile.selectedFormation);
+      setCompletedModules((prev) =>
+        Array.from(new Set([...prev, ...res.profile.completedModules])),
+      );
+      setHistory((prev) => mergeAttempts(res.attempts, prev));
+
+      if (!activeSessionRef.current && res.profile.activeSession) {
+        setActiveSession(res.profile.activeSession);
+      }
+    },
+    [],
+  );
+
+  // Initial automatic Cloud D1 sync on mount
+  useEffect(() => {
+    let cancelled = false;
+    setSyncStatus('syncing');
+
+    syncWithCloud(cloudProfileRef.current.syncCode, {
+      displayName: cloudProfileRef.current.displayName,
+      selectedFormation: selectedFormationRef.current,
+      completedModules: completedModulesRef.current,
+      activeSession: activeSessionRef.current,
+      attempts: historyRef.current.slice(0, 50).map(toCloudAttemptPayload),
+    }).then((res) => {
+      if (cancelled) return;
+      hasInitialSyncRef.current = true;
+      if (res) {
+        applySyncResult(res, cloudProfileRef.current);
+        setSyncStatus('synced');
+      } else {
+        setSyncStatus('offline');
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [applySyncResult]);
+
+  // Debounced background sync when modules or target formation change
+  useEffect(() => {
+    if (!hasInitialSyncRef.current) return;
+    if (skipNextMetaSyncRef.current) {
+      skipNextMetaSyncRef.current = false;
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      setSyncStatus('syncing');
+      void syncWithCloud(cloudProfileRef.current.syncCode, {
+        displayName: cloudProfileRef.current.displayName,
+        selectedFormation,
+        replaceFormation: true,
+        completedModules,
+        replaceModules: true,
+      }).then((res) => {
+        if (res) {
+          setCloudProfile((prev) => ({
+            ...prev,
+            userId: res.profile.userId,
+            lastSyncedAt: res.profile.updatedAt,
+          }));
+          setSyncStatus('synced');
+        } else {
+          setSyncStatus('offline');
+        }
+      });
+    }, 1200);
+
+    return () => window.clearTimeout(timer);
+  }, [completedModules, selectedFormation]);
+
+  // Debounced 20-second checkpoint during live exam when answers/flags change (never on countdown tick)
+  const answeredCountCheckpoint = activeSession ? Object.keys(activeSession.answers).length : 0;
+  const flaggedCountCheckpoint = activeSession ? activeSession.flaggedIds.length : 0;
+
+  useEffect(() => {
+    if (!hasInitialSyncRef.current || !isSessionRunning || !activeSessionRef.current) return;
+
+    const timer = window.setTimeout(() => {
+      const current = activeSessionRef.current;
+      if (!current) return;
+      void syncWithCloud(cloudProfileRef.current.syncCode, {
+        displayName: cloudProfileRef.current.displayName,
+        selectedFormation: selectedFormationRef.current,
+        completedModules: completedModulesRef.current,
+        activeSession: current,
+        updateActiveSession: true,
+      }).then((res) => {
+        if (res) {
+          setSyncStatus('synced');
+          setCloudProfile((prev) => ({
+            ...prev,
+            userId: res.profile.userId,
+            lastSyncedAt: res.profile.updatedAt,
+          }));
+        }
+      });
+    }, 20000);
+
+    return () => window.clearTimeout(timer);
+  }, [isSessionRunning, answeredCountCheckpoint, flaggedCountCheckpoint]);
+
   const pushPath = useCallback(
     (path: string, options?: { replace?: boolean; scroll?: boolean }) => {
       if (typeof window !== 'undefined') {
@@ -295,7 +501,52 @@ export const App: React.FC = () => {
     [],
   );
 
-  // Normalize initial canonical URL once on mount if needed (e.g. /kelas -> /kelas/regulasi)
+  // Fetch shared public report when opening /hasil/:attemptId not present locally
+  useEffect(() => {
+    if (activeTab !== 'history' || selectedResultId === null) {
+      setSharedReport(null);
+      setSharedReportLoading(false);
+      return;
+    }
+
+    const existsLocally = history.some((h) => h.id === selectedResultId);
+    if (existsLocally) {
+      setSharedReport(null);
+      setSharedReportLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+    setSharedReportLoading(true);
+    setSharedReport(null);
+
+    fetchPublicAttempt(selectedResultId).then((res) => {
+      if (cancelled) return;
+      if (res) {
+        const hydrated = rehydrateCloudAttempt(res.attempt);
+        if (hydrated) {
+          setSharedReport({
+            attempt: hydrated,
+            ownerName: res.attempt.displayName,
+            rankInfo: res.rankInfo,
+          });
+          setSharedReportLoading(false);
+          return;
+        }
+      }
+      setSharedReportLoading(false);
+      if (!historyRef.current.some((h) => h.id === selectedResultId)) {
+        setSelectedResultId(null);
+        pushPath('/hasil', { replace: true });
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [activeTab, selectedResultId, history, pushPath]);
+
+  // Normalize initial canonical URL once on mount if needed
   useEffect(() => {
     if (initRoute.needsReplace && typeof window !== 'undefined') {
       window.history.replaceState(null, '', initRoute.canonicalPath);
@@ -308,11 +559,7 @@ export const App: React.FC = () => {
     const handlePopState = () => {
       const pathname = window.location.pathname;
       const parsed = parsePathname(pathname);
-      const resolved = resolveRouteState(
-        pathname,
-        activeSessionRef.current,
-        historyRef.current,
-      );
+      const resolved = resolveRouteState(pathname, activeSessionRef.current);
 
       if (resolved.needsReplace) {
         window.history.replaceState(null, '', resolved.canonicalPath);
@@ -332,6 +579,8 @@ export const App: React.FC = () => {
         }
       }
       if (resolved.tab === 'history') {
+        setHistorySubview(resolved.historySubview);
+        setLeaderboardPkgId(resolved.leaderboardPkgId);
         setSelectedResultId(resolved.resultId);
       } else {
         setSelectedResultId(null);
@@ -340,6 +589,25 @@ export const App: React.FC = () => {
 
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  const syncSessionSnapshot = useCallback((sessionValue: ActiveExamSession | null) => {
+    void syncWithCloud(cloudProfileRef.current.syncCode, {
+      displayName: cloudProfileRef.current.displayName,
+      selectedFormation: selectedFormationRef.current,
+      completedModules: completedModulesRef.current,
+      activeSession: sessionValue,
+      updateActiveSession: true,
+    }).then((res) => {
+      if (res) {
+        setSyncStatus('synced');
+        setCloudProfile((prev) => ({
+          ...prev,
+          userId: res.profile.userId,
+          lastSyncedAt: res.profile.updatedAt,
+        }));
+      }
+    });
   }, []);
 
   const finishExam = useCallback(() => {
@@ -352,7 +620,7 @@ export const App: React.FC = () => {
       activeSession.allocatedSeconds - activeSession.remainingSeconds,
     );
     const attempt: ExamAttempt = {
-      id: `attempt-${Date.now()}`,
+      id: generateAttemptId(),
       packageId: pkg.id,
       packageTitle: pkg.title,
       isFullSimulation: pkg.isFullSimulation,
@@ -369,9 +637,24 @@ export const App: React.FC = () => {
     setHistory((prev) => [attempt, ...prev]);
     setActiveSession(null);
     setIsSessionRunning(false);
+    setHistorySubview('attempts');
     setSelectedResultId(attempt.id);
     setActiveTab('history');
     pushPath(buildHistoryPath(attempt.id), { replace: true });
+
+    setSyncStatus('syncing');
+    void postFinishedAttempt(
+      cloudProfileRef.current.syncCode,
+      cloudProfileRef.current.displayName,
+      attempt,
+    ).then((res) => {
+      if (res) {
+        setSyncStatus('synced');
+        setLatestRankInfo({ attemptId: res.attemptId, rankInfo: res.rankInfo });
+      } else {
+        setSyncStatus('offline');
+      }
+    });
   }, [activeSession, pushPath]);
 
   // Countdown tick only runs while the exam classroom is active and running
@@ -451,8 +734,16 @@ export const App: React.FC = () => {
 
   const handlePauseExam = () => {
     setIsSessionRunning(false);
-    const pkgId = activeSession?.packageId ?? selectedPackageId;
+    const current = activeSessionRef.current;
+    const pkgId = current?.packageId ?? selectedPackageId;
     pushPath(buildExamHubPath(pkgId));
+    syncSessionSnapshot(current);
+  };
+
+  const handleDiscardActiveSession = () => {
+    setActiveSession(null);
+    setIsSessionRunning(false);
+    syncSessionSnapshot(null);
   };
 
   const switchTab = (nextTab: AppTab) => {
@@ -461,6 +752,7 @@ export const App: React.FC = () => {
     }
     if (nextTab === 'history') {
       setSelectedResultId(null);
+      setHistorySubview('attempts');
     }
     setActiveTab(nextTab);
 
@@ -473,6 +765,81 @@ export const App: React.FC = () => {
     } else {
       pushPath(buildHistoryPath(null));
     }
+  };
+
+  const handleOpenLeaderboard = (pkgId?: string) => {
+    const targetPkg = pkgId && getPackageById(pkgId) ? pkgId : leaderboardPkgId;
+    setLeaderboardPkgId(targetPkg);
+    setSelectedResultId(null);
+    setHistorySubview('leaderboard');
+    setActiveTab('history');
+    pushPath(pkgId ? buildLeaderboardPath(targetPkg) : buildLeaderboardPath());
+  };
+
+  const handleManualSync = async (): Promise<boolean> => {
+    setSyncStatus('syncing');
+    const res = await syncWithCloud(cloudProfile.syncCode, {
+      displayName: cloudProfile.displayName,
+      selectedFormation,
+      completedModules,
+      activeSession,
+      attempts: history.slice(0, 50).map(toCloudAttemptPayload),
+    });
+    if (res) {
+      applySyncResult(res, cloudProfile);
+      setSyncStatus('synced');
+      return true;
+    }
+    setSyncStatus('offline');
+    return false;
+  };
+
+  const handleSaveDisplayName = async (nextName: string): Promise<boolean> => {
+    setSyncStatus('syncing');
+    const res = await syncWithCloud(cloudProfile.syncCode, {
+      displayName: nextName,
+      explicitProfileUpdate: true,
+      selectedFormation,
+      completedModules,
+      attempts: history.slice(0, 50).map(toCloudAttemptPayload),
+    });
+    if (res) {
+      applySyncResult(res, { ...cloudProfile, displayName: res.profile.displayName });
+      setSyncStatus('synced');
+      return true;
+    }
+    setSyncStatus('offline');
+    return false;
+  };
+
+  const handleLinkSyncCode = async (
+    nextCode: string,
+  ): Promise<{ ok: boolean; error?: string }> => {
+    setSyncStatus('syncing');
+    const res = await syncWithCloud(nextCode, {
+      displayName: cloudProfile.displayName,
+      selectedFormation,
+      completedModules,
+      activeSession,
+      attempts: history.slice(0, 50).map(toCloudAttemptPayload),
+    });
+    if (!res) {
+      setSyncStatus('offline');
+      return {
+        ok: false,
+        error: 'Gagal terhubung ke server Cloudflare D1. Periksa koneksi lalu coba lagi.',
+      };
+    }
+
+    const linkedProfile: CloudProfile = {
+      syncCode: nextCode,
+      userId: res.profile.userId,
+      displayName: res.profile.displayName,
+      lastSyncedAt: res.profile.updatedAt,
+    };
+    applySyncResult(res, linkedProfile);
+    setSyncStatus('synced');
+    return { ok: true };
   };
 
   const handleToggleCompleteModule = (moduleId: StudyModuleId) => {
@@ -524,8 +891,10 @@ export const App: React.FC = () => {
 
   const selectedSetupPkg = getPackageById(selectedPackageId) ?? FULL_PACKAGES[0];
   const currentExamPkg = activeSession ? getPackageById(activeSession.packageId) : undefined;
-  const selectedAttempt =
+  const localAttempt =
     selectedResultId !== null ? history.find((h) => h.id === selectedResultId) ?? null : null;
+  const displayedAttempt = localAttempt ?? sharedReport?.attempt ?? null;
+  const isViewingSharedAttempt = localAttempt === null && sharedReport !== null;
 
   const isClassroomActive =
     activeTab === 'exam' && Boolean(activeSession) && Boolean(currentExamPkg) && isSessionRunning;
@@ -543,9 +912,11 @@ export const App: React.FC = () => {
           ? currentPath.startsWith('/simulasi/')
             ? `Simulasi: ${selectedSetupPkg.title} | CPNS Learning Hub`
             : 'Persiapan Simulasi CAT SKD CPNS | CPNS Learning Hub'
-          : selectedAttempt
-            ? `Rapor Hasil: ${selectedAttempt.packageTitle} | CPNS Learning Hub`
-            : 'Hasil & Riwayat Simulasi CAT | CPNS Learning Hub';
+          : displayedAttempt
+            ? `Rapor Hasil: ${displayedAttempt.packageTitle} | CPNS Learning Hub`
+            : historySubview === 'leaderboard'
+              ? 'Papan Peringkat Nasional Simulasi CAT | CPNS Learning Hub'
+              : 'Hasil & Riwayat Simulasi CAT | CPNS Learning Hub';
 
   useEffect(() => {
     document.title = pageTitle;
@@ -620,7 +991,7 @@ export const App: React.FC = () => {
     },
     {
       id: 'history',
-      label: 'Hasil & riwayat',
+      label: 'Hasil & peringkat',
       mobileLabel: 'Hasil',
       href: buildHistoryPath(null),
       icon: <ReportIcon size={16} />,
@@ -637,9 +1008,18 @@ export const App: React.FC = () => {
         ? `Kelas · Modul ${activeModuleMeta.number}: ${activeModuleMeta.title}`
         : activeTab === 'exam'
           ? 'Pusat asesmen & persiapan CAT'
-          : selectedAttempt
-            ? `Rapor detail: ${selectedAttempt.packageTitle}`
-            : 'Rapor hasil & riwayat simulasi';
+          : displayedAttempt
+            ? `Rapor detail: ${displayedAttempt.packageTitle}`
+            : historySubview === 'leaderboard'
+              ? 'Papan peringkat nasional per paket'
+              : 'Rapor hasil & riwayat simulasi';
+
+  const cloudStatusLabel =
+    syncStatus === 'syncing'
+      ? 'Sinkron...'
+      : syncStatus === 'synced'
+        ? 'Sinkron'
+        : 'Lokal';
 
   // Mode 1: LMS Workspace Shell
   return (
@@ -688,6 +1068,32 @@ export const App: React.FC = () => {
         </div>
 
         <div className="lms-sidebar-footer">
+          {/* Cloud Sync Profile Widget */}
+          <div className="lms-sidebar-widget">
+            <div className="row-wrap" style={{ justifyContent: 'space-between' }}>
+              <span className="h-xsmall">{cloudProfile.displayName}</span>
+              <span
+                className={`lozenge ${
+                  syncStatus === 'synced'
+                    ? 'lozenge-success'
+                    : syncStatus === 'syncing'
+                      ? 'lozenge-info'
+                      : 'lozenge-warning'
+                }`}
+              >
+                {syncStatus === 'synced' ? 'Cloud D1' : cloudStatusLabel}
+              </span>
+            </div>
+            <button
+              type="button"
+              className="btn btn-compact"
+              onClick={() => setSyncModalOpen(true)}
+            >
+              <CloudIcon size={14} />
+              <span>Sinkronisasi perangkat</span>
+            </button>
+          </div>
+
           {/* Target Formasi Widget */}
           <div className="lms-sidebar-widget">
             <label htmlFor="sidebar-formation-select" className="form-label">
@@ -763,6 +1169,16 @@ export const App: React.FC = () => {
               </a>
             ) : null}
 
+            <button
+              type="button"
+              className={`btn btn-compact ${syncStatus === 'synced' ? 'btn-selected' : ''}`}
+              onClick={() => setSyncModalOpen(true)}
+              title="Pengaturan sinkronisasi Cloud D1 dan kode perangkat"
+            >
+              <CloudIcon size={14} />
+              <span>{cloudStatusLabel}</span>
+            </button>
+
             <ShareLinkButton
               path={currentPath}
               shareTitle={pageTitle}
@@ -785,10 +1201,7 @@ export const App: React.FC = () => {
               totalModulesCount={STUDY_MODULES.length}
               onStartPackage={handleOpenExamPrep}
               onResumeExam={handleResumeExam}
-              onDiscardSession={() => {
-                setActiveSession(null);
-                setIsSessionRunning(false);
-              }}
+              onDiscardSession={handleDiscardActiveSession}
               onOpenStudy={(moduleId) => {
                 const target = moduleId ?? activeModuleId;
                 setActiveModuleId(target);
@@ -797,6 +1210,7 @@ export const App: React.FC = () => {
               }}
               onOpenHistory={(attemptId) => {
                 const targetId = attemptId ?? history[0]?.id ?? null;
+                setHistorySubview('attempts');
                 setSelectedResultId(targetId);
                 setActiveTab('history');
                 pushPath(buildHistoryPath(targetId));
@@ -827,16 +1241,19 @@ export const App: React.FC = () => {
               onChangeFormation={setSelectedFormation}
               onConfirmStartExam={handleConfirmStartExam}
               onResumeActiveSession={handleResumeExam}
-              onDiscardActiveSession={() => {
-                setActiveSession(null);
-                setIsSessionRunning(false);
-              }}
+              onDiscardActiveSession={handleDiscardActiveSession}
             />
           )}
 
-          {activeTab === 'history' && selectedAttempt && (
+          {activeTab === 'history' && sharedReportLoading && (
+            <div className="card">
+              <p className="body text-subtle">Memuat rapor hasil ujian dari Cloudflare D1...</p>
+            </div>
+          )}
+
+          {activeTab === 'history' && !sharedReportLoading && displayedAttempt && (
             <ResultView
-              attempt={selectedAttempt}
+              attempt={displayedAttempt}
               onUpdateFormation={handleUpdateAttemptFormation}
               onRetakePackage={(pkgId) => {
                 const found = getPackageById(pkgId);
@@ -844,156 +1261,134 @@ export const App: React.FC = () => {
               }}
               onBackHome={() => {
                 setSelectedResultId(null);
+                setHistorySubview('attempts');
                 pushPath(buildHistoryPath(null));
+              }}
+              isSharedAttempt={isViewingSharedAttempt}
+              sharedOwnerName={sharedReport?.ownerName}
+              rankInfo={
+                isViewingSharedAttempt
+                  ? sharedReport?.rankInfo
+                  : latestRankInfo && latestRankInfo.attemptId === displayedAttempt.id
+                    ? latestRankInfo.rankInfo
+                    : null
+              }
+              currentUserId={cloudProfile.userId}
+              syncCode={cloudProfile.syncCode}
+              onOpenLeaderboard={(pkgId) => handleOpenLeaderboard(pkgId)}
+              onOpenAttempt={(attemptId) => {
+                setSelectedResultId(attemptId);
+                setHistorySubview('attempts');
+                pushPath(buildHistoryPath(attemptId));
               }}
             />
           )}
 
-          {activeTab === 'history' && !selectedAttempt && (
+          {activeTab === 'history' && !sharedReportLoading && !displayedAttempt && (
             <div className="stack-300">
-              <div className="row-wrap" style={{ justifyContent: 'space-between' }}>
-                <div>
-                  <h1 className="h-xlarge">Hasil &amp; riwayat simulasi ujian</h1>
-                  <p className="body text-subtle" style={{ marginTop: '4px' }}>
-                    Semua riwayat tersimpan otomatis di peramban Anda tanpa login. Klik detail untuk melihat peta pembahasan soal dan ekspor PDF.
-                  </p>
-                </div>
-                {history.length > 0 && (
-                  <button
-                    type="button"
-                    className="btn"
-                    onClick={() => {
-                      setHistory([]);
-                      setSelectedResultId(null);
-                      pushPath(buildHistoryPath(null), { replace: true });
-                    }}
-                  >
-                    Hapus seluruh riwayat
-                  </button>
-                )}
+              {/* Subview Switcher: Riwayat Saya <-> Papan Peringkat */}
+              <div className="row-wrap" style={{ gap: '8px' }}>
+                <a
+                  href={buildHistoryPath(null)}
+                  className={`btn btn-compact ${
+                    historySubview === 'attempts' ? 'btn-selected' : ''
+                  }`}
+                  onClick={(e) => {
+                    if (!shouldHandleClientClick(e)) return;
+                    e.preventDefault();
+                    setHistorySubview('attempts');
+                    pushPath(buildHistoryPath(null), { scroll: false });
+                  }}
+                >
+                  <ReportIcon size={14} />
+                  <span>Riwayat saya ({history.length})</span>
+                </a>
+                <a
+                  href={buildLeaderboardPath(leaderboardPkgId)}
+                  className={`btn btn-compact ${
+                    historySubview === 'leaderboard' ? 'btn-selected' : ''
+                  }`}
+                  onClick={(e) => {
+                    if (!shouldHandleClientClick(e)) return;
+                    e.preventDefault();
+                    handleOpenLeaderboard(leaderboardPkgId);
+                  }}
+                >
+                  <TrophyIcon size={14} />
+                  <span>Papan peringkat</span>
+                </a>
               </div>
 
-              {history.length === 0 ? (
-                <div className="card stack-200" style={{ alignItems: 'flex-start' }}>
-                  <h2 className="h-small">Belum ada riwayat simulasi</h2>
-                  <p className="body text-subtle">
-                    Mulai salah satu paket simulasi 110 soal atau latihan fokus subtes untuk melihat rapor nilai, peta pembahasan, dan mengunduh laporan PDF.
-                  </p>
-                  <a
-                    href={buildExamHubPath(FULL_PACKAGES[0].id)}
-                    className="btn btn-primary"
-                    onClick={(e) => {
-                      if (!shouldHandleClientClick(e)) return;
-                      e.preventDefault();
-                      handleOpenExamPrep(FULL_PACKAGES[0]);
-                    }}
-                  >
-                    Siapkan simulasi 110 soal sekarang
-                  </a>
-                </div>
+              {historySubview === 'leaderboard' ? (
+                <LeaderboardView
+                  selectedPackageId={leaderboardPkgId}
+                  onSelectPackage={(pkgId) => {
+                    setLeaderboardPkgId(pkgId);
+                    pushPath(buildLeaderboardPath(pkgId), { scroll: false });
+                  }}
+                  currentUserId={cloudProfile.userId}
+                  syncCode={cloudProfile.syncCode}
+                  onStartPackage={handleOpenExamPrep}
+                  onOpenAttempt={(attemptId) => {
+                    setSelectedResultId(attemptId);
+                    setHistorySubview('attempts');
+                    pushPath(buildHistoryPath(attemptId));
+                  }}
+                />
               ) : (
                 <>
-                  {/* Mobile History Cards (shown <= 768px) */}
-                  <div className="history-mobile-list">
-                    {history.map((item) => {
-                      const ev = summarizeAttempt(item);
-                      const detailPath = buildHistoryPath(item.id);
-                      return (
-                        <article key={item.id} className="card stack-200">
-                          <div className="row-wrap" style={{ justifyContent: 'space-between' }}>
-                            <span className="body-small">{formatDateTimeId(item.finishedAt)}</span>
-                            <span
-                              className={`lozenge ${
-                                ev.passed ? 'lozenge-success' : 'lozenge-danger'
-                              }`}
-                            >
-                              {ev.passed ? (
-                                <CheckCircleIcon size={12} />
-                              ) : (
-                                <CrossCircleIcon size={12} />
-                              )}
-                              {ev.passed ? 'Lulus PG' : 'Belum lulus PG'}
-                            </span>
-                          </div>
-                          <div>
-                            <h2 className="h-small">{item.packageTitle}</h2>
-                            <span className="body-small text-subtle">{ev.formation.shortLabel}</span>
-                          </div>
-                          <div className="well-sunken row-wrap" style={{ justifyContent: 'space-between', padding: '10px 12px' }}>
-                            <div className="mono">
-                              <strong style={{ fontSize: '18px' }}>{ev.totalScore}</strong>{' '}
-                              <span className="body-small">/ {ev.maxTotalScore}</span>
-                            </div>
-                            <span className="body-small mono">
-                              TWK {ev.subtests.TWK.score} · TIU {ev.subtests.TIU.score} · TKP {ev.subtests.TKP.score}
-                            </span>
-                          </div>
-                          <div className="row-wrap" style={{ gap: '8px' }}>
-                            <a
-                              href={detailPath}
-                              className="btn btn-primary"
-                              style={{ flex: 1 }}
-                              onClick={(e) => {
-                                if (!shouldHandleClientClick(e)) return;
-                                e.preventDefault();
-                                setSelectedResultId(item.id);
-                                pushPath(detailPath);
-                              }}
-                            >
-                              Lihat pembahasan
-                            </a>
-                            <button
-                              type="button"
-                              className="btn"
-                              onClick={() => {
-                                void exportResultToPdf(item, ev);
-                              }}
-                            >
-                              <DownloadIcon size={14} />
-                              PDF
-                            </button>
-                          </div>
-                        </article>
-                      );
-                    })}
+                  <div className="row-wrap" style={{ justifyContent: 'space-between' }}>
+                    <div>
+                      <h1 className="h-xlarge">Hasil &amp; riwayat simulasi ujian</h1>
+                      <p className="body text-subtle" style={{ marginTop: '4px' }}>
+                        Riwayat tersimpan otomatis di peramban dan tersinkron ke Cloudflare D1 melalui kode perangkat.
+                      </p>
+                    </div>
+                    {history.length > 0 && (
+                      <button
+                        type="button"
+                        className="btn"
+                        onClick={() => {
+                          setHistory([]);
+                          setSelectedResultId(null);
+                          pushPath(buildHistoryPath(null), { replace: true });
+                          void clearCloudAttempts(cloudProfile.syncCode);
+                        }}
+                      >
+                        Hapus seluruh riwayat
+                      </button>
+                    )}
                   </div>
 
-                  {/* Desktop History Table (shown > 768px) */}
-                  <div className="table-wrap history-desktop-table">
-                    <table className="ads-table">
-                      <thead>
-                        <tr>
-                          <th>Tanggal selesai</th>
-                          <th>Paket simulasi</th>
-                          <th>Waktu pengerjaan</th>
-                          <th>Skor total</th>
-                          <th>Rincian subtes</th>
-                          <th>Status</th>
-                          <th>Aksi</th>
-                        </tr>
-                      </thead>
-                      <tbody>
+                  {history.length === 0 ? (
+                    <div className="card stack-200" style={{ alignItems: 'flex-start' }}>
+                      <h2 className="h-small">Belum ada riwayat simulasi</h2>
+                      <p className="body text-subtle">
+                        Mulai salah satu paket simulasi 110 soal atau latihan fokus subtes untuk melihat rapor nilai, peta pembahasan, peringkat, dan mengunduh laporan PDF.
+                      </p>
+                      <a
+                        href={buildExamHubPath(FULL_PACKAGES[0].id)}
+                        className="btn btn-primary"
+                        onClick={(e) => {
+                          if (!shouldHandleClientClick(e)) return;
+                          e.preventDefault();
+                          handleOpenExamPrep(FULL_PACKAGES[0]);
+                        }}
+                      >
+                        Siapkan simulasi 110 soal sekarang
+                      </a>
+                    </div>
+                  ) : (
+                    <>
+                      {/* Mobile History Cards (shown <= 768px) */}
+                      <div className="history-mobile-list">
                         {history.map((item) => {
                           const ev = summarizeAttempt(item);
                           const detailPath = buildHistoryPath(item.id);
                           return (
-                            <tr key={item.id}>
-                              <td className="body-small">{formatDateTimeId(item.finishedAt)}</td>
-                              <td>
-                                <strong>{item.packageTitle}</strong>
-                                <div className="body-small">{ev.formation.shortLabel}</div>
-                              </td>
-                              <td className="mono body-small">
-                                {formatDurationText(item.elapsedSeconds)}
-                              </td>
-                              <td className="mono">
-                                <strong>{ev.totalScore}</strong> / {ev.maxTotalScore}
-                              </td>
-                              <td className="body-small mono">
-                                TWK {ev.subtests.TWK.score} · TIU {ev.subtests.TIU.score} · TKP{' '}
-                                {ev.subtests.TKP.score}
-                              </td>
-                              <td>
+                            <article key={item.id} className="card stack-200">
+                              <div className="row-wrap" style={{ justifyContent: 'space-between' }}>
+                                <span className="body-small">{formatDateTimeId(item.finishedAt)}</span>
                                 <span
                                   className={`lozenge ${
                                     ev.passed ? 'lozenge-success' : 'lozenge-danger'
@@ -1006,39 +1401,136 @@ export const App: React.FC = () => {
                                   )}
                                   {ev.passed ? 'Lulus PG' : 'Belum lulus PG'}
                                 </span>
-                              </td>
-                              <td>
-                                <div className="row-wrap" style={{ gap: '8px' }}>
-                                  <a
-                                    href={detailPath}
-                                    className="btn btn-compact"
-                                    onClick={(e) => {
-                                      if (!shouldHandleClientClick(e)) return;
-                                      e.preventDefault();
-                                      setSelectedResultId(item.id);
-                                      pushPath(detailPath);
-                                    }}
-                                  >
-                                    Lihat pembahasan
-                                  </a>
-                                  <button
-                                    type="button"
-                                    className="btn btn-compact"
-                                    onClick={() => {
-                                      void exportResultToPdf(item, ev);
-                                    }}
-                                  >
-                                    <DownloadIcon size={14} />
-                                    PDF
-                                  </button>
+                              </div>
+                              <div>
+                                <h2 className="h-small">{item.packageTitle}</h2>
+                                <span className="body-small text-subtle">{ev.formation.shortLabel}</span>
+                              </div>
+                              <div
+                                className="well-sunken row-wrap"
+                                style={{ justifyContent: 'space-between', padding: '10px 12px' }}
+                              >
+                                <div className="mono">
+                                  <strong style={{ fontSize: '18px' }}>{ev.totalScore}</strong>{' '}
+                                  <span className="body-small">/ {ev.maxTotalScore}</span>
                                 </div>
-                              </td>
-                            </tr>
+                                <span className="body-small mono">
+                                  TWK {ev.subtests.TWK.score} · TIU {ev.subtests.TIU.score} · TKP {ev.subtests.TKP.score}
+                                </span>
+                              </div>
+                              <div className="row-wrap" style={{ gap: '8px' }}>
+                                <a
+                                  href={detailPath}
+                                  className="btn btn-primary"
+                                  style={{ flex: 1 }}
+                                  onClick={(e) => {
+                                    if (!shouldHandleClientClick(e)) return;
+                                    e.preventDefault();
+                                    setSelectedResultId(item.id);
+                                    pushPath(detailPath);
+                                  }}
+                                >
+                                  Lihat pembahasan
+                                </a>
+                                <button
+                                  type="button"
+                                  className="btn"
+                                  onClick={() => {
+                                    void exportResultToPdf(item, ev);
+                                  }}
+                                >
+                                  <DownloadIcon size={14} />
+                                  PDF
+                                </button>
+                              </div>
+                            </article>
                           );
                         })}
-                      </tbody>
-                    </table>
-                  </div>
+                      </div>
+
+                      {/* Desktop History Table (shown > 768px) */}
+                      <div className="table-wrap history-desktop-table">
+                        <table className="ads-table">
+                          <thead>
+                            <tr>
+                              <th>Tanggal selesai</th>
+                              <th>Paket simulasi</th>
+                              <th>Waktu pengerjaan</th>
+                              <th>Skor total</th>
+                              <th>Rincian subtes</th>
+                              <th>Status</th>
+                              <th>Aksi</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {history.map((item) => {
+                              const ev = summarizeAttempt(item);
+                              const detailPath = buildHistoryPath(item.id);
+                              return (
+                                <tr key={item.id}>
+                                  <td className="body-small">{formatDateTimeId(item.finishedAt)}</td>
+                                  <td>
+                                    <strong>{item.packageTitle}</strong>
+                                    <div className="body-small">{ev.formation.shortLabel}</div>
+                                  </td>
+                                  <td className="mono body-small">
+                                    {formatDurationText(item.elapsedSeconds)}
+                                  </td>
+                                  <td className="mono">
+                                    <strong>{ev.totalScore}</strong> / {ev.maxTotalScore}
+                                  </td>
+                                  <td className="body-small mono">
+                                    TWK {ev.subtests.TWK.score} · TIU {ev.subtests.TIU.score} · TKP{' '}
+                                    {ev.subtests.TKP.score}
+                                  </td>
+                                  <td>
+                                    <span
+                                      className={`lozenge ${
+                                        ev.passed ? 'lozenge-success' : 'lozenge-danger'
+                                      }`}
+                                    >
+                                      {ev.passed ? (
+                                        <CheckCircleIcon size={12} />
+                                      ) : (
+                                        <CrossCircleIcon size={12} />
+                                      )}
+                                      {ev.passed ? 'Lulus PG' : 'Belum lulus PG'}
+                                    </span>
+                                  </td>
+                                  <td>
+                                    <div className="row-wrap" style={{ gap: '8px' }}>
+                                      <a
+                                        href={detailPath}
+                                        className="btn btn-compact"
+                                        onClick={(e) => {
+                                          if (!shouldHandleClientClick(e)) return;
+                                          e.preventDefault();
+                                          setSelectedResultId(item.id);
+                                          pushPath(detailPath);
+                                        }}
+                                      >
+                                        Lihat pembahasan
+                                      </a>
+                                      <button
+                                        type="button"
+                                        className="btn btn-compact"
+                                        onClick={() => {
+                                          void exportResultToPdf(item, ev);
+                                        }}
+                                      >
+                                        <DownloadIcon size={14} />
+                                        PDF
+                                      </button>
+                                    </div>
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+                    </>
+                  )}
                 </>
               )}
             </div>
@@ -1048,7 +1540,7 @@ export const App: React.FC = () => {
         <footer className="footer">
           <div className="footer-inner">
             <span className="body-small">
-              cpns.imambas.my.id · LMS &amp; Simulasi CAT SKD CPNS tanpa login (Kepmenpan RB No. 321/2024).
+              cpns.imambas.my.id · LMS, Sinkronisasi D1, &amp; Simulasi CAT SKD CPNS (Kepmenpan RB No. 321/2024).
             </span>
             <div className="row-wrap" style={{ gap: '16px' }}>
               <a
@@ -1109,6 +1601,17 @@ export const App: React.FC = () => {
           );
         })}
       </nav>
+
+      {/* Cloud Sync & Profile Modal */}
+      <CloudSyncModal
+        open={syncModalOpen}
+        profile={cloudProfile}
+        syncStatus={syncStatus}
+        onClose={() => setSyncModalOpen(false)}
+        onSaveDisplayName={handleSaveDisplayName}
+        onManualSync={handleManualSync}
+        onLinkSyncCode={handleLinkSyncCode}
+      />
     </div>
   );
 };

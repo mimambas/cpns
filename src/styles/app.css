@@ -1501,6 +1501,27 @@ input:disabled {
   overflow-y: auto;
 }
 
+.sync-code-box {
+  padding: 10px 14px;
+  border-radius: var(--rounded-sm);
+  border: 1px dashed var(--brand-selected-border);
+  background-color: var(--surface);
+  font-size: 16px;
+  font-weight: var(--weight-medium);
+  color: var(--brand-primary);
+  letter-spacing: 0.04em;
+  word-break: break-all;
+}
+
+.leaderboard-row-me {
+  background-color: var(--brand-selected);
+}
+
+.card[data-me='true'] {
+  background-color: var(--brand-selected);
+  border-color: var(--brand-selected-border);
+}
+
 .modal-header {
   padding: var(--space-6) var(--space-6) var(--space-4);
 }

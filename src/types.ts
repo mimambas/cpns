@@ -113,3 +113,50 @@ export interface StudyLinkItem {
   category: string;
   description: string;
 }
+
+export type CloudSyncStatus = 'idle' | 'syncing' | 'synced' | 'offline';
+
+export interface CloudProfile {
+  syncCode: string;
+  userId: string;
+  displayName: string;
+  lastSyncedAt: string | null;
+}
+
+export interface RankInfo {
+  rank: number;
+  totalParticipants: number;
+}
+
+export interface LeaderboardEntry {
+  rank: number;
+  userId: string;
+  attemptId: string;
+  displayName: string;
+  formationId: FormationType;
+  twkScore: number;
+  tiuScore: number;
+  tkpScore: number;
+  totalScore: number;
+  maxScore: number;
+  passed: boolean;
+  elapsedSeconds: number;
+  finishedAt: string;
+  attemptsCount: number;
+  isMe: boolean;
+}
+
+export interface LeaderboardSummary {
+  totalParticipants: number;
+  topScore: number;
+  avgScore: number;
+  passedCount: number;
+}
+
+export interface LeaderboardResponse {
+  ok: boolean;
+  packageId: string;
+  summary: LeaderboardSummary;
+  entries: LeaderboardEntry[];
+  myEntry: LeaderboardEntry | null;
+}
