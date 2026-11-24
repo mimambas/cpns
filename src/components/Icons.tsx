@@ -425,3 +425,50 @@ export const FolderIcon: React.FC<IconProps> = ({ size = 16, className }) => (
     />
   </svg>
 );
+
+export const LinkIcon: React.FC<IconProps> = ({ size = 16, className }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 16 16"
+    fill="none"
+    aria-hidden="true"
+    className={className}
+  >
+    <path
+      d="M6.75 9.25a3.25 3.25 0 004.6 0l1.9-1.9a3.25 3.25 0 00-4.6-4.6l-1.1 1.1"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M9.25 6.75a3.25 3.25 0 00-4.6 0l-1.9 1.9a3.25 3.25 0 004.6 4.6l1.1-1.1"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+export const ShareIcon: React.FC<IconProps> = ({ size = 16, className }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 16 16"
+    fill="none"
+    aria-hidden="true"
+    className={className}
+  >
+    <circle cx="12" cy="3.25" r="1.75" stroke="currentColor" strokeWidth="1.5" />
+    <circle cx="3.75" cy="8" r="1.75" stroke="currentColor" strokeWidth="1.5" />
+    <circle cx="12" cy="12.75" r="1.75" stroke="currentColor" strokeWidth="1.5" />
+    <path
+      d="M5.3 7.1l5.1-2.9M5.3 8.9l5.1 2.9"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+    />
+  </svg>
+);

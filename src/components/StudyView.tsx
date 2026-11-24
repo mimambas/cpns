@@ -1,4 +1,5 @@
 import React from 'react';
+import type { StudyModuleId } from '../types';
 import {
   DRIVE_FILES,
   DRIVE_SUBFOLDERS,
@@ -7,6 +8,11 @@ import {
   SSCASN_PORTAL,
   YOUTUBE_RESOURCE,
 } from '../data/questionBank';
+import {
+  buildExamHubPath,
+  buildStudyPath,
+  shouldHandleClientClick,
+} from '../utils/router';
 import {
   BookIcon,
   CheckCircleIcon,
@@ -17,17 +23,14 @@ import {
   InfoIcon,
   PlayIcon,
 } from './Icons';
+import { ShareLinkButton } from './ShareLinkButton';
 
-export type StudyModuleId =
-  | 'modul-regulasi'
-  | 'modul-twk'
-  | 'modul-tiu'
-  | 'modul-tkp'
-  | 'modul-drive';
+export type { StudyModuleId };
 
 export interface StudyModuleMeta {
   id: StudyModuleId;
   number: number;
+  shortLabel: string;
   title: string;
   subtitle: string;
   duration: string;
@@ -40,6 +43,7 @@ export const STUDY_MODULES: StudyModuleMeta[] = [
   {
     id: 'modul-regulasi',
     number: 1,
+    shortLabel: '1. Regulasi',
     title: 'Sistem CAT BKN & Ambang Batas 2024',
     subtitle: 'Memahami aturan Kepmenpan RB No. 321 Tahun 2024, pembobotan nilai, dan portal resmi SSCASN.',
     duration: '10 mnt',
@@ -50,6 +54,7 @@ export const STUDY_MODULES: StudyModuleMeta[] = [
   {
     id: 'modul-twk',
     number: 2,
+    shortLabel: '2. TWK',
     title: 'Tes Wawasan Kebangsaan (TWK)',
     subtitle: 'Intisari Pembukaan UUD 1945, UU ASN BerAKHLAK, amandemen konstitusi, dan modul Kerjago.',
     duration: '20 mnt',
@@ -60,6 +65,7 @@ export const STUDY_MODULES: StudyModuleMeta[] = [
   {
     id: 'modul-tiu',
     number: 3,
+    shortLabel: '3. TIU & Figural',
     title: 'Tes Intelegensia Umum (TIU) & Figural',
     subtitle: 'Video pembahasan 15 soal deret gambar Ruang Tentor, checklist pola figural, dan rumus cepat.',
     duration: '25 mnt',
@@ -70,6 +76,7 @@ export const STUDY_MODULES: StudyModuleMeta[] = [
   {
     id: 'modul-tkp',
     number: 4,
+    shortLabel: '4. Strategi TKP',
     title: 'Strategi Skor 5 TKP (6 Aspek ASN)',
     subtitle: 'Panduan memilih opsi bernilai 5 poin pada pelayanan publik, jejaring kerja, TIK, hingga anti-radikalisme.',
     duration: '15 mnt',
@@ -80,6 +87,7 @@ export const STUDY_MODULES: StudyModuleMeta[] = [
   {
     id: 'modul-drive',
     number: 5,
+    shortLabel: '5. E-Book Drive',
     title: 'Perpustakaan E-Book & Bank Soal Drive',
     subtitle: 'Akses 6 e-book utama (LolosASN, Bank Drilling 2024/2025, Sukses SKD, CAT BKN) dan 4 folder arsip.',
     duration: 'Arsip',
@@ -126,15 +134,45 @@ export const StudyView: React.FC<StudyViewProps> = ({
           </p>
         </div>
 
-        <button
-          type="button"
+        <a
+          href={buildExamHubPath('paket-lolosasn-2023')}
           className="btn"
-          onClick={() => onPracticePackage('paket-lolosasn-2023')}
+          onClick={(e) => {
+            if (!shouldHandleClientClick(e)) return;
+            e.preventDefault();
+            onPracticePackage('paket-lolosasn-2023');
+          }}
         >
           <PlayIcon size={16} />
           Siapkan try out 110 soal
-        </button>
+        </a>
       </section>
+
+      {/* Mobile Compact Module Pill Strip (shown <= 996px above stage) */}
+      <nav className="course-mobile-switcher" aria-label="Pilih modul kelas cepat">
+        {STUDY_MODULES.map((mod) => {
+          const modActive = mod.id === activeMeta.id;
+          const modDone = completedModules.includes(mod.id);
+          return (
+            <a
+              key={mod.id}
+              href={buildStudyPath(mod.id)}
+              className="course-mobile-pill"
+              aria-current={modActive ? 'page' : undefined}
+              data-active={modActive}
+              data-completed={modDone}
+              onClick={(e) => {
+                if (!shouldHandleClientClick(e)) return;
+                e.preventDefault();
+                onSelectModule(mod.id);
+              }}
+            >
+              {modDone ? <CheckCircleIcon size={14} /> : null}
+              <span>{mod.shortLabel}</span>
+            </a>
+          );
+        })}
+      </nav>
 
       {/* Two-Pane Interactive LMS Course Player */}
       <div className="course-layout">
@@ -160,20 +198,23 @@ export const StudyView: React.FC<StudyViewProps> = ({
             </span>
           </div>
 
-          <div className="course-module-list" role="tablist" aria-label="Pilih modul kelas">
+          <div className="course-module-list" role="navigation" aria-label="Pilih modul kelas">
             {STUDY_MODULES.map((mod) => {
               const modActive = mod.id === activeMeta.id;
               const modDone = completedModules.includes(mod.id);
               return (
-                <button
+                <a
                   key={mod.id}
-                  type="button"
-                  role="tab"
-                  aria-selected={modActive}
+                  href={buildStudyPath(mod.id)}
+                  aria-current={modActive ? 'page' : undefined}
                   data-active={modActive}
                   data-completed={modDone}
                   className="course-module-item"
-                  onClick={() => onSelectModule(mod.id)}
+                  onClick={(e) => {
+                    if (!shouldHandleClientClick(e)) return;
+                    e.preventDefault();
+                    onSelectModule(mod.id);
+                  }}
                 >
                   <span className="course-module-status" aria-hidden="true">
                     {modDone ? <CheckCircleIcon size={14} /> : mod.number}
@@ -186,7 +227,7 @@ export const StudyView: React.FC<StudyViewProps> = ({
                       {mod.tag} · {mod.duration}
                     </span>
                   </span>
-                </button>
+                </a>
               );
             })}
           </div>
@@ -202,7 +243,7 @@ export const StudyView: React.FC<StudyViewProps> = ({
               borderBottom: '1px solid var(--border-faint)',
             }}
           >
-            <div className="stack-200" style={{ gap: '6px', flex: 1, minWidth: '240px' }}>
+            <div className="stack-200" style={{ gap: '6px', flex: 1, minWidth: '220px' }}>
               <div className="body-small mono">
                 Modul {activeMeta.number} dari 5 · {activeMeta.tag} · {activeMeta.duration}
               </div>
@@ -217,6 +258,15 @@ export const StudyView: React.FC<StudyViewProps> = ({
                   Selesai dipelajari
                 </span>
               )}
+              <ShareLinkButton
+                path={buildStudyPath(activeMeta.id)}
+                shareTitle={`Kelas SKD CPNS: ${activeMeta.title}`}
+                shareText={`Pelajari ${activeMeta.title} di CPNS Learning Hub`}
+                label="Salin link kelas"
+                copiedLabel="Link kelas disalin"
+                compact
+                showNativeShare
+              />
               <button
                 type="button"
                 className={isCompleted ? 'btn btn-selected' : 'btn'}
@@ -225,14 +275,18 @@ export const StudyView: React.FC<StudyViewProps> = ({
                 <CheckCircleIcon size={16} />
                 {isCompleted ? 'Modul selesai dipelajari' : 'Tandai modul selesai'}
               </button>
-              <button
-                type="button"
+              <a
+                href={buildExamHubPath(activeMeta.practicePackageId)}
                 className="btn btn-primary"
-                onClick={() => onPracticePackage(activeMeta.practicePackageId)}
+                onClick={(e) => {
+                  if (!shouldHandleClientClick(e)) return;
+                  e.preventDefault();
+                  onPracticePackage(activeMeta.practicePackageId);
+                }}
               >
                 <PlayIcon size={16} />
                 {activeMeta.practiceLabel}
-              </button>
+              </a>
             </div>
           </header>
 
@@ -616,21 +670,33 @@ export const StudyView: React.FC<StudyViewProps> = ({
               borderTop: '1px solid var(--border-faint)',
             }}
           >
-            <button
-              type="button"
-              className="btn"
-              disabled={!prevMeta}
-              onClick={() => prevMeta && onSelectModule(prevMeta.id)}
-            >
-              <ChevronLeftIcon size={16} />
-              {prevMeta ? `Modul ${prevMeta.number}: ${prevMeta.title}` : 'Modul pertama'}
-            </button>
+            {prevMeta ? (
+              <a
+                href={buildStudyPath(prevMeta.id)}
+                className="btn"
+                onClick={(e) => {
+                  if (!shouldHandleClientClick(e)) return;
+                  e.preventDefault();
+                  onSelectModule(prevMeta.id);
+                }}
+              >
+                <ChevronLeftIcon size={16} />
+                Modul {prevMeta.number}: {prevMeta.title}
+              </a>
+            ) : (
+              <button type="button" className="btn" disabled>
+                <ChevronLeftIcon size={16} />
+                Modul pertama
+              </button>
+            )}
 
             {nextMeta ? (
-              <button
-                type="button"
+              <a
+                href={buildStudyPath(nextMeta.id)}
                 className="btn"
-                onClick={() => {
+                onClick={(e) => {
+                  if (!shouldHandleClientClick(e)) return;
+                  e.preventDefault();
                   if (!isCompleted) {
                     onToggleCompleteModule(activeMeta.id);
                   }
@@ -641,12 +707,14 @@ export const StudyView: React.FC<StudyViewProps> = ({
                   ? `Lanjut ke Modul ${nextMeta.number}`
                   : `Selesai & lanjut Modul ${nextMeta.number}`}
                 <ChevronRightIcon size={16} />
-              </button>
+              </a>
             ) : (
-              <button
-                type="button"
+              <a
+                href={buildExamHubPath('paket-lolosasn-2023')}
                 className="btn"
-                onClick={() => {
+                onClick={(e) => {
+                  if (!shouldHandleClientClick(e)) return;
+                  e.preventDefault();
                   if (!isCompleted) {
                     onToggleCompleteModule(activeMeta.id);
                   }
@@ -655,7 +723,7 @@ export const StudyView: React.FC<StudyViewProps> = ({
               >
                 Selesai &amp; lanjut ke simulasi ujian
                 <ChevronRightIcon size={16} />
-              </button>
+              </a>
             )}
           </footer>
         </article>

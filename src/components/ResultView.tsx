@@ -9,6 +9,11 @@ import {
 } from '../utils/scoring';
 import { exportResultToPdf } from '../utils/pdfExport';
 import {
+  buildExamHubPath,
+  buildHistoryPath,
+  shouldHandleClientClick,
+} from '../utils/router';
+import {
   CheckCircleIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -19,6 +24,7 @@ import {
   GridIcon,
   ListIcon,
 } from './Icons';
+import { ShareLinkButton } from './ShareLinkButton';
 
 interface ResultViewProps {
   attempt: ExamAttempt;
@@ -248,29 +254,44 @@ export const ResultView: React.FC<ResultViewProps> = ({
       {/* Top Action Header */}
       <div className="row-wrap" style={{ justifyContent: 'space-between' }}>
         <div className="stack-200" style={{ gap: '4px' }}>
-          <button
-            type="button"
+          <a
+            href={buildHistoryPath(null)}
             className="btn btn-subtle btn-compact"
             style={{ alignSelf: 'flex-start' }}
-            onClick={onBackHome}
+            onClick={(e) => {
+              if (!shouldHandleClientClick(e)) return;
+              e.preventDefault();
+              onBackHome();
+            }}
           >
             <ChevronLeftIcon size={16} />
             Kembali ke daftar riwayat
-          </button>
+          </a>
           <h1 className="h-xlarge">Rapor hasil &amp; pembahasan soal</h1>
           <p className="body text-subtle">
             {attempt.packageTitle} · Selesai pada {formatDateTimeId(attempt.finishedAt)}
           </p>
         </div>
 
-        <div className="row-wrap">
-          <button
-            type="button"
+        <div className="row-wrap" style={{ gap: '8px' }}>
+          <ShareLinkButton
+            path={buildExamHubPath(attempt.packageId)}
+            shareTitle={`Coba paket soal: ${attempt.packageTitle}`}
+            label="Bagikan paket soal"
+            copiedLabel="Link paket disalin"
+            showNativeShare
+          />
+          <a
+            href={buildExamHubPath(attempt.packageId)}
             className="btn"
-            onClick={() => onRetakePackage(attempt.packageId)}
+            onClick={(e) => {
+              if (!shouldHandleClientClick(e)) return;
+              e.preventDefault();
+              onRetakePackage(attempt.packageId);
+            }}
           >
             Kerjakan ulang paket ini
-          </button>
+          </a>
           <button
             type="button"
             className="btn btn-primary"

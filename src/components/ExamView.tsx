@@ -7,6 +7,7 @@ import {
   ChevronRightIcon,
   ClockIcon,
   FlagIcon,
+  GridIcon,
   PauseIcon,
   WarningIcon,
 } from './Icons';
@@ -42,6 +43,7 @@ export const ExamView: React.FC<ExamViewProps> = ({
 }) => {
   const [navFilter, setNavFilter] = useState<'ALL' | QuestionCategory>('ALL');
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [largeFont, setLargeFont] = useState(false);
 
   const questions = pkg.questions;
@@ -91,9 +93,10 @@ export const ExamView: React.FC<ExamViewProps> = ({
   // Keyboard shortcuts: ArrowLeft / ArrowRight and A..E
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (confirmOpen) {
+      if (confirmOpen || mobileNavOpen) {
         if (e.key === 'Escape') {
           setConfirmOpen(false);
+          setMobileNavOpen(false);
         }
         return;
       }
@@ -119,7 +122,15 @@ export const ExamView: React.FC<ExamViewProps> = ({
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [confirmOpen, currentIndex, questions.length, currentQuestion.id, onNavigate, onSelectAnswer]);
+  }, [
+    confirmOpen,
+    mobileNavOpen,
+    currentIndex,
+    questions.length,
+    currentQuestion.id,
+    onNavigate,
+    onSelectAnswer,
+  ]);
 
   const categoryLozengeClass =
     currentQuestion.category === 'TWK'
@@ -166,8 +177,8 @@ export const ExamView: React.FC<ExamViewProps> = ({
             ))}
           </div>
 
-          {/* Timer & Finish */}
-          <div className="row-wrap" style={{ gap: '10px' }}>
+          {/* Timer, Mobile Grid Trigger & Finish */}
+          <div className="row-wrap" style={{ gap: '8px' }}>
             <div
               className="timer-pill"
               data-urgency={urgency}
@@ -180,7 +191,15 @@ export const ExamView: React.FC<ExamViewProps> = ({
             </div>
             <button
               type="button"
-              className="btn"
+              className="btn btn-compact exam-mobile-grid-trigger"
+              onClick={() => setMobileNavOpen(true)}
+            >
+              <GridIcon size={14} />
+              <span>Nomor soal ({answeredCount}/{questions.length})</span>
+            </button>
+            <button
+              type="button"
+              className="btn btn-compact"
               onClick={() => setConfirmOpen(true)}
             >
               Selesaikan ujian
@@ -423,6 +442,93 @@ export const ExamView: React.FC<ExamViewProps> = ({
           </aside>
         </div>
       </main>
+
+      {/* Mobile Question Navigator Sheet / Modal */}
+      {mobileNavOpen && (
+        <div
+          className="modal-blanket"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="mobile-nav-modal-title"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setMobileNavOpen(false);
+            }
+          }}
+        >
+          <div className="modal-dialog modal-dialog-scroll">
+            <div className="modal-header row-wrap" style={{ justifyContent: 'space-between' }}>
+              <h2 id="mobile-nav-modal-title" className="h-medium">
+                Navigasi nomor soal ({currentIndex + 1}/{questions.length})
+              </h2>
+              <button
+                type="button"
+                className="btn btn-compact"
+                onClick={() => setMobileNavOpen(false)}
+              >
+                Tutup
+              </button>
+            </div>
+            <div className="modal-body stack-200" style={{ paddingBottom: '20px' }}>
+              <div className="row-wrap" style={{ gap: '6px' }}>
+                {(['ALL', 'TWK', 'TIU', 'TKP'] as const).map((cat) => {
+                  const count =
+                    cat === 'ALL'
+                      ? questions.length
+                      : questions.filter((q) => q.category === cat).length;
+                  if (cat !== 'ALL' && count === 0) return null;
+                  const active = navFilter === cat;
+                  return (
+                    <button
+                      key={cat}
+                      type="button"
+                      className={`btn btn-compact ${active ? 'btn-selected' : ''}`}
+                      onClick={() => setNavFilter(cat)}
+                    >
+                      {cat === 'ALL' ? 'Semua' : cat} ({count})
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="nav-grid">
+                {filteredNavItems.map(({ question, index }) => {
+                  const isCurrent = index === currentIndex;
+                  const isAns = Boolean(answers[question.id]);
+                  const isFlg = flaggedIds.includes(question.id);
+                  const state = isFlg ? 'flagged' : isAns ? 'answered' : 'unanswered';
+                  const chosen = answers[question.id];
+
+                  return (
+                    <button
+                      key={question.id}
+                      type="button"
+                      className="nav-num-btn"
+                      data-state={state}
+                      data-current={isCurrent}
+                      onClick={() => {
+                        onNavigate(index);
+                        setMobileNavOpen(false);
+                      }}
+                    >
+                      <span>
+                        {question.number}
+                        {chosen ? `.${chosen}` : ''}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="row-wrap" style={{ gap: '8px' }}>
+                <span className="lozenge lozenge-success">Dijawab ({answeredCount})</span>
+                <span className="lozenge lozenge-warning">Ragu ({flaggedCount})</span>
+                <span className="lozenge">Kosong ({unansweredCount})</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Finish Confirmation Modal */}
       {confirmOpen && (

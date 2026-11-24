@@ -1,8 +1,13 @@
 import React, { useMemo } from 'react';
-import type { ActiveExamSession, ExamAttempt, FormationType, QuestionPackage } from '../types';
+import type { ActiveExamSession, ExamAttempt, FormationType, QuestionPackage, StudyModuleId } from '../types';
 import { ALL_PACKAGES, SSCASN_PORTAL } from '../data/questionBank';
 import { FORMATION_RULES, formatCountdown, summarizeAttempt } from '../utils/scoring';
-import type { StudyModuleId } from './StudyView';
+import {
+  buildExamHubPath,
+  buildHistoryPath,
+  buildStudyPath,
+  shouldHandleClientClick,
+} from '../utils/router';
 import {
   ClockIcon,
   CourseIcon,
@@ -164,14 +169,18 @@ export const HomeView: React.FC<HomeViewProps> = ({
             />
           </div>
           <div style={{ marginTop: 'auto' }}>
-            <button
-              type="button"
+            <a
+              href={buildStudyPath('modul-regulasi')}
               className="btn btn-compact"
-              onClick={() => onOpenStudy()}
+              onClick={(e) => {
+                if (!shouldHandleClientClick(e)) return;
+                e.preventDefault();
+                onOpenStudy();
+              }}
             >
               <CourseIcon size={14} />
               Buka modul belajar
-            </button>
+            </a>
           </div>
         </article>
 
@@ -191,14 +200,18 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 Terakhir: {stats.latestEval.passed ? 'Lulus PG' : 'Belum lulus PG'}
               </span>
               <div style={{ marginTop: 'auto' }}>
-                <button
-                  type="button"
+                <a
+                  href={buildHistoryPath(stats.latestAttempt.id)}
                   className="btn btn-compact"
-                  onClick={() => onOpenHistory(stats.latestAttempt.id)}
+                  onClick={(e) => {
+                    if (!shouldHandleClientClick(e)) return;
+                    e.preventDefault();
+                    onOpenHistory(stats.latestAttempt.id);
+                  }}
                 >
                   <ReportIcon size={14} />
                   Buka rapor terakhir
-                </button>
+                </a>
               </div>
             </>
           ) : (
@@ -206,13 +219,17 @@ export const HomeView: React.FC<HomeViewProps> = ({
               <div className="h-medium text-subtle">Belum ada skor</div>
               <span className="body-small">Belum ada riwayat pengerjaan</span>
               <div style={{ marginTop: 'auto' }}>
-                <button
-                  type="button"
+                <a
+                  href={buildExamHubPath(focusedPackages[0].id)}
                   className="btn btn-compact"
-                  onClick={() => onStartPackage(focusedPackages[0])}
+                  onClick={(e) => {
+                    if (!shouldHandleClientClick(e)) return;
+                    e.preventDefault();
+                    onStartPackage(focusedPackages[0]);
+                  }}
                 >
                   Mulai latihan 30 soal
-                </button>
+                </a>
               </div>
             </>
           )}
@@ -227,13 +244,17 @@ export const HomeView: React.FC<HomeViewProps> = ({
               Timer mulai hanya setelah Anda menekan konfirmasi mulai ujian.
             </span>
           </div>
-          <button
-            type="button"
+          <a
+            href={buildExamHubPath(fullPackages[0].id)}
             className="btn btn-primary"
-            onClick={() => onStartPackage(fullPackages[0])}
+            onClick={(e) => {
+              if (!shouldHandleClientClick(e)) return;
+              e.preventDefault();
+              onStartPackage(fullPackages[0]);
+            }}
           >
             Siapkan simulasi 110 soal (Paket 1)
-          </button>
+          </a>
         </article>
       </section>
 
@@ -283,13 +304,17 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 </div>
 
                 <div className="row-wrap" style={{ justifyContent: 'space-between', marginTop: 'auto' }}>
-                  <button
-                    type="button"
+                  <a
+                    href={buildExamHubPath(pkg.id)}
                     className="btn"
-                    onClick={() => onStartPackage(pkg)}
+                    onClick={(e) => {
+                      if (!shouldHandleClientClick(e)) return;
+                      e.preventDefault();
+                      onStartPackage(pkg);
+                    }}
                   >
                     Pilih paket {idx + 1}
-                  </button>
+                  </a>
                   {pkgStats && (
                     <span className="body-small text-subtlest">
                       Dikerjakan {pkgStats.attempts}x
@@ -328,13 +353,17 @@ export const HomeView: React.FC<HomeViewProps> = ({
                   </span>
                 )}
                 <div style={{ marginTop: 'auto' }}>
-                  <button
-                    type="button"
+                  <a
+                    href={buildExamHubPath(pkg.id)}
                     className="btn"
-                    onClick={() => onStartPackage(pkg)}
+                    onClick={(e) => {
+                      if (!shouldHandleClientClick(e)) return;
+                      e.preventDefault();
+                      onStartPackage(pkg);
+                    }}
                   >
                     Pilih latihan fokus
-                  </button>
+                  </a>
                 </div>
               </article>
             );

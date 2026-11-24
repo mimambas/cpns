@@ -1,5 +1,12 @@
 export type QuestionCategory = 'TWK' | 'TIU' | 'TKP';
 
+export type StudyModuleId =
+  | 'modul-regulasi'
+  | 'modul-twk'
+  | 'modul-tiu'
+  | 'modul-tkp'
+  | 'modul-drive';
+
 export type OptionKey = 'A' | 'B' | 'C' | 'D' | 'E';
 
 export interface QuestionOption {

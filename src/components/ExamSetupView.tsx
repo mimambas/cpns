@@ -2,12 +2,14 @@ import React, { useMemo, useState } from 'react';
 import type { ActiveExamSession, ExamAttempt, FormationType, QuestionPackage } from '../types';
 import { ALL_PACKAGES } from '../data/questionBank';
 import { FORMATION_RULES, formatCountdown, summarizeAttempt } from '../utils/scoring';
+import { buildExamHubPath, shouldHandleClientClick } from '../utils/router';
 import {
   CheckCircleIcon,
   ClockIcon,
   ExternalLinkIcon,
   InfoIcon,
 } from './Icons';
+import { ShareLinkButton } from './ShareLinkButton';
 
 interface ExamSetupViewProps {
   selectedPackage: QuestionPackage;
@@ -64,6 +66,7 @@ export const ExamSetupView: React.FC<ExamSetupViewProps> = ({
   const tiuCount = selectedPackage.questions.filter((q) => q.category === 'TIU').length;
   const tkpCount = selectedPackage.questions.filter((q) => q.category === 'TKP').length;
   const maxScore = selectedPackage.questions.length * 5;
+  const packagePath = buildExamHubPath(selectedPackage.id);
 
   return (
     <div className="stack-300">
@@ -155,15 +158,26 @@ export const ExamSetupView: React.FC<ExamSetupViewProps> = ({
             {filteredPackages.map((pkg) => {
               const isSelected = pkg.id === selectedPackage.id;
               const best = bestByPkg.get(pkg.id);
+              const href = buildExamHubPath(pkg.id);
               return (
-                <button
+                <a
                   key={pkg.id}
-                  type="button"
+                  href={href}
                   role="radio"
                   aria-checked={isSelected}
                   data-selected={isSelected}
                   className="pkg-choice-card"
-                  onClick={() => onChangePackage(pkg.id)}
+                  onClick={(e) => {
+                    if (!shouldHandleClientClick(e)) return;
+                    e.preventDefault();
+                    onChangePackage(pkg.id);
+                    if (window.innerWidth <= 996) {
+                      document.getElementById('exam-briefing-card')?.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start',
+                      });
+                    }
+                  }}
                 >
                   <div className="row-wrap" style={{ justifyContent: 'space-between', width: '100%' }}>
                     <span className="body-small mono">
@@ -177,16 +191,49 @@ export const ExamSetupView: React.FC<ExamSetupViewProps> = ({
                   </div>
                   <div className="h-small">{pkg.title}</div>
                   <p className="body text-subtle">{pkg.description}</p>
-                </button>
+                </a>
               );
             })}
           </div>
         </section>
 
-        {/* Right Sticky: Briefing & Confirmation Card */}
-        <aside className="card briefing-card stack-300" aria-label="Ringkasan dan mulai ujian">
+        {/* Right Sticky (and Top-First on Mobile <= 996px): Briefing & Confirmation Card */}
+        <aside
+          id="exam-briefing-card"
+          className="card briefing-card stack-300"
+          aria-label="Ringkasan dan mulai ujian"
+        >
           <div className="stack-200" style={{ gap: '12px' }}>
-            <h2 className="h-medium">2. Lembar briefing &amp; mulai</h2>
+            <div className="row-wrap" style={{ justifyContent: 'space-between' }}>
+              <h2 className="h-medium">2. Lembar briefing &amp; mulai</h2>
+              <ShareLinkButton
+                path={packagePath}
+                shareTitle={`Simulasi CPNS: ${selectedPackage.title}`}
+                shareText={`Coba kerjakan ${selectedPackage.title} (${selectedPackage.questions.length} soal) di CPNS Learning Hub`}
+                label="Salin link paket"
+                copiedLabel="Link paket disalin"
+                compact
+                showNativeShare
+              />
+            </div>
+
+            <div className="form-field mobile-only-field">
+              <label htmlFor="mobile-setup-package-select" className="form-label">
+                Ganti paket simulasi
+              </label>
+              <select
+                id="mobile-setup-package-select"
+                className="select-input"
+                value={selectedPackage.id}
+                onChange={(e) => onChangePackage(e.target.value)}
+              >
+                {ALL_PACKAGES.map((pkg) => (
+                  <option key={pkg.id} value={pkg.id}>
+                    {pkg.title} ({pkg.questions.length} soal)
+                  </option>
+                ))}
+              </select>
+            </div>
 
             <div className="form-field">
               <label htmlFor="setup-formation-select" className="form-label">
