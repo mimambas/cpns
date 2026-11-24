@@ -277,9 +277,8 @@ export const ResultView: React.FC<ResultViewProps> = ({
           <ShareLinkButton
             path={buildExamHubPath(attempt.packageId)}
             shareTitle={`Coba paket soal: ${attempt.packageTitle}`}
-            label="Bagikan paket soal"
-            copiedLabel="Link paket disalin"
-            showNativeShare
+            label="Share paket"
+            copiedLabel="Link tersalin"
           />
           <a
             href={buildExamHubPath(attempt.packageId)}

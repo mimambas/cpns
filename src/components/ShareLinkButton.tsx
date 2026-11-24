@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { buildAbsoluteUrl, canUseNativeShare, copyUrlToClipboard } from '../utils/router';
-import { CheckCircleIcon, LinkIcon, ShareIcon } from './Icons';
+import { buildAbsoluteUrl, copyUrlToClipboard } from '../utils/router';
+import { CheckCircleIcon, ShareIcon } from './Icons';
 
 interface ShareLinkButtonProps {
   path: string;
@@ -9,7 +9,6 @@ interface ShareLinkButtonProps {
   label?: string;
   copiedLabel?: string;
   compact?: boolean;
-  showNativeShare?: boolean;
   className?: string;
 }
 
@@ -17,10 +16,9 @@ export const ShareLinkButton: React.FC<ShareLinkButtonProps> = ({
   path,
   shareTitle = 'CPNS Learning Hub',
   shareText,
-  label = 'Salin link',
-  copiedLabel = 'Tautan disalin',
+  label = 'Share',
+  copiedLabel = 'Link tersalin',
   compact = false,
-  showNativeShare = false,
   className = '',
 }) => {
   const [copied, setCopied] = useState(false);
@@ -46,63 +44,48 @@ export const ShareLinkButton: React.FC<ShareLinkButtonProps> = ({
     }, 2200);
   };
 
-  const handleCopy = async () => {
+  const handleShare = async () => {
+    const url = buildAbsoluteUrl(path);
+    const shareData: ShareData = {
+      title: shareTitle,
+      text: shareText ?? shareTitle,
+      url,
+    };
+
+    if (
+      typeof navigator !== 'undefined' &&
+      typeof navigator.share === 'function' &&
+      (!navigator.canShare || navigator.canShare(shareData))
+    ) {
+      try {
+        await navigator.share(shareData);
+        return;
+      } catch (err) {
+        if (err instanceof Error && err.name === 'AbortError') {
+          return;
+        }
+      }
+    }
+
     const ok = await copyUrlToClipboard(path);
     if (ok) {
       markCopied();
     }
   };
 
-  const handleNativeShare = async () => {
-    const url = buildAbsoluteUrl(path);
-    try {
-      await navigator.share({
-        title: shareTitle,
-        text: shareText ?? shareTitle,
-        url,
-      });
-    } catch (err) {
-      if (err instanceof Error && err.name === 'AbortError') {
-        return;
-      }
-      const ok = await copyUrlToClipboard(path);
-      if (ok) {
-        markCopied();
-      }
-    }
-  };
-
-  const nativeSupported = showNativeShare && canUseNativeShare();
-  const baseBtnClass = compact ? 'btn btn-compact' : 'btn';
-
   return (
-    <div className={`row-wrap ${className}`.trim()} style={{ gap: '6px' }}>
-      <button
-        type="button"
-        className={`${baseBtnClass} ${copied ? 'btn-selected' : ''}`}
-        onClick={() => {
-          void handleCopy();
-        }}
-        aria-live="polite"
-        title={`Salin tautan: ${path}`}
-      >
-        {copied ? <CheckCircleIcon size={14} /> : <LinkIcon size={14} />}
-        <span>{copied ? copiedLabel : label}</span>
-      </button>
-
-      {nativeSupported && (
-        <button
-          type="button"
-          className={baseBtnClass}
-          onClick={() => {
-            void handleNativeShare();
-          }}
-          aria-label={`Bagikan ${shareTitle}`}
-        >
-          <ShareIcon size={14} />
-          <span>Bagikan</span>
-        </button>
-      )}
-    </div>
+    <button
+      type="button"
+      className={`${compact ? 'btn btn-compact' : 'btn'} ${copied ? 'btn-selected' : ''} ${className}`.trim()}
+      onClick={() => {
+        void handleShare();
+      }}
+      aria-label={`Bagikan ${shareTitle}`}
+      aria-live="polite"
+      title={`Bagikan: ${path}`}
+    >
+      {copied ? <CheckCircleIcon size={14} /> : <ShareIcon size={14} />}
+      <span>{copied ? copiedLabel : label}</span>
+    </button>
   );
 };

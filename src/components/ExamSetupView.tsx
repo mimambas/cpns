@@ -210,10 +210,9 @@ export const ExamSetupView: React.FC<ExamSetupViewProps> = ({
                 path={packagePath}
                 shareTitle={`Simulasi CPNS: ${selectedPackage.title}`}
                 shareText={`Coba kerjakan ${selectedPackage.title} (${selectedPackage.questions.length} soal) di CPNS Learning Hub`}
-                label="Salin link paket"
-                copiedLabel="Link paket disalin"
+                label="Share paket"
+                copiedLabel="Link tersalin"
                 compact
-                showNativeShare
               />
             </div>
 

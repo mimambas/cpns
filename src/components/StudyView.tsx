@@ -262,10 +262,9 @@ export const StudyView: React.FC<StudyViewProps> = ({
                 path={buildStudyPath(activeMeta.id)}
                 shareTitle={`Kelas SKD CPNS: ${activeMeta.title}`}
                 shareText={`Pelajari ${activeMeta.title} di CPNS Learning Hub`}
-                label="Salin link kelas"
-                copiedLabel="Link kelas disalin"
+                label="Share kelas"
+                copiedLabel="Link tersalin"
                 compact
-                showNativeShare
               />
               <button
                 type="button"

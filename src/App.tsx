@@ -766,8 +766,8 @@ export const App: React.FC = () => {
             <ShareLinkButton
               path={currentPath}
               shareTitle={pageTitle}
-              label="Salin link"
-              copiedLabel="Link disalin"
+              label="Share"
+              copiedLabel="Link tersalin"
               compact
             />
           </div>

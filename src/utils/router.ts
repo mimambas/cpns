@@ -203,9 +203,3 @@ export async function copyUrlToClipboard(path: string): Promise<boolean> {
     return false;
   }
 }
-
-export function canUseNativeShare(): boolean {
-  if (typeof window === 'undefined' || typeof navigator === 'undefined') return false;
-  if (typeof navigator.share !== 'function') return false;
-  return Boolean(window.matchMedia?.('(pointer: coarse)').matches);
-}
