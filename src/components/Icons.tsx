@@ -561,3 +561,22 @@ export const RadarIcon: React.FC<IconProps> = ({ size = 16, className }) => (
     <circle cx="8" cy="8" r="1" fill="currentColor" />
   </svg>
 );
+
+export const SearchIcon: React.FC<IconProps> = ({ size = 16, className }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 16 16"
+    fill="none"
+    aria-hidden="true"
+    className={className}
+  >
+    <circle cx="7" cy="7" r="4.5" stroke="currentColor" strokeWidth="1.5" />
+    <path
+      d="M10.4 10.4l3.35 3.35"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+    />
+  </svg>
+);

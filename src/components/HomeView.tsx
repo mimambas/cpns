@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
-import type { ActiveExamSession, ExamAttempt, FormationType, QuestionPackage, StudyModuleId } from '../types';
-import { ALL_PACKAGES, SSCASN_PORTAL } from '../data/questionBank';
+import type { ActiveExamSession, ExamAttempt, FormationType, PackageMeta, StudyModuleId } from '../types';
+import { ALL_PACKAGE_METAS, SSCASN_PORTAL, TOTAL_QUESTION_COUNT } from '../data/questionBank';
 import { FORMATION_RULES, formatCountdown, summarizeAttempt } from '../utils/scoring';
 import {
   buildExamHubPath,
@@ -23,7 +23,7 @@ interface HomeViewProps {
   history: ExamAttempt[];
   completedModules: string[];
   totalModulesCount: number;
-  onStartPackage: (pkg: QuestionPackage) => void;
+  onStartPackage: (pkg: PackageMeta) => void;
   onResumeExam: () => void;
   onDiscardSession: () => void;
   onOpenStudy: (moduleId?: StudyModuleId) => void;
@@ -43,8 +43,8 @@ export const HomeView: React.FC<HomeViewProps> = ({
   onOpenStudy,
   onOpenHistory,
 }) => {
-  const fullPackages = ALL_PACKAGES.filter((p) => p.isFullSimulation);
-  const focusedPackages = ALL_PACKAGES.filter((p) => !p.isFullSimulation);
+  const fullPackages = ALL_PACKAGE_METAS.filter((p) => p.isFullSimulation);
+  const focusedPackages = ALL_PACKAGE_METAS.filter((p) => !p.isFullSimulation);
   const activeRule = FORMATION_RULES[selectedFormation];
 
   const stats = useMemo(() => {
@@ -126,7 +126,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
           </a>
         </div>
         <p className="body-large" style={{ maxWidth: '72ch' }}>
-          Pelajari 5 modul materi tanpa login, latih kecepatan tiap subtes, atau kerjakan 14 paket simulasi CAT SKD (1.440 soal total) berstandar Kepmenpan RB No. 321 Tahun 2024 lengkap dengan link sumber soal dan ekspor PDF.
+          Pelajari 5 modul materi tanpa login, latih kecepatan tiap subtes, atau kerjakan 14 paket simulasi CAT SKD ({TOTAL_QUESTION_COUNT.toLocaleString('id-ID')} soal total) berstandar Kepmenpan RB No. 321 Tahun 2024 lengkap dengan link sumber soal dan ekspor PDF.
         </p>
       </section>
 

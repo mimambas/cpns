@@ -43,6 +43,29 @@ export interface QuestionPackage {
   questions: Question[];
 }
 
+export interface PackageMeta {
+  id: string;
+  title: string;
+  description: string;
+  durationMinutes: number;
+  sourceTitle: string;
+  sourceUrl: string;
+  isFullSimulation: boolean;
+  compositionLabel: string;
+  questionCount: number;
+  twkCount: number;
+  tiuCount: number;
+  tkpCount: number;
+}
+
+export interface SearchableQuestionItem extends Question {
+  packageId: string;
+  packageTitle: string;
+  clusterId: string;
+  clusterLabel: string;
+  hasFigure: boolean;
+}
+
 export type FormationType = 'umum' | 'cumlaude' | 'khusus';
 
 export interface FormationRule {

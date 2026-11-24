@@ -7,7 +7,7 @@ import type {
   OptionKey,
   RankInfo,
 } from '../types';
-import { getPackageById } from '../data/questionBank';
+import { loadPackageById } from '../data/questionBank';
 import { summarizeAttempt } from './scoring';
 
 const STORAGE_CLOUD_PROFILE_KEY = 'cpns_cloud_profile_v1';
@@ -163,8 +163,10 @@ export function toCloudAttemptPayload(attempt: ExamAttempt) {
   };
 }
 
-export function rehydrateCloudAttempt(dto: CloudAttemptDto): ExamAttempt | null {
-  const pkg = getPackageById(dto.packageId);
+export async function rehydrateCloudAttempt(
+  dto: CloudAttemptDto,
+): Promise<ExamAttempt | null> {
+  const pkg = await loadPackageById(dto.packageId);
   if (!pkg) return null;
   return {
     id: dto.id,

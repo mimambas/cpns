@@ -1,13 +1,15 @@
 import React from 'react';
 import type { StudyModuleId } from '../types';
+import { SSCASN_PORTAL } from '../data/questionBank';
 import {
   DRIVE_FILES,
   DRIVE_SUBFOLDERS,
   GOOGLE_DRIVE_ROOT_URL,
   KERJAGO_MODULES,
-  SSCASN_PORTAL,
+  STUDY_MODULES,
   YOUTUBE_RESOURCE,
-} from '../data/questionBank';
+  type StudyModuleMeta,
+} from '../data/studyModules';
 import {
   buildExamHubPath,
   buildStudyPath,
@@ -25,77 +27,8 @@ import {
 } from './Icons';
 import { ShareLinkButton } from './ShareLinkButton';
 
-export type { StudyModuleId };
-
-export interface StudyModuleMeta {
-  id: StudyModuleId;
-  number: number;
-  shortLabel: string;
-  title: string;
-  subtitle: string;
-  duration: string;
-  tag: string;
-  practicePackageId: string;
-  practiceLabel: string;
-}
-
-export const STUDY_MODULES: StudyModuleMeta[] = [
-  {
-    id: 'modul-regulasi',
-    number: 1,
-    shortLabel: '1. Regulasi',
-    title: 'Sistem CAT BKN & Ambang Batas 2024',
-    subtitle: 'Memahami aturan Kepmenpan RB No. 321 Tahun 2024, pembobotan nilai, dan portal resmi SSCASN.',
-    duration: '10 mnt',
-    tag: 'Regulasi & Alur',
-    practicePackageId: 'paket-lolosasn-2023',
-    practiceLabel: 'Siapkan simulasi penuh 110 soal',
-  },
-  {
-    id: 'modul-twk',
-    number: 2,
-    shortLabel: '2. TWK',
-    title: 'Tes Wawasan Kebangsaan (TWK)',
-    subtitle: 'Intisari Pembukaan UUD 1945, UU ASN BerAKHLAK, amandemen konstitusi, dan modul Kerjago.',
-    duration: '20 mnt',
-    tag: '30 Soal · Min 65',
-    practicePackageId: 'fokus-twk-paket2',
-    practiceLabel: 'Latihan fokus TWK (30 soal)',
-  },
-  {
-    id: 'modul-tiu',
-    number: 3,
-    shortLabel: '3. TIU & Figural',
-    title: 'Tes Intelegensia Umum (TIU) & Figural',
-    subtitle: 'Video pembahasan 15 soal deret gambar Ruang Tentor, checklist pola figural, dan rumus cepat.',
-    duration: '25 mnt',
-    tag: '35 Soal · Min 80',
-    practicePackageId: 'fokus-tiu-paket2',
-    practiceLabel: 'Latihan fokus TIU (35 soal)',
-  },
-  {
-    id: 'modul-tkp',
-    number: 4,
-    shortLabel: '4. Strategi TKP',
-    title: 'Strategi Skor 5 TKP (6 Aspek ASN)',
-    subtitle: 'Panduan memilih opsi bernilai 5 poin pada pelayanan publik, jejaring kerja, TIK, hingga anti-radikalisme.',
-    duration: '15 mnt',
-    tag: '45 Soal · Min 166',
-    practicePackageId: 'fokus-tkp-paket1',
-    practiceLabel: 'Latihan fokus TKP (45 soal)',
-  },
-  {
-    id: 'modul-drive',
-    number: 5,
-    shortLabel: '5. E-Book Drive',
-    title: 'Perpustakaan E-Book & Bank Soal Drive',
-    subtitle: 'Akses 6 e-book utama (LolosASN, Bank Drilling 2024/2025, Sukses SKD, CAT BKN) dan 4 folder arsip.',
-    duration: 'Arsip',
-    tag: 'Google Drive',
-    practicePackageId: 'paket-hots-2024-2025',
-    practiceLabel: 'Siapkan simulasi HOTS Paket 2',
-  },
-];
+export type { StudyModuleId, StudyModuleMeta };
+export { STUDY_MODULES };
 
 interface StudyViewProps {
   activeModuleId: StudyModuleId;

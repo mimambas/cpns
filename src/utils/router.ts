@@ -1,7 +1,7 @@
 import type React from 'react';
 import type { StudyModuleId } from '../types';
 
-export type AppTab = 'home' | 'study' | 'exam' | 'history';
+export type AppTab = 'home' | 'study' | 'search' | 'exam' | 'history';
 
 const MODULE_SLUG_BY_ID: Record<StudyModuleId, string> = {
   'modul-regulasi': 'regulasi',
@@ -65,9 +65,14 @@ export function buildAnalyticsPath(): string {
   return '/analitik';
 }
 
+export function buildSearchPath(): string {
+  return '/cari';
+}
+
 export type ParsedRoute =
   | { tab: 'home'; replaceWith?: string }
   | { tab: 'study'; moduleId: StudyModuleId; replaceWith?: string }
+  | { tab: 'search'; replaceWith?: string }
   | { tab: 'exam'; packageId?: string; running: boolean; replaceWith?: string }
   | {
       tab: 'history';
@@ -115,6 +120,13 @@ export function parsePathname(rawPathname: string): ParsedRoute {
       tab: 'study',
       moduleId: 'modul-regulasi',
       replaceWith: buildStudyPath('modul-regulasi'),
+    };
+  }
+
+  if (head === 'cari') {
+    return {
+      tab: 'search',
+      replaceWith: rawPathname !== '/cari' ? '/cari' : undefined,
     };
   }
 

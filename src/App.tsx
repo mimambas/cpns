@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import type {
   ActiveExamSession,
   CloudProfile,
@@ -6,11 +6,19 @@ import type {
   ExamAttempt,
   FormationType,
   OptionKey,
+  PackageMeta,
   QuestionPackage,
   RankInfo,
   StudyModuleId,
 } from './types';
-import { FULL_PACKAGES, getPackageById } from './data/questionBank';
+import {
+  FULL_PACKAGE_METAS,
+  getCachedPackageById,
+  getPackageMetaById,
+  loadPackageById,
+  TOTAL_QUESTION_COUNT,
+} from './data/questionBank';
+import { STUDY_MODULES } from './data/studyModules';
 import {
   FORMATION_RULES,
   formatCountdown,
@@ -18,7 +26,6 @@ import {
   formatDurationText,
   summarizeAttempt,
 } from './utils/scoring';
-import { exportResultToPdf } from './utils/pdfExport';
 import {
   type AppTab,
   buildActiveExamPath,
@@ -27,6 +34,7 @@ import {
   buildHistoryPath,
   buildHomePath,
   buildLeaderboardPath,
+  buildSearchPath,
   buildStudyPath,
   parsePathname,
   shouldHandleClientClick,
@@ -54,17 +62,34 @@ import {
   ExamIcon,
   RadarIcon,
   ReportIcon,
+  SearchIcon,
   TrophyIcon,
 } from './components/Icons';
 import { HomeView } from './components/HomeView';
-import { ExamView } from './components/ExamView';
 import { ExamSetupView } from './components/ExamSetupView';
-import { ResultView } from './components/ResultView';
-import { STUDY_MODULES, StudyView } from './components/StudyView';
 import { ShareLinkButton } from './components/ShareLinkButton';
-import { CloudSyncModal } from './components/CloudSyncModal';
-import { LeaderboardView } from './components/LeaderboardView';
-import { AnalyticsView } from './components/AnalyticsView';
+
+const StudyView = lazy(() =>
+  import('./components/StudyView').then((m) => ({ default: m.StudyView })),
+);
+const ExamView = lazy(() =>
+  import('./components/ExamView').then((m) => ({ default: m.ExamView })),
+);
+const ResultView = lazy(() =>
+  import('./components/ResultView').then((m) => ({ default: m.ResultView })),
+);
+const LeaderboardView = lazy(() =>
+  import('./components/LeaderboardView').then((m) => ({ default: m.LeaderboardView })),
+);
+const AnalyticsView = lazy(() =>
+  import('./components/AnalyticsView').then((m) => ({ default: m.AnalyticsView })),
+);
+const SearchView = lazy(() =>
+  import('./components/SearchView').then((m) => ({ default: m.SearchView })),
+);
+const CloudSyncModal = lazy(() =>
+  import('./components/CloudSyncModal').then((m) => ({ default: m.CloudSyncModal })),
+);
 
 const STORAGE_ACTIVE_KEY = 'cpns_active_session_v1';
 const STORAGE_HISTORY_KEY = 'cpns_exam_history_v1';
@@ -81,10 +106,13 @@ function loadJson<T>(key: string, fallback: T): T {
   }
 }
 
-function mergeAttempts(cloudDtos: SyncResponse['attempts'], localHistory: ExamAttempt[]): ExamAttempt[] {
+async function mergeAttempts(
+  cloudDtos: SyncResponse['attempts'],
+  localHistory: ExamAttempt[],
+): Promise<ExamAttempt[]> {
   const byId = new Map<string, ExamAttempt>();
-  for (const dto of cloudDtos) {
-    const hydrated = rehydrateCloudAttempt(dto);
+  const hydratedList = await Promise.all(cloudDtos.map((dto) => rehydrateCloudAttempt(dto)));
+  for (const hydrated of hydratedList) {
     if (hydrated) {
       byId.set(hydrated.id, hydrated);
     }
@@ -116,14 +144,15 @@ function resolveRouteState(
   activeSession: ActiveExamSession | null,
 ): InitialRouteResolution {
   const parsed = parsePathname(pathname);
+  const defaultPkgId = FULL_PACKAGE_METAS[0].id;
 
   if (parsed.tab === 'home') {
     return {
       tab: 'home',
       historySubview: 'attempts',
-      leaderboardPkgId: FULL_PACKAGES[0].id,
+      leaderboardPkgId: defaultPkgId,
       moduleId: 'modul-regulasi',
-      packageId: FULL_PACKAGES[0].id,
+      packageId: defaultPkgId,
       isRunning: false,
       resultId: null,
       canonicalPath: '/',
@@ -136,9 +165,9 @@ function resolveRouteState(
     return {
       tab: 'study',
       historySubview: 'attempts',
-      leaderboardPkgId: FULL_PACKAGES[0].id,
+      leaderboardPkgId: defaultPkgId,
       moduleId: parsed.moduleId,
-      packageId: FULL_PACKAGES[0].id,
+      packageId: defaultPkgId,
       isRunning: false,
       resultId: null,
       canonicalPath: targetPath,
@@ -146,34 +175,48 @@ function resolveRouteState(
     };
   }
 
+  if (parsed.tab === 'search') {
+    return {
+      tab: 'search',
+      historySubview: 'attempts',
+      leaderboardPkgId: defaultPkgId,
+      moduleId: 'modul-regulasi',
+      packageId: defaultPkgId,
+      isRunning: false,
+      resultId: null,
+      canonicalPath: '/cari',
+      needsReplace: pathname !== '/cari',
+    };
+  }
+
   if (parsed.tab === 'exam') {
-    const requestedPkg = parsed.packageId ? getPackageById(parsed.packageId) : undefined;
+    const requestedMeta = parsed.packageId ? getPackageMetaById(parsed.packageId) : undefined;
     if (parsed.running) {
       const canResume =
         Boolean(activeSession) &&
-        Boolean(requestedPkg) &&
-        activeSession?.packageId === requestedPkg?.id;
-      if (canResume && requestedPkg) {
-        const activePath = buildActiveExamPath(requestedPkg.id);
+        Boolean(requestedMeta) &&
+        activeSession?.packageId === requestedMeta?.id;
+      if (canResume && requestedMeta) {
+        const activePath = buildActiveExamPath(requestedMeta.id);
         return {
           tab: 'exam',
           historySubview: 'attempts',
-          leaderboardPkgId: FULL_PACKAGES[0].id,
+          leaderboardPkgId: defaultPkgId,
           moduleId: 'modul-regulasi',
-          packageId: requestedPkg.id,
+          packageId: requestedMeta.id,
           isRunning: true,
           resultId: null,
           canonicalPath: activePath,
           needsReplace: pathname !== activePath,
         };
       }
-      const safePath = requestedPkg ? buildExamHubPath(requestedPkg.id) : '/simulasi';
+      const safePath = requestedMeta ? buildExamHubPath(requestedMeta.id) : '/simulasi';
       return {
         tab: 'exam',
         historySubview: 'attempts',
-        leaderboardPkgId: FULL_PACKAGES[0].id,
+        leaderboardPkgId: defaultPkgId,
         moduleId: 'modul-regulasi',
-        packageId: requestedPkg?.id ?? FULL_PACKAGES[0].id,
+        packageId: requestedMeta?.id ?? defaultPkgId,
         isRunning: false,
         resultId: null,
         canonicalPath: safePath,
@@ -182,14 +225,14 @@ function resolveRouteState(
     }
 
     if (parsed.packageId) {
-      if (requestedPkg) {
-        const pkgPath = buildExamHubPath(requestedPkg.id);
+      if (requestedMeta) {
+        const pkgPath = buildExamHubPath(requestedMeta.id);
         return {
           tab: 'exam',
           historySubview: 'attempts',
-          leaderboardPkgId: FULL_PACKAGES[0].id,
+          leaderboardPkgId: defaultPkgId,
           moduleId: 'modul-regulasi',
-          packageId: requestedPkg.id,
+          packageId: requestedMeta.id,
           isRunning: false,
           resultId: null,
           canonicalPath: pkgPath,
@@ -199,9 +242,9 @@ function resolveRouteState(
       return {
         tab: 'exam',
         historySubview: 'attempts',
-        leaderboardPkgId: FULL_PACKAGES[0].id,
+        leaderboardPkgId: defaultPkgId,
         moduleId: 'modul-regulasi',
-        packageId: FULL_PACKAGES[0].id,
+        packageId: defaultPkgId,
         isRunning: false,
         resultId: null,
         canonicalPath: '/simulasi',
@@ -212,9 +255,9 @@ function resolveRouteState(
     return {
       tab: 'exam',
       historySubview: 'attempts',
-      leaderboardPkgId: FULL_PACKAGES[0].id,
+      leaderboardPkgId: defaultPkgId,
       moduleId: 'modul-regulasi',
-      packageId: activeSession?.packageId ?? FULL_PACKAGES[0].id,
+      packageId: activeSession?.packageId ?? defaultPkgId,
       isRunning: false,
       resultId: null,
       canonicalPath: '/simulasi',
@@ -224,15 +267,15 @@ function resolveRouteState(
 
   // parsed.tab === 'history'
   if (parsed.subview === 'leaderboard') {
-    const validPkg = parsed.leaderboardPkgId ? getPackageById(parsed.leaderboardPkgId) : undefined;
-    const pkgId = validPkg?.id ?? FULL_PACKAGES[0].id;
-    const targetPath = validPkg ? buildLeaderboardPath(pkgId) : '/peringkat';
+    const validMeta = parsed.leaderboardPkgId ? getPackageMetaById(parsed.leaderboardPkgId) : undefined;
+    const pkgId = validMeta?.id ?? defaultPkgId;
+    const targetPath = validMeta ? buildLeaderboardPath(pkgId) : '/peringkat';
     return {
       tab: 'history',
       historySubview: 'leaderboard',
       leaderboardPkgId: pkgId,
       moduleId: 'modul-regulasi',
-      packageId: FULL_PACKAGES[0].id,
+      packageId: defaultPkgId,
       isRunning: false,
       resultId: null,
       canonicalPath: targetPath,
@@ -244,9 +287,9 @@ function resolveRouteState(
     return {
       tab: 'history',
       historySubview: 'analytics',
-      leaderboardPkgId: FULL_PACKAGES[0].id,
+      leaderboardPkgId: defaultPkgId,
       moduleId: 'modul-regulasi',
-      packageId: FULL_PACKAGES[0].id,
+      packageId: defaultPkgId,
       isRunning: false,
       resultId: null,
       canonicalPath: '/analitik',
@@ -259,9 +302,9 @@ function resolveRouteState(
     return {
       tab: 'history',
       historySubview: 'attempts',
-      leaderboardPkgId: FULL_PACKAGES[0].id,
+      leaderboardPkgId: defaultPkgId,
       moduleId: 'modul-regulasi',
-      packageId: FULL_PACKAGES[0].id,
+      packageId: defaultPkgId,
       isRunning: false,
       resultId: parsed.attemptId,
       canonicalPath: attemptPath,
@@ -272,9 +315,9 @@ function resolveRouteState(
   return {
     tab: 'history',
     historySubview: 'attempts',
-    leaderboardPkgId: FULL_PACKAGES[0].id,
+    leaderboardPkgId: defaultPkgId,
     moduleId: 'modul-regulasi',
-    packageId: FULL_PACKAGES[0].id,
+    packageId: defaultPkgId,
     isRunning: false,
     resultId: null,
     canonicalPath: '/hasil',
@@ -282,10 +325,19 @@ function resolveRouteState(
   };
 }
 
+const LazyFallback: React.FC<{ label?: string }> = ({ label = 'Memuat halaman...' }) => (
+  <div className="card">
+    <p className="body text-subtle">{label}</p>
+  </div>
+);
+
 export const App: React.FC = () => {
   const [cloudProfile, setCloudProfile] = useState<CloudProfile>(() => loadOrCreateCloudProfile());
   const [syncStatus, setSyncStatus] = useState<CloudSyncStatus>('idle');
   const [syncModalOpen, setSyncModalOpen] = useState(false);
+  const [isOffline, setIsOffline] = useState<boolean>(() =>
+    typeof navigator !== 'undefined' ? !navigator.onLine : false,
+  );
 
   const [selectedFormation, setSelectedFormation] = useState<FormationType>(() =>
     loadJson<FormationType>(STORAGE_FORMATION_KEY, 'umum'),
@@ -312,6 +364,10 @@ export const App: React.FC = () => {
   const [activeModuleId, setActiveModuleId] = useState<StudyModuleId>(initRoute.moduleId);
   const [selectedPackageId, setSelectedPackageId] = useState<string>(initRoute.packageId);
   const [isSessionRunning, setIsSessionRunning] = useState<boolean>(initRoute.isRunning);
+  const [activeExamPkg, setActiveExamPkg] = useState<QuestionPackage | null>(() =>
+    activeSession ? getCachedPackageById(activeSession.packageId) ?? null : null,
+  );
+  const [startingExam, setStartingExam] = useState(false);
   const [selectedResultId, setSelectedResultId] = useState<string | null>(initRoute.resultId);
   const [historySubview, setHistorySubview] = useState<'attempts' | 'analytics' | 'leaderboard'>(
     initRoute.historySubview,
@@ -341,9 +397,22 @@ export const App: React.FC = () => {
   selectedFormationRef.current = selectedFormation;
   const cloudProfileRef = useRef(cloudProfile);
   cloudProfileRef.current = cloudProfile;
+  const activeExamPkgRef = useRef(activeExamPkg);
+  activeExamPkgRef.current = activeExamPkg;
 
   const hasInitialSyncRef = useRef(false);
   const skipNextMetaSyncRef = useRef(false);
+
+  useEffect(() => {
+    const onOnline = () => setIsOffline(false);
+    const onOffline = () => setIsOffline(true);
+    window.addEventListener('online', onOnline);
+    window.addEventListener('offline', onOffline);
+    return () => {
+      window.removeEventListener('online', onOnline);
+      window.removeEventListener('offline', onOffline);
+    };
+  }, []);
 
   useEffect(() => {
     saveCloudProfile(cloudProfile);
@@ -385,8 +454,28 @@ export const App: React.FC = () => {
     }
   }, [completedModules]);
 
+  // Load active exam package JSON when entering or resuming classroom
+  useEffect(() => {
+    if (!activeSession || activeTab !== 'exam' || !isSessionRunning) return;
+    if (activeExamPkg && activeExamPkg.id === activeSession.packageId) return;
+
+    let cancelled = false;
+    loadPackageById(activeSession.packageId).then((pkg) => {
+      if (cancelled) return;
+      if (pkg) {
+        setActiveExamPkg(pkg);
+      } else {
+        setIsSessionRunning(false);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [activeSession, activeTab, isSessionRunning, activeExamPkg]);
+
   const applySyncResult = useCallback(
-    (res: SyncResponse, baseProfile: CloudProfile) => {
+    async (res: SyncResponse, baseProfile: CloudProfile) => {
       skipNextMetaSyncRef.current = true;
       setCloudProfile({
         syncCode: baseProfile.syncCode,
@@ -399,7 +488,8 @@ export const App: React.FC = () => {
       setCompletedModules((prev) =>
         Array.from(new Set([...prev, ...res.profile.completedModules])),
       );
-      setHistory((prev) => mergeAttempts(res.attempts, prev));
+      const merged = await mergeAttempts(res.attempts, historyRef.current);
+      setHistory(merged);
 
       if (!activeSessionRef.current && res.profile.activeSession) {
         setActiveSession(res.profile.activeSession);
@@ -419,12 +509,12 @@ export const App: React.FC = () => {
       completedModules: completedModulesRef.current,
       activeSession: activeSessionRef.current,
       attempts: historyRef.current.slice(0, 50).map(toCloudAttemptPayload),
-    }).then((res) => {
+    }).then(async (res) => {
       if (cancelled) return;
       hasInitialSyncRef.current = true;
       if (res) {
-        applySyncResult(res, cloudProfileRef.current);
-        setSyncStatus('synced');
+        await applySyncResult(res, cloudProfileRef.current);
+        if (!cancelled) setSyncStatus('synced');
       } else {
         setSyncStatus('offline');
       }
@@ -537,10 +627,11 @@ export const App: React.FC = () => {
     setSharedReportLoading(true);
     setSharedReport(null);
 
-    fetchPublicAttempt(selectedResultId).then((res) => {
+    fetchPublicAttempt(selectedResultId).then(async (res) => {
       if (cancelled) return;
       if (res) {
-        const hydrated = rehydrateCloudAttempt(res.attempt);
+        const hydrated = await rehydrateCloudAttempt(res.attempt);
+        if (cancelled) return;
         if (hydrated) {
           setSharedReport({
             attempt: hydrated,
@@ -590,7 +681,7 @@ export const App: React.FC = () => {
         setActiveModuleId(resolved.moduleId);
       }
       if (resolved.tab === 'exam' && parsed.tab === 'exam' && parsed.packageId) {
-        const valid = getPackageById(parsed.packageId);
+        const valid = getPackageMetaById(parsed.packageId);
         if (valid) {
           setSelectedPackageId(valid.id);
         }
@@ -627,32 +718,34 @@ export const App: React.FC = () => {
     });
   }, []);
 
-  const finishExam = useCallback(() => {
-    if (!activeSession) return;
-    const pkg = getPackageById(activeSession.packageId);
+  const finishExam = useCallback(async () => {
+    const session = activeSessionRef.current;
+    if (!session) return;
+    const pkg =
+      (activeExamPkgRef.current?.id === session.packageId
+        ? activeExamPkgRef.current
+        : undefined) ?? (await loadPackageById(session.packageId));
     if (!pkg) return;
 
-    const elapsed = Math.max(
-      1,
-      activeSession.allocatedSeconds - activeSession.remainingSeconds,
-    );
+    const elapsed = Math.max(1, session.allocatedSeconds - session.remainingSeconds);
     const attempt: ExamAttempt = {
       id: generateAttemptId(),
       packageId: pkg.id,
       packageTitle: pkg.title,
       isFullSimulation: pkg.isFullSimulation,
-      formationId: activeSession.formationId,
-      startedAt: activeSession.startedAt,
+      formationId: session.formationId,
+      startedAt: session.startedAt,
       finishedAt: new Date().toISOString(),
       elapsedSeconds: elapsed,
-      allocatedSeconds: activeSession.allocatedSeconds,
-      answers: activeSession.answers,
-      flaggedIds: activeSession.flaggedIds,
+      allocatedSeconds: session.allocatedSeconds,
+      answers: session.answers,
+      flaggedIds: session.flaggedIds,
       questions: pkg.questions,
     };
 
     setHistory((prev) => [attempt, ...prev]);
     setActiveSession(null);
+    setActiveExamPkg(null);
     setIsSessionRunning(false);
     setHistorySubview('attempts');
     setSelectedResultId(attempt.id);
@@ -672,11 +765,16 @@ export const App: React.FC = () => {
         setSyncStatus('offline');
       }
     });
-  }, [activeSession, pushPath]);
+  }, [pushPath]);
 
-  // Countdown tick only runs while the exam classroom is active and running
+  // Countdown tick only runs while the exam classroom is active and package loaded
+  const isPkgLoadedForSession = Boolean(
+    activeSession && activeExamPkg && activeExamPkg.id === activeSession.packageId,
+  );
   useEffect(() => {
-    if (!activeSession || !isSessionRunning || activeTab !== 'exam') return;
+    if (!activeSession || !isSessionRunning || activeTab !== 'exam' || !isPkgLoadedForSession) {
+      return;
+    }
 
     const timer = window.setInterval(() => {
       setActiveSession((prev) => {
@@ -689,16 +787,16 @@ export const App: React.FC = () => {
     }, 1000);
 
     return () => window.clearInterval(timer);
-  }, [activeSession !== null, isSessionRunning, activeTab]);
+  }, [activeSession !== null, isSessionRunning, activeTab, isPkgLoadedForSession]);
 
   // Auto-submit when timer hits 0
   useEffect(() => {
     if (activeSession && isSessionRunning && activeSession.remainingSeconds === 0) {
-      finishExam();
+      void finishExam();
     }
   }, [activeSession, isSessionRunning, finishExam]);
 
-  const handleOpenExamPrep = (pkg: QuestionPackage) => {
+  const handleOpenExamPrep = (pkg: PackageMeta) => {
     setSelectedPackageId(pkg.id);
     setIsSessionRunning(false);
     setSelectedResultId(null);
@@ -707,7 +805,7 @@ export const App: React.FC = () => {
   };
 
   const handleChangePackage = (pkgId: string) => {
-    const found = getPackageById(pkgId);
+    const found = getPackageMetaById(pkgId);
     if (!found) return;
     setSelectedPackageId(found.id);
     pushPath(buildExamHubPath(found.id), { scroll: false });
@@ -719,12 +817,17 @@ export const App: React.FC = () => {
     pushPath(buildStudyPath(moduleId));
   };
 
-  const handleConfirmStartExam = (pkg: QuestionPackage, formationId: FormationType) => {
-    const allocatedSeconds = pkg.durationMinutes * 60;
+  const handleConfirmStartExam = async (pkgMeta: PackageMeta, formationId: FormationType) => {
+    setStartingExam(true);
+    const fullPkg = await loadPackageById(pkgMeta.id);
+    setStartingExam(false);
+    if (!fullPkg) return;
+
+    const allocatedSeconds = fullPkg.durationMinutes * 60;
     const newSession: ActiveExamSession = {
-      packageId: pkg.id,
-      packageTitle: pkg.title,
-      isFullSimulation: pkg.isFullSimulation,
+      packageId: fullPkg.id,
+      packageTitle: fullPkg.title,
+      isFullSimulation: fullPkg.isFullSimulation,
       formationId,
       startedAt: new Date().toISOString(),
       allocatedSeconds,
@@ -733,12 +836,13 @@ export const App: React.FC = () => {
       answers: {},
       flaggedIds: [],
     };
-    setSelectedPackageId(pkg.id);
+    setSelectedPackageId(fullPkg.id);
+    setActiveExamPkg(fullPkg);
     setActiveSession(newSession);
     setIsSessionRunning(true);
     setSelectedResultId(null);
     setActiveTab('exam');
-    pushPath(buildActiveExamPath(pkg.id));
+    pushPath(buildActiveExamPath(fullPkg.id));
   };
 
   const handleResumeExam = () => {
@@ -759,6 +863,7 @@ export const App: React.FC = () => {
 
   const handleDiscardActiveSession = () => {
     setActiveSession(null);
+    setActiveExamPkg(null);
     setIsSessionRunning(false);
     syncSessionSnapshot(null);
   };
@@ -777,6 +882,8 @@ export const App: React.FC = () => {
       pushPath(buildHomePath());
     } else if (nextTab === 'study') {
       pushPath(buildStudyPath(activeModuleId));
+    } else if (nextTab === 'search') {
+      pushPath(buildSearchPath());
     } else if (nextTab === 'exam') {
       pushPath(buildExamHubPath());
     } else {
@@ -785,7 +892,7 @@ export const App: React.FC = () => {
   };
 
   const handleOpenLeaderboard = (pkgId?: string) => {
-    const targetPkg = pkgId && getPackageById(pkgId) ? pkgId : leaderboardPkgId;
+    const targetPkg = pkgId && getPackageMetaById(pkgId) ? pkgId : leaderboardPkgId;
     setLeaderboardPkgId(targetPkg);
     setSelectedResultId(null);
     setHistorySubview('leaderboard');
@@ -810,7 +917,7 @@ export const App: React.FC = () => {
       attempts: history.slice(0, 50).map(toCloudAttemptPayload),
     });
     if (res) {
-      applySyncResult(res, cloudProfile);
+      await applySyncResult(res, cloudProfile);
       setSyncStatus('synced');
       return true;
     }
@@ -828,7 +935,7 @@ export const App: React.FC = () => {
       attempts: history.slice(0, 50).map(toCloudAttemptPayload),
     });
     if (res) {
-      applySyncResult(res, { ...cloudProfile, displayName: res.profile.displayName });
+      await applySyncResult(res, { ...cloudProfile, displayName: res.profile.displayName });
       setSyncStatus('synced');
       return true;
     }
@@ -861,7 +968,7 @@ export const App: React.FC = () => {
       displayName: res.profile.displayName,
       lastSyncedAt: res.profile.updatedAt,
     };
-    applySyncResult(res, linkedProfile);
+    await applySyncResult(res, linkedProfile);
     setSyncStatus('synced');
     return { ok: true };
   };
@@ -913,58 +1020,88 @@ export const App: React.FC = () => {
     );
   };
 
-  const selectedSetupPkg = getPackageById(selectedPackageId) ?? FULL_PACKAGES[0];
-  const currentExamPkg = activeSession ? getPackageById(activeSession.packageId) : undefined;
+  const handleExportPdf = async (attempt: ExamAttempt) => {
+    const ev = summarizeAttempt(attempt);
+    const { exportResultToPdf } = await import('./utils/pdfExport');
+    await exportResultToPdf(attempt, ev);
+  };
+
+  const selectedSetupPkg = getPackageMetaById(selectedPackageId) ?? FULL_PACKAGE_METAS[0];
+  const currentExamMeta = activeSession ? getPackageMetaById(activeSession.packageId) : undefined;
   const localAttempt =
     selectedResultId !== null ? history.find((h) => h.id === selectedResultId) ?? null : null;
   const displayedAttempt = localAttempt ?? sharedReport?.attempt ?? null;
   const isViewingSharedAttempt = localAttempt === null && sharedReport !== null;
 
   const isClassroomActive =
-    activeTab === 'exam' && Boolean(activeSession) && Boolean(currentExamPkg) && isSessionRunning;
+    activeTab === 'exam' && Boolean(activeSession) && Boolean(currentExamMeta) && isSessionRunning;
 
   const activeModuleMeta =
     STUDY_MODULES.find((m) => m.id === activeModuleId) ?? STUDY_MODULES[0];
 
-  const pageTitle = isClassroomActive && currentExamPkg
-    ? `Ujian Aktif: ${currentExamPkg.title} | CPNS Learning Hub`
+  const pageTitle = isClassroomActive && currentExamMeta
+    ? `Ujian Aktif: ${currentExamMeta.title} | CPNS Learning Hub`
     : activeTab === 'home'
       ? 'Beranda Belajar & Simulasi CAT SKD CPNS | cpns.imambas.my.id'
       : activeTab === 'study'
         ? `Kelas ${activeModuleMeta.number}: ${activeModuleMeta.title} | CPNS Learning Hub`
-        : activeTab === 'exam'
-          ? currentPath.startsWith('/simulasi/')
-            ? `Simulasi: ${selectedSetupPkg.title} | CPNS Learning Hub`
-            : 'Persiapan Simulasi CAT SKD CPNS | CPNS Learning Hub'
-          : displayedAttempt
-            ? `Rapor Hasil: ${displayedAttempt.packageTitle} | CPNS Learning Hub`
-            : historySubview === 'analytics'
-              ? 'Analitik Peta Kelemahan & Radar Chart | CPNS Learning Hub'
-              : historySubview === 'leaderboard'
-                ? 'Papan Peringkat Nasional Simulasi CAT | CPNS Learning Hub'
-                : 'Hasil & Riwayat Simulasi CAT | CPNS Learning Hub';
+        : activeTab === 'search'
+          ? `Cari Bank Soal (${TOTAL_QUESTION_COUNT.toLocaleString('id-ID')} Soal) | CPNS Learning Hub`
+          : activeTab === 'exam'
+            ? currentPath.startsWith('/simulasi/')
+              ? `Simulasi: ${selectedSetupPkg.title} | CPNS Learning Hub`
+              : 'Persiapan Simulasi CAT SKD CPNS | CPNS Learning Hub'
+            : displayedAttempt
+              ? `Rapor Hasil: ${displayedAttempt.packageTitle} | CPNS Learning Hub`
+              : historySubview === 'analytics'
+                ? 'Analitik Peta Kelemahan & Radar Chart | CPNS Learning Hub'
+                : historySubview === 'leaderboard'
+                  ? 'Papan Peringkat Nasional Simulasi CAT | CPNS Learning Hub'
+                  : 'Hasil & Riwayat Simulasi CAT | CPNS Learning Hub';
 
   useEffect(() => {
     document.title = pageTitle;
   }, [pageTitle]);
 
   // Mode 2: Fullscreen Distraction-Free CAT Classroom
-  if (isClassroomActive && activeSession && currentExamPkg) {
+  if (isClassroomActive && activeSession && currentExamMeta) {
+    if (!activeExamPkg || activeExamPkg.id !== activeSession.packageId) {
+      return (
+        <div className="cat-classroom-shell">
+          <main className="cat-classroom-main">
+            <LazyFallback label={`Memuat soal ${currentExamMeta.title}...`} />
+          </main>
+        </div>
+      );
+    }
+
     return (
-      <ExamView
-        pkg={currentExamPkg}
-        formationId={activeSession.formationId}
-        currentIndex={activeSession.currentIndex}
-        answers={activeSession.answers}
-        flaggedIds={activeSession.flaggedIds}
-        remainingSeconds={activeSession.remainingSeconds}
-        onSelectAnswer={handleSelectAnswer}
-        onClearAnswer={handleClearAnswer}
-        onToggleFlag={handleToggleFlag}
-        onNavigate={handleNavigateQuestion}
-        onPauseExam={handlePauseExam}
-        onFinishExam={finishExam}
-      />
+      <Suspense
+        fallback={
+          <div className="cat-classroom-shell">
+            <main className="cat-classroom-main">
+              <LazyFallback label="Menyiapkan ruang ujian CAT..." />
+            </main>
+          </div>
+        }
+      >
+        <ExamView
+          pkg={activeExamPkg}
+          formationId={activeSession.formationId}
+          currentIndex={activeSession.currentIndex}
+          answers={activeSession.answers}
+          flaggedIds={activeSession.flaggedIds}
+          remainingSeconds={activeSession.remainingSeconds}
+          onSelectAnswer={handleSelectAnswer}
+          onClearAnswer={handleClearAnswer}
+          onToggleFlag={handleToggleFlag}
+          onNavigate={handleNavigateQuestion}
+          onPauseExam={handlePauseExam}
+          onFinishExam={() => {
+            void finishExam();
+          }}
+        />
+      </Suspense>
     );
   }
 
@@ -1002,6 +1139,15 @@ export const App: React.FC = () => {
       mobileBadge: `${completedModules.length}/${STUDY_MODULES.length}`,
     },
     {
+      id: 'search',
+      label: 'Cari bank soal',
+      mobileLabel: 'Cari',
+      href: buildSearchPath(),
+      icon: <SearchIcon size={16} />,
+      mobileIcon: <SearchIcon size={20} />,
+      badge: <span className="badge">{TOTAL_QUESTION_COUNT.toLocaleString('id-ID')}</span>,
+    },
+    {
       id: 'exam',
       label: 'Simulasi ujian',
       mobileLabel: 'Simulasi',
@@ -1032,18 +1178,21 @@ export const App: React.FC = () => {
       ? 'Beranda belajar & dasbor'
       : activeTab === 'study'
         ? `Kelas · Modul ${activeModuleMeta.number}: ${activeModuleMeta.title}`
-        : activeTab === 'exam'
-          ? 'Pusat asesmen & persiapan CAT'
-          : displayedAttempt
-            ? `Rapor detail: ${displayedAttempt.packageTitle}`
-            : historySubview === 'analytics'
-              ? 'Analitik peta kelemahan per subtopik'
-              : historySubview === 'leaderboard'
-                ? 'Papan peringkat nasional per paket'
-                : 'Rapor hasil & riwayat simulasi';
+        : activeTab === 'search'
+          ? `Cari bank soal (${TOTAL_QUESTION_COUNT.toLocaleString('id-ID')} soal)`
+          : activeTab === 'exam'
+            ? 'Pusat asesmen & persiapan CAT'
+            : displayedAttempt
+              ? `Rapor detail: ${displayedAttempt.packageTitle}`
+              : historySubview === 'analytics'
+                ? 'Analitik peta kelemahan per subtopik'
+                : historySubview === 'leaderboard'
+                  ? 'Papan peringkat nasional per paket'
+                  : 'Rapor hasil & riwayat simulasi';
 
-  const cloudStatusLabel =
-    syncStatus === 'syncing'
+  const cloudStatusLabel = isOffline
+    ? 'Offline'
+    : syncStatus === 'syncing'
       ? 'Sinkron...'
       : syncStatus === 'synced'
         ? 'Sinkron'
@@ -1102,14 +1251,16 @@ export const App: React.FC = () => {
               <span className="h-xsmall">{cloudProfile.displayName}</span>
               <span
                 className={`lozenge ${
-                  syncStatus === 'synced'
-                    ? 'lozenge-success'
-                    : syncStatus === 'syncing'
-                      ? 'lozenge-info'
-                      : 'lozenge-warning'
+                  isOffline
+                    ? 'lozenge-warning'
+                    : syncStatus === 'synced'
+                      ? 'lozenge-success'
+                      : syncStatus === 'syncing'
+                        ? 'lozenge-info'
+                        : 'lozenge-warning'
                 }`}
               >
-                {syncStatus === 'synced' ? 'Cloud D1' : cloudStatusLabel}
+                {!isOffline && syncStatus === 'synced' ? 'Cloud D1' : cloudStatusLabel}
               </span>
             </div>
             <button
@@ -1199,7 +1350,7 @@ export const App: React.FC = () => {
 
             <button
               type="button"
-              className={`btn btn-compact ${syncStatus === 'synced' ? 'btn-selected' : ''}`}
+              className={`btn btn-compact ${!isOffline && syncStatus === 'synced' ? 'btn-selected' : ''}`}
               onClick={() => setSyncModalOpen(true)}
               title="Pengaturan sinkronisasi Cloud D1 dan kode perangkat"
             >
@@ -1247,16 +1398,31 @@ export const App: React.FC = () => {
           )}
 
           {activeTab === 'study' && (
-            <StudyView
-              activeModuleId={activeModuleId}
-              onSelectModule={handleSelectModule}
-              completedModules={completedModules}
-              onToggleCompleteModule={handleToggleCompleteModule}
-              onPracticePackage={(pkgId) => {
-                const found = getPackageById(pkgId);
-                if (found) handleOpenExamPrep(found);
-              }}
-            />
+            <Suspense fallback={<LazyFallback label="Memuat modul kelas SKD..." />}>
+              <StudyView
+                activeModuleId={activeModuleId}
+                onSelectModule={handleSelectModule}
+                completedModules={completedModules}
+                onToggleCompleteModule={handleToggleCompleteModule}
+                onPracticePackage={(pkgId) => {
+                  const found = getPackageMetaById(pkgId);
+                  if (found) handleOpenExamPrep(found);
+                }}
+              />
+            </Suspense>
+          )}
+
+          {activeTab === 'search' && (
+            <Suspense fallback={<LazyFallback label="Memuat fitur pencarian bank soal..." />}>
+              <SearchView
+                onStartPackage={handleOpenExamPrep}
+                onOpenStudy={(moduleId) => {
+                  setActiveModuleId(moduleId);
+                  setActiveTab('study');
+                  pushPath(buildStudyPath(moduleId));
+                }}
+              />
+            </Suspense>
           )}
 
           {activeTab === 'exam' && (
@@ -1265,52 +1431,55 @@ export const App: React.FC = () => {
               selectedFormation={selectedFormation}
               activeSession={activeSession}
               history={history}
+              startingExam={startingExam}
               onChangePackage={handleChangePackage}
               onChangeFormation={setSelectedFormation}
-              onConfirmStartExam={handleConfirmStartExam}
+              onConfirmStartExam={(pkgMeta, formationId) => {
+                void handleConfirmStartExam(pkgMeta, formationId);
+              }}
               onResumeActiveSession={handleResumeExam}
               onDiscardActiveSession={handleDiscardActiveSession}
             />
           )}
 
           {activeTab === 'history' && sharedReportLoading && (
-            <div className="card">
-              <p className="body text-subtle">Memuat rapor hasil ujian dari Cloudflare D1...</p>
-            </div>
+            <LazyFallback label="Memuat rapor hasil ujian dari Cloudflare D1..." />
           )}
 
           {activeTab === 'history' && !sharedReportLoading && displayedAttempt && (
-            <ResultView
-              attempt={displayedAttempt}
-              onUpdateFormation={handleUpdateAttemptFormation}
-              onRetakePackage={(pkgId) => {
-                const found = getPackageById(pkgId);
-                if (found) handleOpenExamPrep(found);
-              }}
-              onBackHome={() => {
-                setSelectedResultId(null);
-                setHistorySubview('attempts');
-                pushPath(buildHistoryPath(null));
-              }}
-              isSharedAttempt={isViewingSharedAttempt}
-              sharedOwnerName={sharedReport?.ownerName}
-              rankInfo={
-                isViewingSharedAttempt
-                  ? sharedReport?.rankInfo
-                  : latestRankInfo && latestRankInfo.attemptId === displayedAttempt.id
-                    ? latestRankInfo.rankInfo
-                    : null
-              }
-              currentUserId={cloudProfile.userId}
-              syncCode={cloudProfile.syncCode}
-              onOpenLeaderboard={(pkgId) => handleOpenLeaderboard(pkgId)}
-              onOpenAttempt={(attemptId) => {
-                setSelectedResultId(attemptId);
-                setHistorySubview('attempts');
-                pushPath(buildHistoryPath(attemptId));
-              }}
-              onOpenAnalytics={handleOpenAnalytics}
-            />
+            <Suspense fallback={<LazyFallback label="Memuat rapor & pembahasan..." />}>
+              <ResultView
+                attempt={displayedAttempt}
+                onUpdateFormation={handleUpdateAttemptFormation}
+                onRetakePackage={(pkgId) => {
+                  const found = getPackageMetaById(pkgId);
+                  if (found) handleOpenExamPrep(found);
+                }}
+                onBackHome={() => {
+                  setSelectedResultId(null);
+                  setHistorySubview('attempts');
+                  pushPath(buildHistoryPath(null));
+                }}
+                isSharedAttempt={isViewingSharedAttempt}
+                sharedOwnerName={sharedReport?.ownerName}
+                rankInfo={
+                  isViewingSharedAttempt
+                    ? sharedReport?.rankInfo
+                    : latestRankInfo && latestRankInfo.attemptId === displayedAttempt.id
+                      ? latestRankInfo.rankInfo
+                      : null
+                }
+                currentUserId={cloudProfile.userId}
+                syncCode={cloudProfile.syncCode}
+                onOpenLeaderboard={(pkgId) => handleOpenLeaderboard(pkgId)}
+                onOpenAttempt={(attemptId) => {
+                  setSelectedResultId(attemptId);
+                  setHistorySubview('attempts');
+                  pushPath(buildHistoryPath(attemptId));
+                }}
+                onOpenAnalytics={handleOpenAnalytics}
+              />
+            </Suspense>
           )}
 
           {activeTab === 'history' && !sharedReportLoading && !displayedAttempt && (
@@ -1363,36 +1532,40 @@ export const App: React.FC = () => {
               </div>
 
               {historySubview === 'analytics' ? (
-                <AnalyticsView
-                  history={history}
-                  onStartPackage={handleOpenExamPrep}
-                  onOpenStudy={(moduleId) => {
-                    setActiveModuleId(moduleId);
-                    setActiveTab('study');
-                    pushPath(buildStudyPath(moduleId));
-                  }}
-                  onOpenAttempt={(attemptId) => {
-                    setSelectedResultId(attemptId);
-                    setHistorySubview('attempts');
-                    pushPath(buildHistoryPath(attemptId));
-                  }}
-                />
+                <Suspense fallback={<LazyFallback label="Menyiapkan analitik & Radar Chart..." />}>
+                  <AnalyticsView
+                    history={history}
+                    onStartPackage={handleOpenExamPrep}
+                    onOpenStudy={(moduleId) => {
+                      setActiveModuleId(moduleId);
+                      setActiveTab('study');
+                      pushPath(buildStudyPath(moduleId));
+                    }}
+                    onOpenAttempt={(attemptId) => {
+                      setSelectedResultId(attemptId);
+                      setHistorySubview('attempts');
+                      pushPath(buildHistoryPath(attemptId));
+                    }}
+                  />
+                </Suspense>
               ) : historySubview === 'leaderboard' ? (
-                <LeaderboardView
-                  selectedPackageId={leaderboardPkgId}
-                  onSelectPackage={(pkgId) => {
-                    setLeaderboardPkgId(pkgId);
-                    pushPath(buildLeaderboardPath(pkgId), { scroll: false });
-                  }}
-                  currentUserId={cloudProfile.userId}
-                  syncCode={cloudProfile.syncCode}
-                  onStartPackage={handleOpenExamPrep}
-                  onOpenAttempt={(attemptId) => {
-                    setSelectedResultId(attemptId);
-                    setHistorySubview('attempts');
-                    pushPath(buildHistoryPath(attemptId));
-                  }}
-                />
+                <Suspense fallback={<LazyFallback label="Memuat papan peringkat..." />}>
+                  <LeaderboardView
+                    selectedPackageId={leaderboardPkgId}
+                    onSelectPackage={(pkgId) => {
+                      setLeaderboardPkgId(pkgId);
+                      pushPath(buildLeaderboardPath(pkgId), { scroll: false });
+                    }}
+                    currentUserId={cloudProfile.userId}
+                    syncCode={cloudProfile.syncCode}
+                    onStartPackage={handleOpenExamPrep}
+                    onOpenAttempt={(attemptId) => {
+                      setSelectedResultId(attemptId);
+                      setHistorySubview('attempts');
+                      pushPath(buildHistoryPath(attemptId));
+                    }}
+                  />
+                </Suspense>
               ) : (
                 <>
                   <div className="row-wrap" style={{ justifyContent: 'space-between' }}>
@@ -1409,6 +1582,7 @@ export const App: React.FC = () => {
                         onClick={() => {
                           setHistory([]);
                           setSelectedResultId(null);
+                          setLatestRankInfo(null);
                           pushPath(buildHistoryPath(null), { replace: true });
                           void clearCloudAttempts(cloudProfile.syncCode);
                         }}
@@ -1425,12 +1599,12 @@ export const App: React.FC = () => {
                         Mulai salah satu paket simulasi 110 soal atau latihan fokus subtes untuk melihat rapor nilai, peta pembahasan, peringkat, dan mengunduh laporan PDF.
                       </p>
                       <a
-                        href={buildExamHubPath(FULL_PACKAGES[0].id)}
+                        href={buildExamHubPath(FULL_PACKAGE_METAS[0].id)}
                         className="btn btn-primary"
                         onClick={(e) => {
                           if (!shouldHandleClientClick(e)) return;
                           e.preventDefault();
-                          handleOpenExamPrep(FULL_PACKAGES[0]);
+                          handleOpenExamPrep(FULL_PACKAGE_METAS[0]);
                         }}
                       >
                         Siapkan simulasi 110 soal sekarang
@@ -1494,7 +1668,7 @@ export const App: React.FC = () => {
                                   type="button"
                                   className="btn"
                                   onClick={() => {
-                                    void exportResultToPdf(item, ev);
+                                    void handleExportPdf(item);
                                   }}
                                 >
                                   <DownloadIcon size={14} />
@@ -1573,7 +1747,7 @@ export const App: React.FC = () => {
                                         type="button"
                                         className="btn btn-compact"
                                         onClick={() => {
-                                          void exportResultToPdf(item, ev);
+                                          void handleExportPdf(item);
                                         }}
                                       >
                                         <DownloadIcon size={14} />
@@ -1661,15 +1835,19 @@ export const App: React.FC = () => {
       </nav>
 
       {/* Cloud Sync & Profile Modal */}
-      <CloudSyncModal
-        open={syncModalOpen}
-        profile={cloudProfile}
-        syncStatus={syncStatus}
-        onClose={() => setSyncModalOpen(false)}
-        onSaveDisplayName={handleSaveDisplayName}
-        onManualSync={handleManualSync}
-        onLinkSyncCode={handleLinkSyncCode}
-      />
+      {syncModalOpen && (
+        <Suspense fallback={null}>
+          <CloudSyncModal
+            open={syncModalOpen}
+            profile={cloudProfile}
+            syncStatus={syncStatus}
+            onClose={() => setSyncModalOpen(false)}
+            onSaveDisplayName={handleSaveDisplayName}
+            onManualSync={handleManualSync}
+            onLinkSyncCode={handleLinkSyncCode}
+          />
+        </Suspense>
+      )}
     </div>
   );
 };

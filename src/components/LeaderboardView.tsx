@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import type { LeaderboardResponse, QuestionPackage } from '../types';
-import { ALL_PACKAGES, getPackageById } from '../data/questionBank';
+import type { LeaderboardResponse, PackageMeta } from '../types';
+import { ALL_PACKAGE_METAS, getPackageMetaById } from '../data/questionBank';
 import { FORMATION_RULES, formatDurationText } from '../utils/scoring';
 import { fetchLeaderboard } from '../utils/cloudSync';
 import { buildExamHubPath, buildHistoryPath, buildLeaderboardPath, shouldHandleClientClick } from '../utils/router';
@@ -11,7 +11,7 @@ interface LeaderboardViewProps {
   onSelectPackage?: (packageId: string) => void;
   currentUserId: string;
   syncCode: string;
-  onStartPackage?: (pkg: QuestionPackage) => void;
+  onStartPackage?: (pkg: PackageMeta) => void;
   onOpenAttempt?: (attemptId: string) => void;
   embedded?: boolean;
   onOpenFullLeaderboard?: (packageId: string) => void;
@@ -34,10 +34,10 @@ export const LeaderboardView: React.FC<LeaderboardViewProps> = ({
   const [error, setError] = useState(false);
   const [reloadTick, setReloadTick] = useState(0);
 
-  const activePkg = getPackageById(selectedPackageId) ?? ALL_PACKAGES[0];
-  const selectPackages = ALL_PACKAGES.some((p) => p.id === activePkg.id)
-    ? ALL_PACKAGES
-    : [activePkg, ...ALL_PACKAGES];
+  const activePkg = getPackageMetaById(selectedPackageId) ?? ALL_PACKAGE_METAS[0];
+  const selectPackages = ALL_PACKAGE_METAS.some((p) => p.id === activePkg.id)
+    ? ALL_PACKAGE_METAS
+    : [activePkg, ...ALL_PACKAGE_METAS];
   const limit = embedded ? 10 : 25;
 
   useEffect(() => {
@@ -91,7 +91,7 @@ export const LeaderboardView: React.FC<LeaderboardViewProps> = ({
             >
               {selectPackages.map((pkg) => (
                 <option key={pkg.id} value={pkg.id}>
-                  {pkg.title} ({pkg.questions.length} soal)
+                  {pkg.title} ({pkg.questionCount} soal)
                 </option>
               ))}
             </select>
@@ -158,7 +158,7 @@ export const LeaderboardView: React.FC<LeaderboardViewProps> = ({
             <span className="body-small">Skor tertinggi</span>
             <div className="metric-medium mono">
               {summary.topScore}{' '}
-              <span className="body-small">/ {activePkg.questions.length * 5}</span>
+              <span className="body-small">/ {activePkg.questionCount * 5}</span>
             </div>
             <span className="body-small">Rekor paket ini</span>
           </div>

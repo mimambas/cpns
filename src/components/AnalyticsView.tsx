@@ -1,14 +1,14 @@
 import React, { useMemo, useState } from 'react';
 import type {
   ExamAttempt,
+  PackageMeta,
   QuestionCategory,
-  QuestionPackage,
   StudyModuleId,
 } from '../types';
 import {
-  ALL_PACKAGES,
-  FULL_PACKAGES,
-  getPackageById,
+  ALL_PACKAGE_METAS,
+  FULL_PACKAGE_METAS,
+  getPackageMetaById,
   getSubtopicQuestionCount,
 } from '../data/questionBank';
 import {
@@ -25,7 +25,7 @@ import { RadarChart, type RadarAxisPoint } from './RadarChart';
 
 interface AnalyticsViewProps {
   history: ExamAttempt[];
-  onStartPackage: (pkg: QuestionPackage) => void;
+  onStartPackage: (pkg: PackageMeta) => void;
   onOpenStudy: (moduleId: StudyModuleId) => void;
   onOpenAttempt: (attemptId: string) => void;
 }
@@ -99,7 +99,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
   };
 
   const launchDrill = (clusterId: SubtopicClusterId) => {
-    const drillPkg = getPackageById(getDrillPackageId(clusterId));
+    const drillPkg = getPackageMetaById(getDrillPackageId(clusterId));
     if (drillPkg) {
       onStartPackage(drillPkg);
     }
@@ -136,24 +136,24 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
             </p>
             <div className="row-wrap" style={{ marginTop: '8px' }}>
               <a
-                href={buildExamHubPath(FULL_PACKAGES[0].id)}
+                href={buildExamHubPath(FULL_PACKAGE_METAS[0].id)}
                 className="btn btn-primary btn-compact"
                 onClick={(e) => {
                   if (!shouldHandleClientClick(e)) return;
                   e.preventDefault();
-                  onStartPackage(FULL_PACKAGES[0]);
+                  onStartPackage(FULL_PACKAGE_METAS[0]);
                 }}
               >
                 <PlayIcon size={14} />
                 Mulai simulasi 110 soal (Paket 1)
               </a>
               <a
-                href={buildExamHubPath(ALL_PACKAGES.find((p) => !p.isFullSimulation)?.id ?? FULL_PACKAGES[0].id)}
+                href={buildExamHubPath(ALL_PACKAGE_METAS.find((p) => !p.isFullSimulation)?.id ?? FULL_PACKAGE_METAS[0].id)}
                 className="btn btn-compact"
                 onClick={(e) => {
                   if (!shouldHandleClientClick(e)) return;
                   e.preventDefault();
-                  const focused = ALL_PACKAGES.find((p) => !p.isFullSimulation) ?? FULL_PACKAGES[0];
+                  const focused = ALL_PACKAGE_METAS.find((p) => !p.isFullSimulation) ?? FULL_PACKAGE_METAS[0];
                   onStartPackage(focused);
                 }}
               >

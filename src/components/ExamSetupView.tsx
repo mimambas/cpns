@@ -1,6 +1,6 @@
-import React, { useMemo, useState } from 'react';
-import type { ActiveExamSession, ExamAttempt, FormationType, QuestionPackage } from '../types';
-import { ALL_PACKAGES } from '../data/questionBank';
+import React, { useEffect, useMemo, useState } from 'react';
+import type { ActiveExamSession, ExamAttempt, FormationType, PackageMeta } from '../types';
+import { ALL_PACKAGE_METAS, preloadPackageById } from '../data/questionBank';
 import { FORMATION_RULES, formatCountdown, summarizeAttempt } from '../utils/scoring';
 import { buildExamHubPath, shouldHandleClientClick } from '../utils/router';
 import {
@@ -12,13 +12,14 @@ import {
 import { ShareLinkButton } from './ShareLinkButton';
 
 interface ExamSetupViewProps {
-  selectedPackage: QuestionPackage;
+  selectedPackage: PackageMeta;
   selectedFormation: FormationType;
   activeSession: ActiveExamSession | null;
   history: ExamAttempt[];
+  startingExam?: boolean;
   onChangePackage: (pkgId: string) => void;
   onChangeFormation: (formation: FormationType) => void;
-  onConfirmStartExam: (pkg: QuestionPackage, formationId: FormationType) => void;
+  onConfirmStartExam: (pkg: PackageMeta, formationId: FormationType) => void;
   onResumeActiveSession: () => void;
   onDiscardActiveSession: () => void;
 }
@@ -30,6 +31,7 @@ export const ExamSetupView: React.FC<ExamSetupViewProps> = ({
   selectedFormation,
   activeSession,
   history,
+  startingExam = false,
   onChangePackage,
   onChangeFormation,
   onConfirmStartExam,
@@ -38,17 +40,21 @@ export const ExamSetupView: React.FC<ExamSetupViewProps> = ({
 }) => {
   const [pkgFilter, setPkgFilter] = useState<PackageFilter>('ALL');
 
+  useEffect(() => {
+    preloadPackageById(selectedPackage.id);
+  }, [selectedPackage.id]);
+
   const filteredPackages = useMemo(() => {
-    if (pkgFilter === 'FULL') return ALL_PACKAGES.filter((p) => p.isFullSimulation);
-    if (pkgFilter === 'FOCUSED') return ALL_PACKAGES.filter((p) => !p.isFullSimulation);
-    return ALL_PACKAGES;
+    if (pkgFilter === 'FULL') return ALL_PACKAGE_METAS.filter((p) => p.isFullSimulation);
+    if (pkgFilter === 'FOCUSED') return ALL_PACKAGE_METAS.filter((p) => !p.isFullSimulation);
+    return ALL_PACKAGE_METAS;
   }, [pkgFilter]);
 
   const selectPackages = useMemo(() => {
-    if (ALL_PACKAGES.some((p) => p.id === selectedPackage.id)) {
-      return ALL_PACKAGES;
+    if (ALL_PACKAGE_METAS.some((p) => p.id === selectedPackage.id)) {
+      return ALL_PACKAGE_METAS;
     }
-    return [selectedPackage, ...ALL_PACKAGES];
+    return [selectedPackage, ...ALL_PACKAGE_METAS];
   }, [selectedPackage]);
 
   const bestByPkg = useMemo(() => {
@@ -69,10 +75,8 @@ export const ExamSetupView: React.FC<ExamSetupViewProps> = ({
     return map;
   }, [history]);
 
-  const twkCount = selectedPackage.questions.filter((q) => q.category === 'TWK').length;
-  const tiuCount = selectedPackage.questions.filter((q) => q.category === 'TIU').length;
-  const tkpCount = selectedPackage.questions.filter((q) => q.category === 'TKP').length;
-  const maxScore = selectedPackage.questions.length * 5;
+  const { twkCount, tiuCount, tkpCount, questionCount } = selectedPackage;
+  const maxScore = questionCount * 5;
   const packagePath = buildExamHubPath(selectedPackage.id);
 
   return (
@@ -126,7 +130,7 @@ export const ExamSetupView: React.FC<ExamSetupViewProps> = ({
             <div className="row-wrap" style={{ gap: '6px' }}>
               {(
                 [
-                  { id: 'ALL', label: `Semua (${ALL_PACKAGES.length})` },
+                  { id: 'ALL', label: `Semua (${ALL_PACKAGE_METAS.length})` },
                   { id: 'FULL', label: 'Simulasi CAT lengkap' },
                   { id: 'FOCUSED', label: 'Latihan fokus' },
                 ] as { id: PackageFilter; label: string }[]
@@ -155,7 +159,7 @@ export const ExamSetupView: React.FC<ExamSetupViewProps> = ({
             >
               {selectPackages.map((pkg) => (
                 <option key={pkg.id} value={pkg.id}>
-                  {pkg.title} ({pkg.questions.length} soal · {pkg.durationMinutes} mnt)
+                  {pkg.title} ({pkg.questionCount} soal · {pkg.durationMinutes} mnt)
                 </option>
               ))}
             </select>
@@ -216,7 +220,7 @@ export const ExamSetupView: React.FC<ExamSetupViewProps> = ({
               <ShareLinkButton
                 path={packagePath}
                 shareTitle={`Simulasi CPNS: ${selectedPackage.title}`}
-                shareText={`Coba kerjakan ${selectedPackage.title} (${selectedPackage.questions.length} soal) di CPNS Learning Hub`}
+                shareText={`Coba kerjakan ${selectedPackage.title} (${selectedPackage.questionCount} soal) di CPNS Learning Hub`}
                 label="Share paket"
                 copiedLabel="Link tersalin"
                 compact
@@ -235,7 +239,7 @@ export const ExamSetupView: React.FC<ExamSetupViewProps> = ({
               >
                 {selectPackages.map((pkg) => (
                   <option key={pkg.id} value={pkg.id}>
-                    {pkg.title} ({pkg.questions.length} soal)
+                    {pkg.title} ({pkg.questionCount} soal)
                   </option>
                 ))}
               </select>
@@ -284,7 +288,7 @@ export const ExamSetupView: React.FC<ExamSetupViewProps> = ({
                   <tr>
                     <td>Total jumlah soal</td>
                     <td className="mono">
-                      <strong>{selectedPackage.questions.length} butir</strong>
+                      <strong>{questionCount} butir</strong>
                     </td>
                   </tr>
                   <tr>
@@ -331,10 +335,15 @@ export const ExamSetupView: React.FC<ExamSetupViewProps> = ({
             type="button"
             className={activeSession ? 'btn' : 'btn btn-primary'}
             style={{ width: '100%' }}
+            disabled={startingExam}
             onClick={() => onConfirmStartExam(selectedPackage, selectedFormation)}
           >
             <CheckCircleIcon size={16} />
-            {activeSession ? 'Mulai sesi baru sekarang' : 'Mulai kerjakan ujian sekarang'}
+            {startingExam
+              ? 'Memuat paket soal...'
+              : activeSession
+                ? 'Mulai sesi baru sekarang'
+                : 'Mulai kerjakan ujian sekarang'}
           </button>
         </aside>
       </div>
