@@ -15,6 +15,7 @@ interface LeaderboardViewProps {
   onOpenAttempt?: (attemptId: string) => void;
   embedded?: boolean;
   onOpenFullLeaderboard?: (packageId: string) => void;
+  refreshKey?: string;
 }
 
 export const LeaderboardView: React.FC<LeaderboardViewProps> = ({
@@ -26,6 +27,7 @@ export const LeaderboardView: React.FC<LeaderboardViewProps> = ({
   onOpenAttempt,
   embedded = false,
   onOpenFullLeaderboard,
+  refreshKey = '',
 }) => {
   const [data, setData] = useState<LeaderboardResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -53,7 +55,7 @@ export const LeaderboardView: React.FC<LeaderboardViewProps> = ({
     return () => {
       cancelled = true;
     };
-  }, [activePkg.id, syncCode, limit, reloadTick]);
+  }, [activePkg.id, syncCode, limit, reloadTick, refreshKey]);
 
   const summary = data?.summary;
   const entries = data?.entries ?? [];

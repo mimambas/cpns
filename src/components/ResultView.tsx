@@ -525,6 +525,7 @@ export const ResultView: React.FC<ResultViewProps> = ({
         onOpenAttempt={onOpenAttempt}
         embedded
         onOpenFullLeaderboard={onOpenLeaderboard}
+        refreshKey={rankInfo ? `${rankInfo.rank}-${rankInfo.totalParticipants}` : 'pending'}
       />
 
       {/* Interactive Question Jumper Map */}

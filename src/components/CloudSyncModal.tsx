@@ -38,7 +38,11 @@ export const CloudSyncModal: React.FC<CloudSyncModalProps> = ({
     setCodeCopied(false);
     setLinkError(null);
     setLinkSuccess(false);
+    // Only reset modal form feedback when opening the modal (not when profile.displayName saves)
+  }, [open]);
 
+  useEffect(() => {
+    if (!open) return;
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         onClose();
@@ -46,7 +50,7 @@ export const CloudSyncModal: React.FC<CloudSyncModalProps> = ({
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [open, profile.displayName, onClose]);
+  }, [open, onClose]);
 
   if (!open) return null;
 
